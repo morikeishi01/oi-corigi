@@ -6,9 +6,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Oi Corigi">
-<meta name="theme-color" content="#1A1A2E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231A1A2E'/><text x='50' y='68' text-anchor='middle' font-size='52'>🛒</text></svg>">
-<title>Oi Corigi — Ngân Sách</title>
+<meta name="theme-color" content="#FFE4EC">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FF6B9D'/><text x='50' y='68' text-anchor='middle' font-size='52'>🏮</text></svg>">
+<title>Oi Corigi — お買い物</title>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+
 <style>
 :root {
   --bg: #F5F3EF;
@@ -24,9 +29,7 @@
   --yellow: #FDCB6E;
   --border: #F0EDE8;
   --nav-bg: rgba(255,255,255,0.95);
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
   --shadow: 0 2px 12px rgba(0,0,0,0.06);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.10);
   --radius: 20px;
   --radius-sm: 14px;
   --nav-h: 72px;
@@ -59,7 +62,6 @@ body {
   color: #4A3055;
   position: relative; overflow: hidden;
 }
-/* Sparkle bg */
 .login-screen::before {
   content: '✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦';
   position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -80,124 +82,63 @@ body {
   background: linear-gradient(135deg, #FF6B9D, #C44DFF);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: none; letter-spacing: -0.5px;
 }
-.login-screen .sub {
-  font-size: 16px; color: #9B7BA8; margin-bottom: 32px;
-  font-weight: 500; position: relative; z-index: 1;
-}
+.login-screen .sub { font-size: 16px; color: #9B7BA8; margin-bottom: 32px; font-weight: 500; position: relative; z-index: 1; }
 .login-screen .pin-box { display: flex; gap: 16px; margin-bottom: 32px; position: relative; z-index: 1; }
 .login-screen .pin-dot {
-  width: 64px; height: 64px; border-radius: 20px;
-  border: 3px solid #E8C4E0; display: flex;
-  align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 20px; border: 3px solid #E8C4E0;
+  display: flex; align-items: center; justify-content: center;
   font-size: 32px; font-weight: 800; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  background: white; color: #C44DFF;
-  box-shadow: 0 4px 12px rgba(196,77,255,0.12);
+  background: white; color: #C44DFF; box-shadow: 0 4px 12px rgba(196,77,255,0.12);
 }
-.login-screen .pin-dot.filled {
-  border-color: #C44DFF; background: #F8F0FF;
-  transform: scale(1.08); box-shadow: 0 6px 20px rgba(196,77,255,0.25);
-}
-.login-screen .pin-dot.error {
-  border-color: #FF6B6B; background: #FFF0F0; color: #FF6B6B;
-  animation: shake 0.5s; box-shadow: 0 0 0 4px rgba(255,107,107,0.15);
-}
+.login-screen .pin-dot.filled { border-color: #C44DFF; background: #F8F0FF; transform: scale(1.08); box-shadow: 0 6px 20px rgba(196,77,255,0.25); }
+.login-screen .pin-dot.error { border-color: #FF6B6B; background: #FFF0F0; color: #FF6B6B; animation: shake 0.5s; box-shadow: 0 0 0 4px rgba(255,107,107,0.15); }
 @keyframes shake { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-8px)} 30%{transform:translateX(8px)} 45%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 75%{transform:translateX(-3px)} 90%{transform:translateX(3px)} }
-.login-screen .num-pad {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 14px; width: 300px; max-width: 90vw;
-  position: relative; z-index: 1;
-}
+.login-screen .num-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 300px; max-width: 90vw; position: relative; z-index: 1; }
 .login-screen .num-key {
-  width: 100%; aspect-ratio: 1; border-radius: 24px;
-  border: none; background: white;
-  color: #4A3055; font-size: 30px; font-weight: 800;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  width: 100%; aspect-ratio: 1; border-radius: 24px; border: none; background: white;
+  color: #4A3055; font-size: 30px; font-weight: 800; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 4px 16px rgba(196,77,255,0.12), 0 1px 3px rgba(0,0,0,0.04);
   position: relative;
 }
-.login-screen .num-key::after {
-  content: ''; position: absolute; inset: 3px; border-radius: 21px;
-  border: 2px solid rgba(255,150,200,0.2); pointer-events: none;
+.login-screen .num-key::after { content: ''; position: absolute; inset: 3px; border-radius: 21px; border: 2px solid rgba(255,150,200,0.2); pointer-events: none; }
+.login-screen .num-key:active { transform: scale(0.92); background: #FFF0F8; box-shadow: 0 2px 8px rgba(196,77,255,0.2); }
+.login-screen .num-key.del { font-size: 16px; color: #B88CC8; background: #FDF5FF; font-weight: 600; }
+.login-screen .login-msg { font-size: 15px; margin-top: 16px; color: #9B7BA8; min-height: 22px; font-weight: 600; position: relative; z-index: 1; }
+.login-screen .login-link { font-size: 14px; margin-top: 24px; color: #C495D8; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; position: relative; z-index: 1; }
+
+.login-screen .sync-status {
+  font-size: 11px; color: #B88CC8; margin-top: 8px; position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 4px;
 }
-.login-screen .num-key:active {
-  transform: scale(0.92); background: #FFF0F8;
-  box-shadow: 0 2px 8px rgba(196,77,255,0.2);
-}
-.login-screen .num-key.del {
-  font-size: 16px; color: #B88CC8; background: #FDF5FF;
-  font-weight: 600;
-}
-.login-screen .login-msg {
-  font-size: 15px; margin-top: 16px; color: #9B7BA8;
-  min-height: 22px; font-weight: 600; position: relative; z-index: 1;
-}
-.login-screen .login-link {
-  font-size: 14px; margin-top: 24px; color: #C495D8;
-  cursor: pointer; text-decoration: underline;
-  text-underline-offset: 4px; position: relative; z-index: 1;
-}
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.sync-dot.online { background: #00B894; }
+.sync-dot.offline { background: #E94560; }
 
 /* ═══ HEADER ═══ */
 .header {
   background: linear-gradient(135deg, #1A1A2E 0%, #0F3460 100%);
   color: white; padding: 20px 20px 24px;
-  border-radius: 0 0 28px 28px;
-  margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
+  border-radius: 0 0 28px 28px; margin-bottom: 20px;
+  position: relative; overflow: hidden;
 }
-.header::after {
-  content: ''; position: absolute; top: -50%; right: -20%;
-  width: 200px; height: 200px; background: rgba(233,69,96,0.15);
-  border-radius: 50%; pointer-events: none;
-}
+.header::after { content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px; background: rgba(233,69,96,0.15); border-radius: 50%; pointer-events: none; }
 .header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; position: relative; z-index: 1; }
 .header .sub { font-size: 13px; opacity: 0.6; margin-top: 2px; position: relative; z-index: 1; }
 .header .budget-row { display: flex; gap: 12px; margin-top: 16px; position: relative; z-index: 1; }
-.header .budget-item {
-  flex: 1; background: rgba(255,255,255,0.1);
-  border-radius: 16px; padding: 14px;
-  backdrop-filter: blur(10px);
-}
+.header .budget-item { flex: 1; background: rgba(255,255,255,0.1); border-radius: 16px; padding: 14px; backdrop-filter: blur(10px); }
 .header .budget-item .label { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
 .header .budget-item .val { font-size: 24px; font-weight: 800; margin-top: 4px; }
-.header .logout-btn {
-  position: absolute; top: 20px; right: 20px; z-index: 2;
-  background: rgba(255,255,255,0.15); border: none;
-  color: rgba(255,255,255,0.7); padding: 8px 14px;
-  border-radius: 10px; font-size: 12px; cursor: pointer;
-  font-family: inherit;
-}
+.header .logout-btn { position: absolute; top: 20px; right: 20px; z-index: 2; background: rgba(255,255,255,0.15); border: none; color: rgba(255,255,255,0.7); padding: 8px 14px; border-radius: 10px; font-size: 12px; cursor: pointer; font-family: inherit; }
+.header .sync-badge { position: absolute; top: 20px; right: 100px; z-index: 2; font-size: 10px; background: rgba(0,184,148,0.3); color: #00E5A0; padding: 4px 8px; border-radius: 8px; }
 
 /* ═══ TAB BAR ═══ */
-.tab-bar {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-  max-width: 480px; margin: 0 auto;
-  background: var(--nav-bg); backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--border);
-  display: flex; padding: 6px 8px;
-  padding-bottom: calc(6px + var(--safe-bottom));
-  height: calc(var(--nav-h) + var(--safe-bottom));
-}
-.tab-btn {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  border: none; background: none; cursor: pointer;
-  font-size: 10px; font-weight: 500; color: var(--text2);
-  gap: 4px; transition: all 0.2s;
-  border-radius: 14px; padding: 6px 0;
-  position: relative;
-}
+.tab-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; max-width: 480px; margin: 0 auto; background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; padding: 6px 8px; padding-bottom: calc(6px + var(--safe-bottom)); height: calc(var(--nav-h) + var(--safe-bottom)); }
+.tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; font-size: 10px; font-weight: 500; color: var(--text2); gap: 4px; transition: all 0.2s; border-radius: 14px; padding: 6px 0; position: relative; }
 .tab-btn.active { color: var(--accent); font-weight: 700; }
-.tab-btn.active::after {
-  content: ''; position: absolute; bottom: -2px;
-  width: 20px; height: 3px; background: var(--accent);
-  border-radius: 2px;
-}
+.tab-btn.active::after { content: ''; position: absolute; bottom: -2px; width: 20px; height: 3px; background: var(--accent); border-radius: 2px; }
 .tab-btn svg { width: 24px; height: 24px; }
 
 /* ═══ PAGES ═══ */
@@ -206,125 +147,62 @@ body {
 @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
 /* ═══ CARDS ═══ */
-.card {
-  background: var(--card); border-radius: var(--radius);
-  padding: 18px; margin-bottom: 16px;
-  box-shadow: var(--shadow);
-  transition: transform 0.2s;
-}
-.card-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 14px;
-}
-.card-title {
-  font-size: 15px; font-weight: 700; color: var(--text);
-  letter-spacing: -0.2px;
-}
-.card-badge {
-  font-size: 11px; font-weight: 600; padding: 4px 10px;
-  border-radius: 20px; background: var(--accent2); color: white;
-}
+.card { background: var(--card); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.card-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.card-badge { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; background: var(--accent2); color: white; }
 
 /* ═══ MEAL DAYS ═══ */
-.meal-day {
-  background: #FAFAF8; border-radius: var(--radius-sm);
-  padding: 14px; margin-bottom: 10px;
-  border: 1px solid var(--border);
-}
-.meal-day .day-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 8px;
-}
+.meal-day { background: #FAFAF8; border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+.meal-day .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .meal-day .day-name { font-size: 15px; font-weight: 700; }
 .meal-day .day-total { font-size: 14px; font-weight: 700; color: var(--accent2); }
-.meal-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 0; border-top: 1px solid var(--border);
-}
+.meal-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); }
 .meal-row:first-of-type { border-top: none; }
 .meal-row .meal-icon { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
 .meal-row .meal-text { flex: 1; font-size: 14px; color: var(--text); }
 .meal-row .meal-price { font-weight: 700; font-size: 14px; color: var(--accent2); }
 
 /* ═══ SHOPPING ═══ */
-.shop-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 0; border-bottom: 1px solid var(--border);
-}
+.shop-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
 .shop-item:last-child { border-bottom: none; }
-.shop-item .check {
-  width: 28px; height: 28px; border: 2.5px solid #D1D5DB;
-  border-radius: 8px; cursor: pointer; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-}
+.shop-item .check { width: 28px; height: 28px; border: 2.5px solid #D1D5DB; border-radius: 8px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .shop-item .check.checked { background: var(--green); border-color: var(--green); }
 .shop-item .check.checked::after { content: '✓'; color: white; font-size: 16px; font-weight: 700; }
 .shop-item .name { flex: 1; font-size: 15px; }
 .shop-item .name.done { text-decoration: line-through; color: var(--text2); }
 .shop-item .info { font-size: 13px; color: var(--text2); font-weight: 500; }
-.shop-total {
-  font-size: 16px; font-weight: 800; text-align: right;
-  padding: 12px 0 0; color: var(--accent2);
-  border-top: 2px solid var(--border); margin-top: 8px;
-}
+.shop-total { font-size: 16px; font-weight: 800; text-align: right; padding: 12px 0 0; color: var(--accent2); border-top: 2px solid var(--border); margin-top: 8px; }
 
-/* ═══ EXPENSE FORM ═══ */
+/* ═══ EXPENSE ═══ */
 .form-group { margin-bottom: 12px; }
 .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 .form-row { display: flex; gap: 10px; }
-.form-row input, .form-row select {
-  flex: 1; padding: 14px 16px; border: 2px solid var(--border);
-  border-radius: var(--radius-sm); font-size: 16px;
-  background: #FAFAF8; font-family: inherit; color: var(--text);
-  -webkit-appearance: none; appearance: none;
-  transition: border-color 0.2s;
-}
-.form-row input:focus, .form-row select:focus {
-  outline: none; border-color: var(--accent2); background: white;
-}
-.btn {
-  padding: 14px 24px; border: none; border-radius: var(--radius-sm);
-  font-size: 16px; font-weight: 700; cursor: pointer;
-  font-family: inherit; transition: all 0.2s;
-  letter-spacing: -0.2px;
-}
+.form-row input, .form-row select { flex: 1; padding: 14px 16px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; background: #FAFAF8; font-family: inherit; color: var(--text); -webkit-appearance: none; appearance: none; transition: border-color 0.2s; }
+.form-row input:focus, .form-row select:focus { outline: none; border-color: var(--accent2); background: white; }
+.btn { padding: 14px 24px; border: none; border-radius: var(--radius-sm); font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; }
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--accent2); color: white; width: 100%; }
-.btn-primary:hover { background: #1A3A6E; }
 .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
 .btn-danger { background: var(--red); color: white; }
 
-/* ═══ EXPENSE LIST ═══ */
-.expense-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 0; border-bottom: 1px solid var(--border);
-}
+.expense-list { max-height: 400px; overflow-y: auto; }
+.expense-item { display: flex; align-items: center; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--border); }
 .expense-item:last-child { border-bottom: none; }
-.expense-item .cat-dot {
-  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
-}
+.expense-item .cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .expense-item .exp-info { flex: 1; min-width: 0; }
 .expense-item .exp-store { font-size: 14px; font-weight: 600; }
 .expense-item .exp-date { font-size: 12px; color: var(--text2); }
 .expense-item .exp-amount { font-size: 16px; font-weight: 800; color: var(--red); }
-.expense-item .cat-tag {
-  font-size: 10px; padding: 3px 8px; border-radius: 10px;
-  background: #F0EDE8; color: var(--text2); white-space: nowrap;
-}
+.expense-item .cat-tag { font-size: 10px; padding: 3px 8px; border-radius: 10px; background: #F0EDE8; color: var(--text2); white-space: nowrap; }
 
 /* ═══ STATS ═══ */
 .stat-row { display: flex; gap: 10px; margin-bottom: 12px; }
-.stat-box {
-  flex: 1; background: var(--card); border-radius: var(--radius);
-  padding: 16px; box-shadow: var(--shadow-sm); text-align: center;
-}
+.stat-box { flex: 1; background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); text-align: center; }
 .stat-box .label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
 .stat-box .value { font-size: 26px; font-weight: 800; margin-top: 4px; }
 .stat-box.good { background: var(--green-bg); }
 .stat-box.good .value { color: var(--green); }
-.stat-box.warn { background: #FFF8E1; }
-.stat-box.warn .value { color: #E6A817; }
 
 .progress-wrap { margin-top: 12px; }
 .progress-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
@@ -335,48 +213,21 @@ body {
 .progress-bar .fill.bad { background: var(--red); }
 
 /* ═══ SETTINGS ═══ */
-.setting-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 0; border-bottom: 1px solid var(--border);
-}
+.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
 .setting-row:last-child { border-bottom: none; }
 .setting-row .s-label { font-size: 15px; font-weight: 500; }
-.setting-row .s-btn {
-  background: none; border: 1.5px solid var(--border);
-  padding: 8px 16px; border-radius: 10px; font-size: 13px;
-  font-weight: 600; cursor: pointer; font-family: inherit;
-  color: var(--text); transition: all 0.2s;
-}
+.setting-row .s-btn { background: none; border: 1.5px solid var(--border); padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; color: var(--text); transition: all 0.2s; }
 .setting-row .s-btn:active { background: #F0EDE8; }
 .setting-row .s-btn.danger { color: var(--red); border-color: var(--red); }
 
-/* ═══ TOAST ═══ */
-.toast {
-  position: fixed; bottom: calc(var(--nav-h) + 30px); left: 50%; transform: translateX(-50%);
-  background: var(--text); color: white; padding: 12px 28px; border-radius: 30px;
-  font-size: 14px; font-weight: 600; z-index: 200; opacity: 0;
-  transition: opacity 0.3s; pointer-events: none;
-  box-shadow: var(--shadow-lg);
-}
+.toast { position: fixed; bottom: calc(var(--nav-h) + 30px); left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 12px 28px; border-radius: 30px; font-size: 14px; font-weight: 600; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
 .toast.show { opacity: 1; }
 
-/* ═══ EMPTY ═══ */
 .empty { text-align: center; padding: 48px 20px; }
 .empty .icon { font-size: 48px; margin-bottom: 12px; }
 .empty p { font-size: 15px; color: var(--text2); }
 
-/* ═══ FAB ═══ */
-.fab {
-  position: fixed; bottom: calc(var(--nav-h) + var(--safe-bottom) + 20px);
-  right: calc(max(16px, (100vw - 480px)/2 + 16px)); z-index: 90;
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--accent); color: white; border: none;
-  font-size: 28px; cursor: pointer; display: flex;
-  align-items: center; justify-content: center;
-  box-shadow: 0 4px 20px rgba(233,69,96,0.4);
-  transition: all 0.2s; animation: fabIn 0.4s ease;
-}
-@keyframes fabIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.fab { position: fixed; bottom: calc(var(--nav-h) + var(--safe-bottom) + 20px); right: calc(max(16px, (100vw - 480px)/2 + 16px)); z-index: 90; width: 56px; height: 56px; border-radius: 50%; background: var(--accent); color: white; border: none; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(233,69,96,0.4); transition: all 0.2s; }
 .fab:active { transform: scale(0.9); }
 .fab.hidden { display: none; }
 </style>
@@ -385,9 +236,9 @@ body {
 
 <!-- ═══ LOGIN ═══ -->
 <div id="login-screen" class="login-screen">
-  <div class="logo">🛒</div>
+  <div class="logo">🏮</div>
   <h1 id="login-title">Oi Corigi</h1>
-  <div class="sub" id="login-sub">💖 Ngân sách gia đình ✨</div>
+  <div class="sub" id="login-sub">💖 家族の予算管理 ✨</div>
   <div class="pin-box" id="pin-dots">
     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
   </div>
@@ -398,151 +249,222 @@ body {
     <button class="num-key">7</button><button class="num-key">8</button><button class="num-key">9</button>
     <button class="num-key" style="visibility:hidden"></button><button class="num-key">0</button><button class="num-key del">⌫</button>
   </div>
-  <div class="login-link" id="login-link" onclick="resetPin()">Quên PIN? Đặt lại</div>
+  <div class="sync-status" id="sync-status">
+    <span class="sync-dot" id="sync-dot"></span>
+    <span id="sync-text">オフライン</span>
+  </div>
+  <div class="login-link" id="login-link" onclick="resetPin()">パスワードをお忘れですか？</div>
 </div>
 
 <!-- ═══ APP ═══ -->
 <div id="app" style="display:none">
 
 <div class="header">
-  <button class="logout-btn" onclick="logout()">Đăng xuất</button>
-  <h1>Oi Corigi 🛒</h1>
-  <div class="sub">¥100,000 siêu thị + ¥16,691 Amazon</div>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+  <span class="sync-badge" id="sync-badge">☁️ Sync</span>
+  <h1>Oi Corigi 🏮</h1>
+  <div class="sub">¥100,000 + ¥16,691 Amazon</div>
   <div class="budget-row">
-    <div class="budget-item">
-      <div class="label">Đã chi</div>
-      <div class="val" id="header-weekly" style="color:#FF8A9E">¥0</div>
-    </div>
-    <div class="budget-item">
-      <div class="label">Còn lại</div>
-      <div class="val" id="header-remain" style="color:#00E5A0">¥23,000</div>
-    </div>
+    <div class="budget-item"><div class="label">支出</div><div class="val" id="header-weekly" style="color:#FF8A9E">¥0</div></div>
+    <div class="budget-item"><div class="label">残り</div><div class="val" id="header-remain" style="color:#00E5A0">¥23,000</div></div>
   </div>
 </div>
 
-<!-- ═══ PAGES ═══ -->
 <div class="page active" id="page-meals">
-  <div class="card">
-    <div class="card-header"><div class="card-title">🍽️ Thực đơn tuần</div><div class="card-badge">7 ngày</div></div>
-    <div id="meal-plan"></div>
-  </div>
+  <div class="card"><div class="card-header"><div class="card-title">🍽️ 献立</div><div class="card-badge">7日間</div></div><div id="meal-plan"></div></div>
 </div>
 
 <div class="page" id="page-shop">
-  <div class="card">
-    <div class="card-header"><div class="card-title">🛒 Chuyến chính — Thứ 7</div><div class="card-badge">OK</div></div>
-    <div id="shop-main"></div>
-    <div class="shop-total">Tổng: <span id="shop-main-total">¥0</span></div>
-  </div>
-  <div class="card">
-    <div class="card-header"><div class="card-title">🛒 Bổ sung — Thứ 4</div></div>
-    <div id="shop-sup"></div>
-    <div class="shop-total">Tổng: <span id="shop-sup-total">¥0</span></div>
-  </div>
-  <div class="card">
-    <div class="card-header"><div class="card-title">📦 Amazon</div><div class="card-badge">¥16,691</div></div>
-    <div id="amazon-list"></div>
-  </div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 メイン — 土曜日</div><div class="card-badge">OK</div></div><div id="shop-main"></div><div class="shop-total">計: <span id="shop-main-total">¥0</span></div></div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 追加 — 水曜日</div></div><div id="shop-sup"></div><div class="shop-total">計: <span id="shop-sup-total">¥0</span></div></div>
+  <div class="card"><div class="card-header"><div class="card-title">📦 Amazon</div><div class="card-badge">¥16,691</div></div><div id="amazon-list"></div></div>
 </div>
 
 <div class="page" id="page-expense">
   <div class="card">
-    <div class="card-title">➕ Thêm khoản chi</div>
-    <div class="form-group"><label>Ngày</label><input type="date" id="exp-date" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:#FAFAF8;font-family:inherit"></div>
-    <div class="form-group"><label>Số tiền (¥)</label><input type="number" id="exp-amount" placeholder="Nhập số tiền..." min="1" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:#FAFAF8;font-family:inherit"></div>
+    <div class="card-title">💰 支出を追加</div>
+    <div class="form-group"><label>日付</label><input type="date" id="exp-date" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:#FAFAF8;font-family:inherit"></div>
+    <div class="form-group"><label>金額 (¥)</label><input type="number" id="exp-amount" placeholder="金額を入力..." min="1" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:#FAFAF8;font-family:inherit"></div>
     <div class="form-row" style="margin-bottom:12px">
-      <select id="exp-store" style="flex:1">
-        <option value="">🏪 Cửa hàng</option>
-        <option>OK Shin-Yoga</option><option>FUJI Yoga</option><option>York Mart</option>
-        <option>My Basket</option><option>Seven-Eleven</option><option>Hanamasa</option><option>Khác</option>
-      </select>
-      <select id="exp-cat" style="flex:1">
-        <option value="">📂 Phân loại</option>
-        <option>Thịt, cá, hải sản</option><option>Rau củ quả</option>
-        <option>Sữa, trứng, đậu</option><option>Gạo, mì, bánh mì</option>
-        <option>Gia vị, dầu ăn</option><option>Snack, đồ uống</option>
-        <option>Trái cây</option><option>Đồ khô, đồ hộp</option><option>Khác</option>
-      </select>
+      <select id="exp-store" style="flex:1"><option value="">🏪 お店</option><option>OK新用賀</option><option>FUJI用賀</option><option>York Mart</option><option>My Basket</option><option>Seven-Eleven</option><option>Hanamasa</option><option>その他</option></select>
+      <select id="exp-cat" style="flex:1"><option value="">📂 カテゴリー</option><option>Thịt, cá, hải sản</option><option>Rau củ quả</option><option>Sữa, trứng, đậu</option><option>Gạo, mì, bánh mì</option><option>Gia vị, dầu ăn</option><option>Snack, đồ uống</option><option>Trái cây</option><option>Đồ khô, đồ hộp</option><option>Khác</option></select>
     </div>
-    <button class="btn btn-primary" onclick="addExpense()">✓ Thêm khoản chi</button>
+    <button class="btn btn-primary" onclick="addExpense()">✓ 追加する</button>
   </div>
-  <div class="card">
-    <div class="card-header"><div class="card-title">📝 Lịch sử</div></div>
-    <div id="expense-list"><div class="empty"><div class="icon">📋</div><p>Chưa có khoản chi nào</p></div></div>
-  </div>
+  <div class="card"><div class="card-header"><div class="card-title">📝 履歴</div></div><div id="expense-list"><div class="empty"><div class="icon">📋</div><p>まだ支出がありません</p></div></div></div>
 </div>
 
 <div class="page" id="page-settings">
   <div class="stat-row">
-    <div class="stat-box"><div class="label">Đã chi tuần</div><div class="value" id="dash-spent" style="color:var(--red)">¥0</div></div>
-    <div class="stat-box"><div class="label">Ngân sách</div><div class="value" style="color:var(--accent2)">¥23k</div></div>
+    <div class="stat-box"><div class="label">支出</div><div class="value" id="dash-spent" style="color:var(--red)">¥0</div></div>
+    <div class="stat-box"><div class="label">予算</div><div class="value" style="color:var(--accent2)">¥23k</div></div>
   </div>
   <div class="card">
-    <div class="card-title">📊 Tiến độ</div>
+    <div class="card-title">📊 進捗</div>
     <div class="progress-wrap">
       <div class="progress-label"><span id="dash-progress-label">0%</span><span>¥23,000</span></div>
       <div class="progress-bar"><div class="fill good" id="dash-progress" style="width:0%"></div></div>
     </div>
   </div>
+  <div class="card"><div class="card-title">📂 カテゴリー</div><div id="dash-categories"></div></div>
   <div class="card">
-    <div class="card-title">📂 Phân loại</div><div id="dash-categories"></div>
+    <div class="card-title">⚙️ 設定</div>
+    <div class="setting-row"><span class="s-label">PINを変更</span><button class="s-btn" onclick="changePin()">変更</button></div>
+    <div class="setting-row"><span class="s-label">データをエクスポート</span><button class="s-btn" onclick="exportData()">📥 出力</button></div>
+    <div class="setting-row"><span class="s-label">データを削除</span><button class="s-btn danger" onclick="resetAll()">🗑️ 削除</button></div>
   </div>
   <div class="card">
-    <div class="card-title">⚙️ Cài đặt</div>
-    <div class="setting-row"><span class="s-label">Đổi mã PIN</span><button class="s-btn" onclick="changePin()">Đổi</button></div>
-    <div class="setting-row"><span class="s-label">Xuất dữ liệu</span><button class="s-btn" onclick="exportData()">📥 Xuất</button></div>
-    <div class="setting-row"><span class="s-label">Nhập dữ liệu</span><button class="s-btn" onclick="document.getElementById('import-file').click()">📤 Nhập</button><input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)"></div>
-    <div class="setting-row"><span class="s-label">Xóa dữ liệu</span><button class="s-btn danger" onclick="resetAll()">🗑️ Xóa</button></div>
+    <div class="text-center text-xs text-gray-400">
+      <p class="font-bold text-gray-500 mb-1">お買い物 — Oi Corigi</p>
+      <p>🛒 Firebase Sync — 家族で共有</p>
+    </div>
   </div>
 </div>
 
-<!-- FAB -->
 <button class="fab" id="fab" onclick="quickAdd()">+</button>
 
-<!-- TAB BAR -->
 <nav class="tab-bar">
-  <button class="tab-btn active" data-page="meals">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    Thực đơn
-  </button>
-  <button class="tab-btn" data-page="shop">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-    Mua sắm
-  </button>
-  <button class="tab-btn" data-page="expense">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Chi tiêu
-  </button>
-  <button class="tab-btn" data-page="settings">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Cài đặt
-  </button>
+  <button class="tab-btn active" data-page="meals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>献立</button>
+  <button class="tab-btn" data-page="shop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>買い物</button>
+  <button class="tab-btn" data-page="expense"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>支出</button>
+  <button class="tab-btn" data-page="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>設定</button>
 </nav>
 
-</div><!-- /#app -->
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 // ═══════════════════════════════════════════
-// PIN
+// FIREBASE CONFIG — REPLACE WITH YOUR OWN
 // ═══════════════════════════════════════════
-const PIN_KEY = 'budget_pin_hash';
+const firebaseConfig = {
+  // TODO: Thay bằng config từ Firebase Console
+  // Vào console.firebase.google.com → Project Settings → Your apps → Config
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "YOUR_APP_ID"
+};
+
+let db = null;
+let firebaseReady = false;
+let familyCode = '';
+
+function initFirebase() {
+  try {
+    if (firebaseConfig.apiKey === 'YOUR_API_KEY') {
+      console.warn('Firebase not configured — using localStorage fallback');
+      updateSyncStatus(false);
+      return;
+    }
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+    firebaseReady = true;
+    updateSyncStatus(true);
+    console.log('🔥 Firebase ready');
+  } catch(e) {
+    console.warn('Firebase init failed:', e.message);
+    updateSyncStatus(false);
+  }
+}
+
+function updateSyncStatus(online) {
+  const dot = document.getElementById('sync-dot');
+  const text = document.getElementById('sync-text');
+  if (dot) {
+    dot.className = 'sync-dot ' + (online ? 'online' : 'offline');
+    text.textContent = online ? '☁️ 同期中' : '📱 オフライン';
+  }
+  const badge = document.getElementById('sync-badge');
+  if (badge) {
+    badge.textContent = online ? '☁️ LIVE' : '📱 LOCAL';
+    badge.style.background = online ? 'rgba(0,184,148,0.3)' : 'rgba(233,69,96,0.3)';
+    badge.style.color = online ? '#00E5A0' : '#FF8A9E';
+  }
+}
+
+// ═══════════════════════════════════════════
+// DATA LAYER — Firebase + localStorage fallback
+// ═══════════════════════════════════════════
+function getDocRef() {
+  if (!familyCode) return null;
+  return db ? db.collection('families').doc(familyCode) : null;
+}
+
+async function saveExpenses(arr) {
+  localStorage.setItem('oi_expenses', JSON.stringify(arr));
+  const ref = getDocRef();
+  if (ref) {
+    try { await ref.set({ expenses: arr }, { merge: true }); } catch(e) { console.warn('Firebase save failed'); }
+  }
+}
+
+async function saveShopChecks(obj) {
+  localStorage.setItem('oi_shop', JSON.stringify(obj));
+  const ref = getDocRef();
+  if (ref) {
+    try { await ref.set({ shop: obj }, { merge: true }); } catch(e) { console.warn('Firebase save failed'); }
+  }
+}
+
+function getExpensesLocal() {
+  try { return JSON.parse(localStorage.getItem('oi_expenses') || '[]'); } catch(e) { return []; }
+}
+
+function getShopLocal() {
+  try { return JSON.parse(localStorage.getItem('oi_shop') || '{}'); } catch(e) { return {}; }
+}
+
+function listenToFirebase() {
+  const ref = getDocRef();
+  if (!ref) return;
+  ref.onSnapshot((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.expenses) {
+        localStorage.setItem('oi_expenses', JSON.stringify(data.expenses));
+        if (document.getElementById('app').style.display !== 'none') {
+          renderExpenses();
+          updateHeader();
+          if (document.getElementById('page-settings').classList.contains('active')) renderDashboard();
+        }
+      }
+      if (data.shop) {
+        localStorage.setItem('oi_shop', JSON.stringify(data.shop));
+        if (document.getElementById('app').style.display !== 'none') {
+          renderShop();
+        }
+      }
+    }
+  }, (err) => {
+    console.warn('Firestore listener error:', err.message);
+  });
+}
+
+// ═══════════════════════════════════════════
+// PIN SYSTEM
+// ═══════════════════════════════════════════
+const PIN_KEY = 'oi_pin_hash';
 const WEEKLY_BUDGET = 23000;
 let pinInput = '', pinMode = 'enter', pinCreate = '';
 
 async function hashPin(pin) {
-  const data = new TextEncoder().encode(pin + 'oi-corigi-2026');
+  const data = new TextEncoder().encode(pin + 'oi-corigi-firebase');
   const h = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
 async function initLogin() {
+  initFirebase();
   const stored = localStorage.getItem(PIN_KEY);
   const t = document.getElementById('login-title'), s = document.getElementById('login-sub');
   const link = document.getElementById('login-link');
   if (!stored) {
-    pinMode = 'create'; t.textContent = 'Oi Corigi'; s.textContent = 'Tạo mã PIN 4 số để bắt đầu';
+    pinMode = 'create'; t.textContent = 'Oi Corigi'; s.textContent = '家族コードを設定してください';
     link.style.display = 'none';
   } else {
     pinMode = 'enter'; link.style.display = 'block';
@@ -568,26 +490,42 @@ async function handlePin(n) {
   pinInput += n; updateDots();
   if (pinInput.length === 4) {
     if (pinMode === 'create') { pinCreate = pinInput; pinInput = ''; pinMode = 'confirm';
-      document.getElementById('login-sub').textContent = 'Nhập lại để xác nhận'; updateDots(); }
+      document.getElementById('login-sub').textContent = 'もう一度入力してください'; updateDots(); }
     else if (pinMode === 'confirm') {
       if (pinInput === pinCreate) {
         localStorage.setItem(PIN_KEY, await hashPin(pinInput));
-        document.getElementById('login-msg').textContent = '✓ Thành công!';
+        document.getElementById('login-msg').textContent = '✓ 設定完了！';
         setTimeout(loginSuccess, 400);
-      } else { document.getElementById('login-msg').textContent = 'Không khớp!'; pinInput = ''; pinMode = 'create';
-        document.getElementById('login-sub').textContent = 'Tạo mã PIN 4 số để bắt đầu'; shake(); updateDots(); }
+      } else { document.getElementById('login-msg').textContent = '一致しません！'; pinInput = ''; pinMode = 'create';
+        document.getElementById('login-sub').textContent = '家族コードを設定してください'; shake(); updateDots(); }
     } else {
-      if (await hashPin(pinInput) === localStorage.getItem(PIN_KEY)) { loginSuccess(); }
-      else { document.getElementById('login-msg').textContent = 'Sai PIN!'; pinInput = ''; shake(); updateDots(); }
+      if (await hashPin(pinInput) === localStorage.getItem(PIN_KEY)) {
+        loginSuccess();
+      } else { document.getElementById('login-msg').textContent = 'コードが違います'; pinInput = ''; shake(); updateDots(); }
     }
   }
 }
 
 function handleDel() { if (pinInput.length) { pinInput = pinInput.slice(0,-1); updateDots(); } }
 
-function loginSuccess() {
+async function loginSuccess() {
+  familyCode = pinInput || pinCreate;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
+
+  // Load from Firebase first, then fallback to localStorage
+  const ref = getDocRef();
+  if (ref) {
+    try {
+      const doc = await ref.get();
+      if (doc.exists) {
+        const data = doc.data();
+        if (data.expenses) localStorage.setItem('oi_expenses', JSON.stringify(data.expenses));
+        if (data.shop) localStorage.setItem('oi_shop', JSON.stringify(data.shop));
+      }
+    } catch(e) { console.warn('Firebase load failed'); }
+  }
+  listenToFirebase();
   renderMeals(); renderShop(); renderExpenses(); updateHeader();
   document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
 }
@@ -602,16 +540,16 @@ function logout() {
 }
 
 function resetPin() {
-  if (confirm('Xóa PIN và tất cả dữ liệu?')) { localStorage.clear(); pinInput = ''; pinMode = 'create'; pinCreate = '';
+  if (confirm('すべてのデータを削除しますか？')) { localStorage.clear(); pinInput = ''; pinMode = 'create'; pinCreate = '';
     document.getElementById('login-title').textContent = 'Oi Corigi';
-    document.getElementById('login-sub').textContent = 'Tạo mã PIN 4 số để bắt đầu';
+    document.getElementById('login-sub').textContent = '家族コードを設定してください';
     document.getElementById('login-link').style.display = 'none'; updateDots(); }
 }
 
 function changePin() {
-  if (confirm('Đổi mã PIN?')) { localStorage.removeItem(PIN_KEY); pinInput = ''; pinMode = 'create'; pinCreate = '';
+  if (confirm('家族コードを変更しますか？')) { localStorage.removeItem(PIN_KEY); pinInput = ''; pinMode = 'create'; pinCreate = '';
     document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none';
-    document.getElementById('login-title').textContent = 'PIN mới'; document.getElementById('login-sub').textContent = 'Nhập 4 số mới';
+    document.getElementById('login-title').textContent = '新しいコード'; document.getElementById('login-sub').textContent = '4桁のコードを入力';
     document.getElementById('login-link').style.display = 'none'; updateDots(); }
 }
 
@@ -619,17 +557,19 @@ function changePin() {
 // EXPORT/IMPORT
 // ═══════════════════════════════════════════
 function exportData() {
-  const d = { expenses: JSON.parse(localStorage.getItem('budget_expenses')||'[]'), shop: JSON.parse(localStorage.getItem('budget_shop')||'{}'), exportedAt: new Date().toISOString() };
+  const d = { expenses: getExpensesLocal(), shop: getShopLocal(), exportedAt: new Date().toISOString() };
   const b = new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'oi-corigi-backup-'+new Date().toISOString().split('T')[0]+'.json'; a.click();
-  showToast('Đã xuất!');
+  showToast('エクスポート完了！');
 }
-function importData(e) {
-  const f = e.target.files[0]; if(!f) return;
-  const r = new FileReader(); r.onload = function(ev) {
-    try { const d = JSON.parse(ev.target.result); if(d.expenses) localStorage.setItem('budget_expenses',JSON.stringify(d.expenses)); if(d.shop) localStorage.setItem('budget_shop',JSON.stringify(d.shop)); renderShop(); renderExpenses(); updateHeader(); showToast('Đã nhập!'); }
-    catch(ex) { showToast('File không hợp lệ'); }
-  }; r.readAsText(f); e.target.value = '';
+
+function resetAll() {
+  if(confirm('すべてのデータを削除しますか？')){
+    localStorage.removeItem('oi_expenses'); localStorage.removeItem('oi_shop');
+    const ref = getDocRef();
+    if (ref) ref.delete().catch(() => {});
+    renderShop(); renderExpenses(); updateHeader(); showToast('削除しました！');
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -652,46 +592,38 @@ const CAT_COLORS = {
 };
 
 const meals = [
-  { day: 'Thứ 2', items: [{icon:'🌅',text:'Cơm + trứng ốp + miso + sữa',price:400},{icon:'☀️',text:'Cơm + gà xào ớt chuông + canh',price:600},{icon:'🌙',text:'Cá saba nướng + rau luộc + cơm',price:700}]},
-  { day: 'Thứ 3', items: [{icon:'🌅',text:'Bánh mì + trứng luộc + sữa',price:350},{icon:'☀️',text:'Mì udon + thịt lợn xào rau cải',price:550},{icon:'🌙',text:'Đậu hũ sốt teriyaki + salad trộn',price:600}]},
-  { day: 'Thứ 4', items: [{icon:'🌅',text:'Cơm + natto + miso + trứng',price:350},{icon:'☀️',text:'Cơm + thịt bò xào kim chi + dưa',price:800},{icon:'🌙',text:'Sashimi cá hồi + cơm cuộn',price:850}]},
-  { day: 'Thứ 5', items: [{icon:'🌅',text:'Bánh mì + yogurt + chuối',price:300},{icon:'☀️',text:'Cơm rang rau củ + trứng + gà',price:500},{icon:'🌙',text:'Gà teriyaki + canh miso + rau',price:650}]},
-  { day: 'Thứ 6', items: [{icon:'🌅',text:'Cơm + trứng + rong biển + miso',price:350},{icon:'☀️',text:'Mì somen lạnh + gà xé + dưa',price:500},{icon:'🌙',text:'Cá hồi muối + rau củ nướng + cơm',price:750}]},
-  { day: 'Thứ 7', items: [{icon:'🌅',text:'Pancake + trái cây + sữa',price:400},{icon:'☀️',text:'Cơm + sườn nướng + dưa cải + salad',price:750},{icon:'🌙',text:'Lẩu nhỏ (gà+rau+đậu hũ+nấm)',price:900}]},
-  { day: 'Chủ nhật', items: [{icon:'🌅',text:'Bánh mì + trứng ốp + sữa + trái cây',price:400},{icon:'☀️',text:'Cơm cà ri gà',price:600},{icon:'🌙',text:'Bulgogi bò + kim chi + salad',price:850}]}
+  { day: '月曜日', items: [{icon:'🌅',text:'ご飯 + 卵焼き + 味噌汁',price:400},{icon:'☀️',text:'ご飯 + 鶏肉炒め',price:600},{icon:'🌙',text:'鯖の塩焼き + 野菜',price:700}]},
+  { day: '火曜日', items: [{icon:'🌅',text:'パン + ゆで卵 + 牛乳',price:350},{icon:'☀️',text:'うどん + 豚肉野菜炒め',price:550},{icon:'🌙',text:'豆腐の照り焼き + サラダ',price:600}]},
+  { day: '水曜日', items: [{icon:'🌅',text:'ご飯 + 納豆 + 味噌汁',price:350},{icon:'☀️',text:'牛カルビ炒め + キムチ',price:800},{icon:'🌙',text:'サーモン刺身 + 巻き寿司',price:850}]},
+  { day: '木曜日', items: [{icon:'🌅',text:'パン + ヨーグルト + バナナ',price:300},{icon:'☀️',text:'チャーハン + 卵 + 鶏肉',price:500},{icon:'🌙',text:'鶏照り焼き + 味噌汁',price:650}]},
+  { day: '金曜日', items: [{icon:'🌅',text:'ご飯 + 卵 + 海苔',price:350},{icon:'☀️',text:'そうめん + 鶏ささみ',price:500},{icon:'🌙',text:'塩鮭 + 焼き野菜',price:750}]},
+  { day: '土曜日', items: [{icon:'🌅',text:'パンケーキ + フルーツ',price:400},{icon:'☀️',text:'ご飯 + スペアリブ',price:750},{icon:'🌙',text:'鍋 (鶏+野菜+豆腐+きのこ)',price:900}]},
+  { day: '日曜日', items: [{icon:'🌅',text:'パン + 目玉焼き + 牛乳',price:400},{icon:'☀️',text:'カレーライス',price:600},{icon:'🌙',text:'プルコギ + キムチ + サラダ',price:850}]}
 ];
 
 const shopMain = [
-  {name:'Gạo (1.5kg)',qty:'1.5kg',price:600},{name:'Thịt gà đùi',qty:'800g',price:1200},{name:'Thịt gà ức',qty:'400g',price:400},
-  {name:'Thịt lợn nạc',qty:'600g',price:1200},{name:'Thịt bò nạc',qty:'400g',price:2000},{name:'Cá saba/aji',qty:'3 con',price:750},
-  {name:'Cá hồi filê',qty:'3 miếng',price:1200},{name:'Trứng gà (10 quả)',qty:'2 hộp',price:500},{name:'Đậu hũ',qty:'4 hộp',price:320},
-  {name:'Sữa tươi 1L',qty:'2 hộp',price:400},{name:'Yogurt 400g',qty:'2 hộp',price:400},{name:'Phô mai',qty:'1 gói',price:200},
-  {name:'Bánh mì sandwich',qty:'2 gói',price:300},{name:'Mì udon/somen',qty:'4 gói',price:400},{name:'Rau cải / spinach',qty:'3 bó',price:600},
-  {name:'Cà chua + dưa chuột',qty:'1 gói',price:250},{name:'Hành tây, cà rốt, khoai',qty:'1 bộ',price:400},
-  {name:'Nấm các loại',qty:'2 gói',price:300},{name:'Trái cây theo mùa',qty:'5 quả',price:750},{name:'Chuối',qty:'1 nải',price:150},
-  {name:'Natto',qty:'3 hộp',price:240},{name:'Miso, xì dầu',qty:'1',price:300}
+  {name:'お米 (1.5kg)',qty:'1.5kg',price:600},{name:'鶏もも肉',qty:'800g',price:1200},{name:'鶏むね肉',qty:'400g',price:400},
+  {name:'豚肉ロース',qty:'600g',price:1200},{name:'牛肉',qty:'400g',price:2000},{name:'鯖・あじ',qty:'3尾',price:750},
+  {name:'サーモン',qty:'3切',price:1200},{name:'卵 (10個)',qty:'2パック',price:500},{name:'豆腐',qty:'4丁',price:320},
+  {name:'牛乳 1L',qty:'2本',price:400},{name:'ヨーグルト',qty:'2個',price:400},{name:'チーズ',qty:'1個',price:200},
+  {name:'食パン',qty:'2袋',price:300},{name:'うどん/そうめん',qty:'4袋',price:400},{name:'青菜/ほうれん草',qty:'3束',price:600},
+  {name:'トマト+きゅうり',qty:'1袋',price:250},{name:'玉ねぎ・人参・じゃがいも',qty:'1セット',price:400},
+  {name:'きのこ',qty:'2袋',price:300},{name:'季節の果物',qty:'5個',price:750},{name:'バナナ',qty:'1房',price:150},
+  {name:'納豆',qty:'3パック',price:240},{name:'味噌・醤油',qty:'1',price:300}
 ];
 
 const shopSup = [
-  {name:'Thịt/cá tươi bổ sung',qty:'1',price:2000},{name:'Rau tươi bổ sung',qty:'1',price:1000},
-  {name:'Trái cây bổ sung',qty:'1',price:600},{name:'Sữa + trứng + yogurt',qty:'1',price:700},
-  {name:'Snack, bánh nhẹ',qty:'1',price:1000},{name:'Linh hoạt / dự phòng',qty:'1',price:1700}
+  {name:'肉・魚 追加',qty:'1',price:2000},{name:'野菜 追加',qty:'1',price:1000},
+  {name:'果物 追加',qty:'1',price:600},{name:'牛乳+卵+ヨーグルト',qty:'1',price:700},
+  {name:'お菓子',qty:'1',price:1000},{name:'予備',qty:'1',price:1700}
 ];
 
 const amazonItems = [
-  {name:'Sữa Moriyama A2 ×12',price:2712},{name:'Sữa bột Morinaga GOLD',price:3789},{name:'Sữa hạnh nhân Glico ×24',price:2812},
-  {name:'Nước Irohasu ×24',price:1900},{name:'Green Da-Ka-Ra ×24',price:1913},{name:'Listerine 1000ml',price:988},
-  {name:'NMN 400mg 30 viên',price:980},{name:'Lenor nước xả vải',price:882},{name:'Xà phòng For Back',price:715}
+  {name:'森山A2牛乳 200ml×12',price:2712},{name:'森永ミルク生活GOLD',price:3789},
+  {name:'アーモンド効果×24',price:2812},{name:'い・ろ・は・す×24',price:1900},
+  {name:'GREEN DA・KA・RA×24',price:1913},{name:'リステリン 1000ml',price:988},
+  {name:'NMN 400mg 30粒',price:980},{name:'レノア ハピネス',price:882},{name:'ForBack 薬用石鹸',price:715}
 ];
-
-// ═══════════════════════════════════════════
-// STORAGE
-// ═══════════════════════════════════════════
-function getExpenses() { try{return JSON.parse(localStorage.getItem('budget_expenses')||'[]')}catch(e){return[]} }
-function saveExpenses(a) { localStorage.setItem('budget_expenses',JSON.stringify(a)); }
-function getShopChecks() { try{return JSON.parse(localStorage.getItem('budget_shop')||'{}')}catch(e){return{}} }
-function saveShopChecks(o) { localStorage.setItem('budget_shop',JSON.stringify(o)); }
-function resetAll() { if(confirm('Xóa tất cả dữ liệu?')){localStorage.removeItem('budget_expenses');localStorage.removeItem('budget_shop');renderShop();renderExpenses();updateHeader();showToast('Đã xóa!')} }
 
 // ═══════════════════════════════════════════
 // NAVIGATION
@@ -703,8 +635,8 @@ document.querySelectorAll('.tab-btn').forEach(b => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-'+b.dataset.page).classList.add('active');
     const fab = document.getElementById('fab');
-    if (b.dataset.page === 'expense') { fab.classList.add('hidden'); }
-    else { fab.classList.remove('hidden'); }
+    if (b.dataset.page === 'expense') fab.classList.add('hidden');
+    else fab.classList.remove('hidden');
     if (b.dataset.page === 'settings') renderDashboard();
     if (b.dataset.page === 'shop') renderShop();
     if (b.dataset.page === 'expense') renderExpenses();
@@ -738,12 +670,12 @@ function renderMeals() {
     m.items.forEach(i => h += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><span class="meal-text">${i.text}</span><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`);
     h += `</div>`;
   });
-  h += `<div style="text-align:right;font-weight:800;padding:12px 0 0;font-size:16px;color:var(--accent2)">Tổng: ¥${wt.toLocaleString()} / ¥23,000</div>`;
+  h += `<div style="text-align:right;font-weight:800;padding:12px 0 0;font-size:16px;color:var(--accent2)">合計: ¥${wt.toLocaleString()} / ¥23,000</div>`;
   document.getElementById('meal-plan').innerHTML = h;
 }
 
 function renderShop() {
-  const c = getShopChecks();
+  const c = getShopLocal();
   function list(items, elId, tId) {
     let h = '', t = 0;
     items.forEach((item, i) => {
@@ -755,22 +687,26 @@ function renderShop() {
   }
   list(shopMain, 'shop-main', 'shop-main-total');
   list(shopSup, 'shop-sup', 'shop-sup-total');
-  let ah = '', at = 0;
-  amazonItems.forEach(i => { at += i.price; ah += `<div class="shop-item"><span class="name">${i.name}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`; });
+  let ah = '';
+  amazonItems.forEach(i => { ah += `<div class="shop-item"><span class="name">${i.name}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`; });
   document.getElementById('amazon-list').innerHTML = ah;
 }
 
-function toggleShop(k) { const c = getShopChecks(); c[k] = !c[k]; saveShopChecks(c); renderShop(); }
+async function toggleShop(k) {
+  const c = getShopLocal(); c[k] = !c[k];
+  await saveShopChecks(c);
+  renderShop();
+}
 
 function renderExpenses() {
-  const ex = getExpenses(), el = document.getElementById('expense-list');
-  if (!ex.length) { el.innerHTML = '<div class="empty"><div class="icon">📋</div><p>Chưa có khoản chi nào</p></div>'; return; }
+  const ex = getExpensesLocal(), el = document.getElementById('expense-list');
+  if (!ex.length) { el.innerHTML = '<div class="empty"><div class="icon">📋</div><p>まだ支出がありません</p></div>'; return; }
   ex.sort((a,b) => new Date(b.date) - new Date(a.date));
   let h = '';
   ex.forEach((e, i) => {
     h += `<div class="expense-item">
       <div class="cat-dot" style="background:${CAT_COLORS[e.cat]||'#B2BEC3'}"></div>
-      <div class="exp-info"><div class="exp-store">${e.store||'Không rõ'}</div><div class="exp-date">${e.date}</div></div>
+      <div class="exp-info"><div class="exp-store">${e.store||'その他'}</div><div class="exp-date">${e.date}</div></div>
       <span class="cat-tag">${e.cat||'Khác'}</span>
       <span class="exp-amount">¥${e.amount.toLocaleString()}</span>
       <button class="btn btn-danger btn-sm" onclick="deleteExpense(${i})">✕</button>
@@ -779,22 +715,27 @@ function renderExpenses() {
   el.innerHTML = h;
 }
 
-function addExpense() {
+async function addExpense() {
   const d = document.getElementById('exp-date').value || new Date().toISOString().split('T')[0];
   const a = parseInt(document.getElementById('exp-amount').value);
   const s = document.getElementById('exp-store').value, c = document.getElementById('exp-cat').value;
-  if (!a || a <= 0) { showToast('Nhập số tiền!'); return; }
-  const ex = getExpenses(); ex.push({date:d,amount:a,store:s,cat:c,added:new Date().toISOString()}); saveExpenses(ex);
-  document.getElementById('exp-amount').value = ''; renderExpenses(); updateHeader(); showToast('✓ Đã thêm ¥'+a.toLocaleString());
+  if (!a || a <= 0) { showToast('金額を入力してください！'); return; }
+  const ex = getExpensesLocal();
+  ex.push({ id: Date.now().toString(), date:d, amount:a, store:s, cat:c, added:new Date().toISOString() });
+  await saveExpenses(ex);
+  document.getElementById('exp-amount').value = '';
+  renderExpenses(); updateHeader(); showToast('✓ 追加しました ¥'+a.toLocaleString());
 }
 
-function deleteExpense(i) {
-  const ex = getExpenses(); ex.sort((a,b) => new Date(b.date) - new Date(a.date));
-  const r = ex.splice(i,1)[0]; saveExpenses(ex); renderExpenses(); updateHeader(); showToast('Đã xóa ¥'+r.amount.toLocaleString());
+async function deleteExpense(i) {
+  const ex = getExpensesLocal(); ex.sort((a,b) => new Date(b.date) - new Date(a.date));
+  const r = ex.splice(i,1)[0];
+  await saveExpenses(ex);
+  renderExpenses(); updateHeader(); showToast('削除しました ¥'+r.amount.toLocaleString());
 }
 
 function renderDashboard() {
-  const ex = getExpenses(), now = new Date(), wk = new Date(now.getTime()-7*86400000);
+  const ex = getExpensesLocal(), now = new Date(), wk = new Date(now.getTime()-7*86400000);
   const we = ex.filter(e => new Date(e.date) >= wk), ts = we.reduce((s,e) => s+e.amount, 0);
   const pct = Math.min(100, Math.round(ts/WEEKLY_BUDGET*100));
   document.getElementById('dash-spent').textContent = '¥'+ts.toLocaleString();
@@ -803,25 +744,25 @@ function renderDashboard() {
   const bar = document.getElementById('dash-progress'); bar.classList.remove('good','warn','bad');
   if (pct>90) bar.classList.add('bad'); else if (pct>70) bar.classList.add('warn'); else bar.classList.add('good');
 
+  const CAT_NAMES = Object.keys(CAT_COLORS);
   const cats = {};
-  ['Thịt, cá, hải sản','Rau củ quả','Sữa, trứng, đậu','Gạo, mì, bánh mì','Gia vị, dầu ăn','Snack, đồ uống','Trái cây','Đồ khô, đồ hộp','Khác'].forEach(n => cats[n]=0);
+  CAT_NAMES.forEach(n => cats[n]=0);
   we.forEach(e => { if (cats.hasOwnProperty(e.cat)) cats[e.cat] = (cats[e.cat]||0) + e.amount; else cats['Khác'] = (cats['Khác']||0) + e.amount; });
 
   let ch = '';
   Object.entries(cats).forEach(([n,v]) => {
     const p = ts>0 ? Math.round(v/ts*100) : 0;
-    ch += `<div class="cat-row" style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px">
-      <div class="cat-dot" style="width:10px;height:10px;border-radius:50%;background:${CAT_COLORS[n]};margin-right:10px;flex-shrink:0"></div>
+    ch += `<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <div style="width:10px;height:10px;border-radius:50%;background:${CAT_COLORS[n]};margin-right:10px;flex-shrink:0"></div>
       <span style="flex:1">${n}</span><span style="font-weight:700;margin:0 8px">¥${v.toLocaleString()}</span>
       <div style="width:60px"><div class="progress-bar" style="height:6px"><div class="fill good" style="width:${p}%;background:${CAT_COLORS[n]}"></div></div></div>
-      <span style="font-size:11px;min-width:32px;text-align:right">${p}%</span>
-    </div>`;
+      <span style="font-size:11px;min-width:32px;text-align:right">${p}%</span></div>`;
   });
-  document.getElementById('dash-categories').innerHTML = ch || '<div class="empty"><p>Chưa có dữ liệu</p></div>';
+  document.getElementById('dash-categories').innerHTML = ch || '<div class="empty"><p>データがありません</p></div>';
 }
 
 function updateHeader() {
-  const ex = getExpenses(), now = new Date(), wk = new Date(now.getTime()-7*86400000);
+  const ex = getExpensesLocal(), now = new Date(), wk = new Date(now.getTime()-7*86400000);
   const ts = ex.filter(e => new Date(e.date) >= wk).reduce((s,e) => s+e.amount, 0);
   const rm = WEEKLY_BUDGET - ts;
   document.getElementById('header-weekly').textContent = '¥'+ts.toLocaleString();
