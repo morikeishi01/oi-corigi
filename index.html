@@ -359,7 +359,27 @@ let currentLang = localStorage.getItem('oi_lang') || 'ja';
 // ═══════════════════════════════════════════
 const L = {
   ja: { loginTitle: 'Oi Corigi', loginSubCreate: '家族コードを設定してください', loginSubConfirm: 'もう一度入力してください', loginSubEnter: 'PINを入力してください', loginForgot: 'パスワードをお忘れですか？', loginSuccess: '✓ 設定完了！', loginMismatch: '一致しません！', loginWrong: 'コードが違います', syncOn: '☁️ 同期中', syncOff: '📱 オフライン', syncLive: '☁️ LIVE', syncLocal: '📱 LOCAL', tabMeals: '献立', tabShop: '買い物', tabExpense: '支出', tabSettings: '設定', headerBudget: '¥100,000 + ¥16,691 Amazon', headerSpent: '支出', headerRemain: '残り', badgeWeek: '7日間', badgeMain: 'メイン', badgeAdd: '追加', badgeMonth: '今月', shopMain: '🛒 メイン — 土曜日', shopAdd: '🛒 追加 — 水曜日', shopAmazon: '📦 Amazon', shopTotal: '計', mealTotal: '合計', mealBudget: '/ ¥23,000', expTitle: '💰 支出を追加', expDate: '日付', expAmount: '金額 (¥)', expAmountPlaceholder: '金額を入力...', expStore: '🏪 お店', expStoreOther: 'その他', expCat: '📂 カテゴリー', expAdd: '✓ 追加する', expHistory: '📝 履歴', expEmpty: 'まだ支出がありません', expAdded: '✓ 追加しました', expDeleted: '削除しました', expAmountWarn: '金額を入力してください！', dashTitle: '📊 進捗', dashCat: '📂 カテゴリー', dashNoData: 'データがありません', setTitle: '設定', setChangePin: 'PINを変更', setExport: 'データをエクスポート', setExportBtn: '📥 出力', setDelete: 'データを削除', setDeleteBtn: '🗑️ 削除', setExportDone: 'エクスポート完了！', setDeleteDone: '削除しました！', setFooter: '🛒 Firebase Sync — 家族で共有', setNewPin: '新しいコード', setNewPinSub: '4桁のコードを入力', setPinChange: '家族コードを変更しますか？', setDeleteConfirm: 'すべてのデータを削除しますか？', logout: 'Logout', fab: '+', storeList: ['OK新用賀','FUJI用賀','York Mart','My Basket','Seven-Eleven','Hanamasa','その他'] },
-  vi: { loginTitle: 'Oi Corigi', loginSubCreate: 'Tạo mã gia đình 4 số', loginSubConfirm: 'Nhập lại để xác nhận', loginSubEnter: 'Nhập mã PIN để vào', loginForgot: 'Quên mã PIN?', loginSuccess: '✓ Thành công!', loginMismatch: 'Không khớp!', loginWrong: 'Sai mã PIN', syncOn: '☁️ Đang đồng bộ', syncOff: '📱 Ngoại tuyến', syncLive: '☁️ LIVE', syncLocal: '📱 LOCAL', tabMeals: 'Thực đơn', tabShop: 'Mua sắm', tabExpense: 'Chi tiêu', tabSettings: 'Cài đặt', headerBudget: '¥100,000 siêu thị + ¥16,691 Amazon', headerSpent: 'Đã chi', headerRemain: 'Còn lại', badgeWeek: '7 ngày', badgeMain: 'Chính', badgeAdd: 'Thêm', badgeMonth: 'Tháng', shopMain: '🛒 Chuyến chính — Thứ 7', shopAdd: '🛒 Bổ sung — Thứ 4', shopAmazon: '📦 Amazon', shopTotal: 'Tổng', mealTotal: 'Tổng', mealBudget: '/ ¥23,000', expTitle: '💰 Thêm khoản chi', expDate: 'Ngày', expAmount: 'Số tiền (¥)', expAmountPlaceholder: 'Nhập số tiền...', expStore: '🏪 Cửa hàng', expStoreOther: 'Khác', expCat: '📂 Phân loại', expAdd: '✓ Thêm', expHistory: '📝 Lịch sử', expEmpty: 'Chưa có khoản chi nào', expAdded: '✓ Đã thêm', expDeleted: 'Đã xóa', expAmountWarn: 'Nhập số tiền!', dashTitle: '📊 Tiến độ', dashCat: '📂 Phân loại', dashNoData: 'Chưa có dữ liệu', setTitle: 'Cài đặt', setChangePin: 'Đổi mã PIN', setExport: 'Xuất dữ liệu', setExportBtn: '📥 Xuất', setDelete: 'Xóa dữ liệu', setDeleteBtn: '🗑️ Xóa', setExportDone: 'Đã xuất!', setDeleteDone: 'Đã xóa!', setFooter: '🛒 Firebase Sync — Cho gia đình', setNewPin: 'Mã PIN mới', setNewPinSub: 'Nhập 4 số mới', setPinChange: 'Đổi mã gia đình?', setDeleteConfirm: 'Xóa tất cả dữ liệu?', logout: 'Đăng xuất', fab: '+', storeList: ['OK Shin-Yoga','FUJI Yoga','York Mart','My Basket','Seven-Eleven','Hanamasa','Khác'] }
+  vi: { loginTitle: 'Oi Corigi', loginSubCreate: 'Tạo mã gia đình 4 số', loginSubConfirm: 'Nhập lại để xác nhận', loginSubEnter: 'Nhập mã PIN để vào', loginForgot: 'Quên mã PIN?', loginSuccess: '✓ Thành công!', loginMismatch: 'Không khớp!', loginWrong: 'Sai mã PIN', syncOn: '☁️ Đang đồng bộ', syncOff: '📱 Ngoại tuyến', syncLive: '☁️ LIVE', syncLocal: '📱 LOCAL', tabMeals: 'Thực đơn', tabShop: 'Mua sắm', tabExpense: 'Chi tiêu', tabSettings: 'Cài đặt', headerBudget: '¥100,000 siêu thị + ¥16,691 Amazon', headerSpent: 'Đã chi', headerRemain: 'Còn lại', badgeWeek: '7 ngày', badgeMain: 'Chính', badgeAdd: 'Thêm', badgeMonth: 'Tháng', shopMain: '🛒 Chuyến chính — Thứ 7', shopAdd: '🛒 Bổ sung — Thứ 4', shopAmazon: '📦 Amazon', shopTotal: 'Tổng', mealTotal: 'Tổng tuần', mealBudget: '/ ¥23,000', expTitle: '💰 Thêm khoản chi', expDate: 'Ngày', expAmount: 'Số tiền (¥)', expAmountPlaceholder: 'Nhập số tiền...', expStore: '🏪 Cửa hàng', expStoreOther: 'Khác', expCat: '📂 Phân loại', expAdd: '✓ Thêm', expHistory: '📝 Lịch sử', expEmpty: 'Chưa có khoản chi nào', expAdded: '✓ Đã thêm', expDeleted: 'Đã xóa', expAmountWarn: 'Nhập số tiền!', dashTitle: '📊 Tiến độ', dashCat: '📂 Phân loại', dashNoData: 'Chưa có dữ liệu', setTitle: 'Cài đặt', setChangePin: 'Đổi mã PIN', setExport: 'Xuất dữ liệu', setExportBtn: '📥 Xuất', setDelete: 'Xóa dữ liệu', setDeleteBtn: '🗑️ Xóa', setExportDone: 'Đã xuất!', setDeleteDone: 'Đã xóa!', setFooter: '🛒 Firebase Sync — Cho gia đình', setNewPin: 'Mã PIN mới', setNewPinSub: 'Nhập 4 số mới', setPinChange: 'Đổi mã gia đình?', setDeleteConfirm: 'Xóa tất cả dữ liệu?', logout: 'Đăng xuất', fab: '+', storeList: ['OK Shin-Yoga','FUJI Yoga','York Mart','My Basket','Seven-Eleven','Hanamasa','Khác'],
+  // Meal translations
+  '月曜日': 'Thứ 2', '火曜日': 'Thứ 3', '水曜日': 'Thứ 4', '木曜日': 'Thứ 5', '金曜日': 'Thứ 6', '土曜日': 'Thứ 7', '日曜日': 'Chủ nhật',
+  'ご飯 + 卵焼き + 味噌汁': 'Cơm + trứng ốp + miso + sữa', 'ご飯 + 鶏肉炒め': 'Cơm + gà xào ớt chuông', '鯖の塩焼き + 野菜': 'Cá saba nướng + rau luộc',
+  'パン + ゆで卵 + 牛乳': 'Bánh mì + trứng luộc + sữa', 'うどん + 豚肉野菜炒め': 'Mì udon + thịt lợn xào rau', '豆腐の照り焼き + サラダ': 'Đậu hũ sốt teriyaki + salad',
+  'ご飯 + 納豆 + 味噌汁': 'Cơm + natto + miso + trứng', '牛カルビ炒め + キムチ': 'Thịt bò xào kim chi + dưa', 'サーモン刺身 + 巻き寿司': 'Sashimi cá hồi + cơm cuộn',
+  'パン + ヨーグルト + バナナ': 'Bánh mì + yogurt + chuối', 'チャーハン + 卵 + 鶏肉': 'Cơm rang + trứng + thịt gà', '鶏照り焼き + 味噌汁': 'Gà teriyaki + canh miso',
+  'ご飯 + 卵 + 海苔': 'Cơm + trứng + rong biển', 'そうめん + 鶏ささみ': 'Mì somen + thịt gà xé', '塩鮭 + 焼き野菜': 'Cá hồi muối + rau củ nướng',
+  'パンケーキ + フルーツ': 'Pancake + trái cây + sữa', 'ご飯 + スペアリブ': 'Cơm + sườn nướng + dưa cải', '鍋 (鶏+野菜+豆腐+きのこ)': 'Lẩu nhỏ (gà + rau + đậu hũ + nấm)',
+  'パン + 目玉焼き + 牛乳': 'Bánh mì + trứng ốp + sữa', 'カレーライス': 'Cơm cà ri gà', 'プルコギ + キムチ + サラダ': 'Bulgogi bò + kim chi + salad',
+  // Shop translations
+  'お米 (1.5kg)': 'Gạo (1.5kg)', '鶏もも肉': 'Thịt gà đùi', '鶏むね肉': 'Thịt gà ức', '豚肉ロース': 'Thịt lợn nạc', '牛肉': 'Thịt bò nạc',
+  '鯖・あじ': 'Cá saba/aji', 'サーモン': 'Cá hồi filê', '卵 (10個)': 'Trứng gà (10 quả)', '豆腐': 'Đậu hũ', '牛乳 1L': 'Sữa tươi 1L',
+  'ヨーグルト': 'Yogurt 400g', 'チーズ': 'Phô mai', '食パン': 'Bánh mì sandwich', 'うどん/そうめん': 'Mì udon/somen', '青菜/ほうれん草': 'Rau cải / spinach',
+  'トマト+きゅうり': 'Cà chua + dưa chuột', '玉ねぎ・人参・じゃがいも': 'Hành tây, cà rốt, khoai', 'きのこ': 'Nấm các loại', '季節の果物': 'Trái cây theo mùa',
+  'バナナ': 'Chuối', '納豆': 'Natto', '味噌・醤油': 'Miso, xì dầu',
+  '肉・魚 追加': 'Thịt/cá bổ sung', '野菜 追加': 'Rau bổ sung', '果物 追加': 'Trái cây bổ sung', '牛乳+卵+ヨーグルト': 'Sữa + trứng + yogurt',
+  'お菓子': 'Snack, bánh nhẹ', '予備': 'Linh hoạt / dự phòng',
+  '森山A2牛乳 200ml×12': 'Sữa Moriyama A2 ×12', '森永ミルク生活GOLD': 'Sữa bột Morinaga GOLD', 'アーモンド効果×24': 'Sữa hạnh nhân Glico ×24',
+  'い・ろ・は・す×24': 'Nước Irohasu ×24', 'GREEN DA・KA・RA×24': 'Green Da-Ka-Ra ×24', 'リステリン 1000ml': 'Listerine 1000ml',
+  'NMN 400mg 30粒': 'NMN 400mg 30 viên', 'レノア ハピネス': 'Lenor nước xả vải', 'ForBack 薬用石鹸': 'Xà phòng For Back' }
 };
 
 function t(key) { return (L[currentLang] && L[currentLang][key]) || (L.ja[key]) || key; }
@@ -759,11 +779,11 @@ function renderMeals() {
   let h = '', wt = 0;
   meals.forEach(m => {
     const dt = m.items.reduce((s,i) => s+i.price, 0); wt += dt;
-    h += `<div class="meal-day"><div class="day-header"><span class="day-name">${m.day}</span><span class="day-total">¥${dt.toLocaleString()}</span></div>`;
-    m.items.forEach(i => h += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><span class="meal-text">${i.text}</span><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`);
+    h += `<div class="meal-day"><div class="day-header"><span class="day-name">${t(m.day)}</span><span class="day-total">¥${dt.toLocaleString()}</span></div>`;
+    m.items.forEach(i => h += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><span class="meal-text">${t(i.text)}</span><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`);
     h += `</div>`;
   });
-  h += `<div style="text-align:right;font-weight:800;padding:12px 0 0;font-size:16px;color:var(--accent2)">合計: ¥${wt.toLocaleString()} / ¥23,000</div>`;
+  h += `<div style="text-align:right;font-weight:800;padding:12px 0 0;font-size:16px;color:var(--accent2)">${t('mealTotal')}: ¥${wt.toLocaleString()} ${t('mealBudget')}</div>`;
   document.getElementById('meal-plan').innerHTML = h;
 }
 
@@ -773,7 +793,7 @@ function renderShop() {
     let h = '', t = 0;
     items.forEach((item, i) => {
       const k = elId+'_'+i, d = c[k]; t += item.price;
-      h += `<div class="shop-item"><div class="check${d?' checked':''}" onclick="toggleShop('${k}')"></div><span class="name${d?' done':''}">${item.name}</span><span class="info">${item.qty||''} ¥${item.price.toLocaleString()}</span></div>`;
+      h += `<div class="shop-item"><div class="check${d?' checked':''}" onclick="toggleShop('${k}')"></div><span class="name${d?' done':''}">${t(item.name)}</span><span class="info">${t(item.qty)||''} ¥${item.price.toLocaleString()}</span></div>`;
     });
     document.getElementById(elId).innerHTML = h;
     document.getElementById(tId).textContent = '¥'+t.toLocaleString();
@@ -781,7 +801,7 @@ function renderShop() {
   list(shopMain, 'shop-main', 'shop-main-total');
   list(shopSup, 'shop-sup', 'shop-sup-total');
   let ah = '';
-  amazonItems.forEach(i => { ah += `<div class="shop-item"><span class="name">${i.name}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`; });
+  amazonItems.forEach(i => { ah += `<div class="shop-item"><span class="name">${t(i.name)}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`; });
   document.getElementById('amazon-list').innerHTML = ah;
 }
 
