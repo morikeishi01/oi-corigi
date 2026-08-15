@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Ngân Sách Gia Đình</title>
+<style>
+:root {
+  --bg: #F8F7F4;
+  --surface: #FFFFFF;
+  --text: #1A1A1A;
+  --text2: #6B6B6B;
+  --accent: #2F5496;
+  --accent-light: #D6E4F0;
+  --save: #1B7A2E;
+  --save-bg: #D4EDDA;
+  --over: #B22222;
+  --over-bg: #F8D7DA;
+  --border: #E8E6E1;
+  --input-bg: #F3F2EF;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+  --nav-height: 64px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-bottom: calc(var(--nav-height) + 20px);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* ── NAV ── */
+.nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  height: var(--nav-height);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border: none; background: none;
+  font-size: 10px; color: var(--text2);
+  cursor: pointer; gap: 3px;
+  transition: color 0.15s;
+}
+.nav-btn svg { width: 22px; height: 22px; }
+.nav-btn.active { color: var(--accent); font-weight: 600; }
+
+/* ── HEADER ── */
+.header {
+  background: var(--accent); color: white;
+  padding: 16px 16px 14px; border-radius: 0 0 20px 20px;
+  margin-bottom: 16px;
+}
+.header h1 { font-size: 18px; font-weight: 700; }
+.header .sub { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+.header .budget-row { display: flex; gap: 16px; margin-top: 12px; }
+.header .budget-item { flex: 1; }
+.header .budget-item .label { font-size: 10px; opacity: 0.7; text-transform: uppercase; }
+.header .budget-item .val { font-size: 20px; font-weight: 700; }
+
+/* ── PAGE ── */
+.page { display: none; padding: 0 12px; }
+.page.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface); border-radius: 14px;
+  padding: 14px; margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 13px; font-weight: 700; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+/* ── MEAL TABLE ── */
+.meal-day { border-bottom: 1px solid var(--border); padding: 10px 0; }
+.meal-day:last-child { border-bottom: none; }
+.meal-day .day-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.meal-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 13px; }
+.meal-row .meal-icon { width: 24px; text-align: center; flex-shrink: 0; font-size: 14px; }
+.meal-row .meal-text { flex: 1; color: var(--text); }
+.meal-row .meal-price { font-weight: 600; color: var(--accent); min-width: 50px; text-align: right; }
+.meal-day .day-total { font-size: 12px; color: var(--text2); text-align: right; margin-top: 2px; }
+
+/* ── SHOPPING ── */
+.shop-section { margin-bottom: 16px; }
+.shop-section h3 { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+.shop-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.shop-item:last-child { border-bottom: none; }
+.shop-item .check { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.shop-item .check.checked { background: var(--save); border-color: var(--save); }
+.shop-item .check.checked::after { content: '✓'; color: white; font-size: 13px; font-weight: 700; }
+.shop-item .name { flex: 1; font-size: 13px; }
+.shop-item .name.done { text-decoration: line-through; color: var(--text2); }
+.shop-item .info { font-size: 12px; color: var(--text2); text-align: right; min-width: 70px; }
+.shop-total { font-weight: 700; font-size: 14px; text-align: right; padding: 8px 0; color: var(--accent); }
+
+/* ── EXPENSE FORM ── */
+.form-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.form-row input, .form-row select {
+  flex: 1; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: 10px; font-size: 14px; background: var(--input-bg);
+  font-family: inherit; color: var(--text);
+  -webkit-appearance: none; appearance: none;
+}
+.form-row input:focus, .form-row select:focus {
+  outline: none; border-color: var(--accent);
+}
+.btn { 
+  padding: 10px 20px; border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.btn:active { opacity: 0.8; }
+.btn-primary { background: var(--accent); color: white; width: 100%; }
+.btn-danger { background: var(--over); color: white; font-size: 11px; padding: 4px 10px; border-radius: 6px; }
+
+.expense-list { max-height: 400px; overflow-y: auto; }
+.expense-item { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.expense-item .cat-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--accent-light); color: var(--accent); white-space: nowrap; }
+.expense-item .amount { font-weight: 700; color: var(--over); margin-left: auto; }
+.expense-item .store { color: var(--text2); font-size: 11px; }
+
+/* ── DASHBOARD ── */
+.stat-row { display: flex; gap: 10px; margin-bottom: 12px; }
+.stat-box { flex: 1; background: var(--surface); border-radius: 14px; padding: 14px; box-shadow: var(--shadow); text-align: center; }
+.stat-box .label { font-size: 11px; color: var(--text2); text-transform: uppercase; }
+.stat-box .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+.stat-box .value.good { color: var(--save); }
+.stat-box .value.bad { color: var(--over); }
+
+.progress-bar { height: 8px; background: var(--border); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+.progress-bar .fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+.progress-bar .fill.good { background: var(--save); }
+.progress-bar .fill.warn { background: #E6A817; }
+.progress-bar .fill.bad { background: var(--over); }
+
+.cat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.cat-row:last-child { border-bottom: none; }
+.cat-row .cat-name { flex: 1; }
+.cat-row .cat-amount { font-weight: 600; }
+.cat-row .cat-bar { width: 40%; margin: 0 10px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: calc(var(--nav-height) + 20px); left: 50%; transform: translateX(-50%);
+  background: var(--text); color: white; padding: 10px 24px; border-radius: 20px;
+  font-size: 13px; font-weight: 600; z-index: 200; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+/* ── EMPTY STATE ── */
+.empty { text-align: center; padding: 40px 20px; color: var(--text2); }
+.empty .icon { font-size: 40px; margin-bottom: 8px; }
+.empty p { font-size: 13px; }
+
+/* ── RESET BUTTON ── */
+.reset-area { text-align: center; margin-top: 20px; padding: 10px; }
+.reset-btn { font-size: 11px; color: var(--text2); background: none; border: none; cursor: pointer; text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <button class="nav-btn active" data-page="meals">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+    Thực đơn
+  </button>
+  <button class="nav-btn" data-page="shop">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    Mua sắm
+  </button>
+  <button class="nav-btn" data-page="expense">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Chi tiêu
+  </button>
+  <button class="nav-btn" data-page="dashboard">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Tổng quan
+  </button>
+</nav>
+
+<!-- ═══ HEADER ═══ -->
+<div class="header">
+  <h1>Ngân Sách Gia Đình</h1>
+  <div class="sub">Mục tiêu: ¥100,000/tháng siêu thị + ¥16,691 Amazon</div>
+  <div class="budget-row">
+    <div class="budget-item">
+      <div class="label">Tuần này</div>
+      <div class="val" id="header-weekly">¥0</div>
+    </div>
+    <div class="budget-item">
+      <div class="label">Còn lại</div>
+      <div class="val" id="header-remain">¥23,000</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 1: MEAL PLAN ═══ -->
+<div class="page active" id="page-meals">
+  <div class="card">
+    <div class="card-title">🍽️ Thực đơn tuần</div>
+    <div id="meal-plan"></div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 2: SHOPPING LIST ═══ -->
+<div class="page" id="page-shop">
+  <div class="card">
+    <div class="card-title">🛒 Chuyến chính — Thứ 7 (OK)</div>
+    <div id="shop-main"></div>
+    <div class="shop-total">Tổng: <span id="shop-main-total">¥0</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🛒 Bổ sung — Thứ 4</div>
+    <div id="shop-sup"></div>
+    <div class="shop-total">Tổng: <span id="shop-sup-total">¥0</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📦 Amazon (tháng này)</div>
+    <div id="amazon-list"></div>
+    <div class="shop-total">Tổng: <span id="amazon-total">¥16,691</span></div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 3: EXPENSE TRACKER ═══ -->
+<div class="page" id="page-expense">
+  <div class="card">
+    <div class="card-title">➕ Thêm khoản chi</div>
+    <div class="form-row">
+      <input type="date" id="exp-date" style="max-width:140px">
+      <input type="number" id="exp-amount" placeholder="Số tiền (¥)" min="1" style="max-width:120px">
+    </div>
+    <div class="form-row">
+      <select id="exp-store">
+        <option value="">Chọn cửa hàng</option>
+        <option>OK Shin-Yoga</option><option>FUJI Yoga</option><option>York Mart</option>
+        <option>My Basket</option><option>Seven-Eleven</option><option>Hanamasa</option>
+        <option>Khác</option>
+      </select>
+      <select id="exp-cat">
+        <option value="">Phân loại</option>
+        <option>Thịt, cá, hải sản</option><option>Rau củ quả</option>
+        <option>Sữa, trứng, đậu</option><option>Gạo, mì, bánh mì</option>
+        <option>Gia vị, dầu ăn</option><option>Snack, đồ uống</option>
+        <option>Trái cây</option><option>Đồ khô, đồ hộp</option>
+        <option>Khác</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="addExpense()">Thêm khoản chi</button>
+  </div>
+  <div class="card">
+    <div class="card-title">📝 Lịch sử chi tiêu</div>
+    <div id="expense-list" class="expense-list">
+      <div class="empty"><div class="icon">📋</div><p>Chưa có khoản chi nào. Thêm ngay!</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 4: DASHBOARD ═══ -->
+<div class="page" id="page-dashboard">
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="label">Đã chi tuần này</div>
+      <div class="value" id="dash-spent" style="color:var(--over)">¥0</div>
+    </div>
+    <div class="stat-box">
+      <div class="label">Ngân sách tuần</div>
+      <div class="value">¥23,000</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📊 Tiến độ tuần</div>
+    <div id="dash-progress-label" style="font-size:13px;margin-bottom:6px">0% đã dùng</div>
+    <div class="progress-bar"><div class="fill good" id="dash-progress" style="width:0%"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📂 Phân loại chi tiêu</div>
+    <div id="dash-categories"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📊 Tổng quan tháng</div>
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="label">Siêu thị</div>
+        <div class="value">¥100,000</div>
+      </div>
+      <div class="stat-box">
+        <div class="label">Amazon</div>
+        <div class="value">¥16,691</div>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box" style="background:var(--save-bg)">
+        <div class="label">Tiết kiệm/tháng</div>
+        <div class="value good">¥35,500</div>
+      </div>
+      <div class="stat-box" style="background:var(--save-bg)">
+        <div class="label">Tiết kiệm/năm</div>
+        <div class="value good">¥426,000</div>
+      </div>
+    </div>
+  </div>
+  <div class="reset-area">
+    <button class="reset-btn" onclick="resetAll()">↺ Đặt lại tất cả dữ liệu</button>
+  </div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const WEEKLY_BUDGET = 23000;
+const meals = [
+  { day: 'Thứ 2', items: [
+    { icon: '🌅', text: 'Cơm + trứng ốp + miso + sữa', price: 400 },
+    { icon: '☀️', text: 'Cơm + gà xào ớt chuông + canh', price: 600 },
+    { icon: '🌙', text: 'Cá saba nướng + rau luộc + cơm', price: 700 }
+  ]},
+  { day: 'Thứ 3', items: [
+    { icon: '🌅', text: 'Bánh mì + trứng luộc + sữa', price: 350 },
+    { icon: '☀️', text: 'Mì udon + thịt lợn xào rau cải', price: 550 },
+    { icon: '🌙', text: 'Đậu hũ sốt teriyaki + salad trộn', price: 600 }
+  ]},
+  { day: 'Thứ 4', items: [
+    { icon: '🌅', text: 'Cơm + natto + miso + trứng', price: 350 },
+    { icon: '☀️', text: 'Cơm + thịt bò xào kim chi + dưa', price: 800 },
+    { icon: '🌙', text: 'Sashimi cá hồi + cơm cuộn rong biển', price: 850 }
+  ]},
+  { day: 'Thứ 5', items: [
+    { icon: '🌅', text: 'Bánh mì + yogurt + chuối', price: 300 },
+    { icon: '☀️', text: 'Cơm rang rau củ + trứng + thịt gà', price: 500 },
+    { icon: '🌙', text: 'Gà teriyaki + canh miso + rau', price: 650 }
+  ]},
+  { day: 'Thứ 6', items: [
+    { icon: '🌅', text: 'Cơm + trứng + rong biển + miso', price: 350 },
+    { icon: '☀️', text: 'Mì somen lạnh + thịt gà xé + dưa', price: 500 },
+    { icon: '🌙', text: 'Cá hồi muối + rau củ nướng + cơm', price: 750 }
+  ]},
+  { day: 'Thứ 7', items: [
+    { icon: '🌅', text: 'Pancake + trái cây + sữa', price: 400 },
+    { icon: '☀️', text: 'Cơm + sườn nướng + dưa cải + salad', price: 750 },
+    { icon: '🌙', text: 'Lẩu nhỏ (gà + rau + đậu hũ + nấm)', price: 900 }
+  ]},
+  { day: 'Chủ nhật', items: [
+    { icon: '🌅', text: 'Bánh mì + trứng ốp + sữa + trái cây', price: 400 },
+    { icon: '☀️', text: 'Cơm cà ri gà (nấu nhiều, ăn 2 ngày)', price: 600 },
+    { icon: '🌙', text: 'Bulgogi bò + kim chi + salad + cơm', price: 850 }
+  ]}
+];
+
+const shopMain = [
+  { name: 'Gạo (1.5kg)', qty: '1.5kg', price: 600 },
+  { name: 'Thịt gà đùi', qty: '800g', price: 1200 },
+  { name: 'Thịt gà ức', qty: '400g', price: 400 },
+  { name: 'Thịt lợn nạc', qty: '600g', price: 1200 },
+  { name: 'Thịt bò nạc', qty: '400g', price: 2000 },
+  { name: 'Cá saba/aji', qty: '3 con', price: 750 },
+  { name: 'Cá hồi filê', qty: '3 miếng', price: 1200 },
+  { name: 'Trứng gà (10 quả)', qty: '2 hộp', price: 500 },
+  { name: 'Đậu hũ', qty: '4 hộp', price: 320 },
+  { name: 'Sữa tươi 1L', qty: '2 hộp', price: 400 },
+  { name: 'Yogurt 400g', qty: '2 hộp', price: 400 },
+  { name: 'Phô mai', qty: '1 gói', price: 200 },
+  { name: 'Bánh mì sandwich', qty: '2 gói', price: 300 },
+  { name: 'Mì udon/somen', qty: '4 gói', price: 400 },
+  { name: 'Rau cải / spinach', qty: '3 bó', price: 600 },
+  { name: 'Cà chua + dưa chuột', qty: '1 gói', price: 250 },
+  { name: 'Hành tây, cà rốt, khoai', qty: '1 bộ', price: 400 },
+  { name: 'Nấm các loại', qty: '2 gói', price: 300 },
+  { name: 'Trái cây theo mùa', qty: '5 quả', price: 750 },
+  { name: 'Chuối', qty: '1 nải', price: 150 },
+  { name: 'Natto', qty: '3 hộp', price: 240 },
+  { name: 'Miso, xì dầu (bổ sung)', qty: '1', price: 300 },
+];
+
+const shopSup = [
+  { name: 'Thịt/cá tươi bổ sung', qty: '1', price: 2000 },
+  { name: 'Rau tươi bổ sung', qty: '1', price: 1000 },
+  { name: 'Trái cây bổ sung', qty: '1', price: 600 },
+  { name: 'Sữa + trứng + yogurt', qty: '1', price: 700 },
+  { name: 'Snack, bánh nhẹ', qty: '1', price: 1000 },
+  { name: 'Linh hoạt / dự phòng', qty: '1', price: 1700 },
+];
+
+const amazonItems = [
+  { name: 'Sữa Moriyama A2 200ml × 12', price: 2712 },
+  { name: 'Sữa bột Morinaga Milk Life GOLD', price: 3789 },
+  { name: 'Sữa hạnh nhân Glico Almond × 24', price: 2812 },
+  { name: 'Nước Irohasu 560ml × 24', price: 1900 },
+  { name: 'Green Da-Ka-Ra 600ml × 24', price: 1913 },
+  { name: 'Listerine 1000ml', price: 988 },
+  { name: 'NMN 400mg 30 viên', price: 980 },
+  { name: 'Lenor nước xả vải 1285ml', price: 882 },
+  { name: 'Xà phòng For Back 135g', price: 715 },
+];
+
+// ═══════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════
+function getExpenses() {
+  try { return JSON.parse(localStorage.getItem('budget_expenses') || '[]'); }
+  catch(e) { return []; }
+}
+function saveExpenses(arr) {
+  localStorage.setItem('budget_expenses', JSON.stringify(arr));
+}
+function getShopChecks() {
+  try { return JSON.parse(localStorage.getItem('budget_shop') || '{}'); }
+  catch(e) { return {}; }
+}
+function saveShopChecks(obj) {
+  localStorage.setItem('budget_shop', JSON.stringify(obj));
+}
+function resetAll() {
+  if (confirm('Xóa tất cả dữ liệu chi tiêu và danh sách mua sắm?')) {
+    localStorage.removeItem('budget_expenses');
+    localStorage.removeItem('budget_shop');
+    location.reload();
+  }
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + btn.dataset.page).classList.add('active');
+    if (btn.dataset.page === 'dashboard') renderDashboard();
+    if (btn.dataset.page === 'shop') renderShop();
+    if (btn.dataset.page === 'expense') renderExpenses();
+    updateHeader();
+  });
+});
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ═══════════════════════════════════════════
+// RENDER: MEAL PLAN
+// ═══════════════════════════════════════════
+function renderMeals() {
+  const el = document.getElementById('meal-plan');
+  let html = '';
+  let weekTotal = 0;
+  meals.forEach(m => {
+    const dayTotal = m.items.reduce((s, i) => s + i.price, 0);
+    weekTotal += dayTotal;
+    html += `<div class="meal-day"><div class="day-name">${m.day} — ¥${dayTotal.toLocaleString()}</div>`;
+    m.items.forEach(i => {
+      html += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><span class="meal-text">${i.text}</span><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`;
+    });
+    html += `</div>`;
+  });
+  html += `<div style="text-align:right;font-weight:700;padding:8px 0;color:var(--accent);margin-top:4px">Tổng tuần: ¥${weekTotal.toLocaleString()} / ¥23,000</div>`;
+  el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+// RENDER: SHOPPING LIST
+// ═══════════════════════════════════════════
+function renderShop() {
+  const checks = getShopChecks();
+  
+  function renderList(items, elId, totalId) {
+    const el = document.getElementById(elId);
+    let html = '', total = 0;
+    items.forEach((item, i) => {
+      const key = elId + '_' + i;
+      const done = checks[key];
+      total += item.price;
+      html += `<div class="shop-item">
+        <div class="check${done ? ' checked' : ''}" onclick="toggleShop('${key}')"></div>
+        <span class="name${done ? ' done' : ''}">${item.name}</span>
+        <span class="info">${item.qty || ''} ¥${item.price.toLocaleString()}</span>
+      </div>`;
+    });
+    el.innerHTML = html;
+    document.getElementById(totalId).textContent = '¥' + total.toLocaleString();
+  }
+  
+  renderList(shopMain, 'shop-main', 'shop-main-total');
+  renderList(shopSup, 'shop-sup', 'shop-sup-total');
+  
+  // Amazon
+  let amzHtml = '', amzTotal = 0;
+  amazonItems.forEach(item => {
+    amzTotal += item.price;
+    amzHtml += `<div class="shop-item"><span class="name">${item.name}</span><span class="info">¥${item.price.toLocaleString()}</span></div>`;
+  });
+  document.getElementById('amazon-list').innerHTML = amzHtml;
+  document.getElementById('amazon-total').textContent = '¥' + amzTotal.toLocaleString();
+}
+
+function toggleShop(key) {
+  const checks = getShopChecks();
+  checks[key] = !checks[key];
+  saveShopChecks(checks);
+  renderShop();
+}
+
+// ═══════════════════════════════════════════
+// RENDER: EXPENSES
+// ═══════════════════════════════════════════
+function renderExpenses() {
+  const expenses = getExpenses();
+  const el = document.getElementById('expense-list');
+  
+  if (expenses.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="icon">📋</div><p>Chưa có khoản chi nào. Thêm ngay!</p></div>';
+    return;
+  }
+  
+  // Sort newest first
+  expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  let html = '';
+  expenses.forEach((e, i) => {
+    // Only show this week's expenses
+    html += `<div class="expense-item">
+      <span class="cat-badge">${e.cat || 'Khác'}</span>
+      <span>${e.store || ''}</span>
+      <span style="font-size:11px;color:var(--text2);margin-left:4px">${e.date}</span>
+      <span class="amount">¥${e.amount.toLocaleString()}</span>
+      <button class="btn-danger" onclick="deleteExpense(${i})">✕</button>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function addExpense() {
+  const date = document.getElementById('exp-date').value || new Date().toISOString().split('T')[0];
+  const amount = parseInt(document.getElementById('exp-amount').value);
+  const store = document.getElementById('exp-store').value;
+  const cat = document.getElementById('exp-cat').value;
+  
+  if (!amount || amount <= 0) { showToast('Nhập số tiền hợp lệ'); return; }
+  
+  const expenses = getExpenses();
+  expenses.push({ date, amount, store, cat, added: new Date().toISOString() });
+  saveExpenses(expenses);
+  
+  document.getElementById('exp-amount').value = '';
+  renderExpenses();
+  updateHeader();
+  showToast('Đã thêm ¥' + amount.toLocaleString());
+}
+
+function deleteExpense(idx) {
+  const expenses = getExpenses();
+  // Reverse the sort to match display order
+  expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+  const removed = expenses.splice(idx, 1)[0];
+  // Re-sort by added time for storage
+  saveExpenses(expenses);
+  renderExpenses();
+  updateHeader();
+  showToast('Đã xóa ¥' + removed.amount.toLocaleString());
+}
+
+// ═══════════════════════════════════════════
+// RENDER: DASHBOARD
+// ═══════════════════════════════════════════
+function renderDashboard() {
+  const expenses = getExpenses();
+  
+  // Filter this week (last 7 days)
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const weekExpenses = expenses.filter(e => new Date(e.date) >= weekAgo);
+  const totalSpent = weekExpenses.reduce((s, e) => s + e.amount, 0);
+  const pct = Math.min(100, Math.round((totalSpent / WEEKLY_BUDGET) * 100));
+  
+  document.getElementById('dash-spent').textContent = '¥' + totalSpent.toLocaleString();
+  document.getElementById('dash-progress').style.width = pct + '%';
+  document.getElementById('dash-progress-label').textContent = pct + '% đã dùng';
+  
+  // Progress bar color
+  const bar = document.getElementById('dash-progress');
+  bar.classList.remove('good', 'warn', 'bad');
+  if (pct > 90) bar.classList.add('bad');
+  else if (pct > 70) bar.classList.add('warn');
+  else bar.classList.add('good');
+  
+  // Categories
+  const cats = {};
+  const CAT_NAMES = ['Thịt, cá, hải sản', 'Rau củ quả', 'Sữa, trứng, đậu', 'Gạo, mì, bánh mì', 
+    'Gia vị, dầu ăn', 'Snack, đồ uống', 'Trái cây', 'Đồ khô, đồ hộp', 'Khác'];
+  weekExpenses.forEach(e => {
+    const c = e.cat || 'Khác';
+    cats[c] = (cats[c] || 0) + e.amount;
+  });
+  
+  let catHtml = '';
+  CAT_NAMES.forEach(name => {
+    const val = cats[name] || 0;
+    const p = totalSpent > 0 ? Math.round((val / totalSpent) * 100) : 0;
+    catHtml += `<div class="cat-row">
+      <span class="cat-name">${name}</span>
+      <span class="cat-amount">¥${val.toLocaleString()}</span>
+      <div class="cat-bar"><div class="progress-bar"><div class="fill good" style="width:${p}%"></div></div></div>
+      <span style="font-size:11px;min-width:32px;text-align:right">${p}%</span>
+    </div>`;
+  });
+  document.getElementById('dash-categories').innerHTML = catHtml || '<div class="empty"><p>Chưa có dữ liệu</p></div>';
+}
+
+// ═══════════════════════════════════════════
+// HEADER UPDATE
+// ═══════════════════════════════════════════
+function updateHeader() {
+  const expenses = getExpenses();
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const totalSpent = expenses.filter(e => new Date(e.date) >= weekAgo).reduce((s, e) => s + e.amount, 0);
+  const remain = WEEKLY_BUDGET - totalSpent;
+  
+  document.getElementById('header-weekly').textContent = '¥' + totalSpent.toLocaleString();
+  document.getElementById('header-remain').textContent = '¥' + remain.toLocaleString();
+  document.getElementById('header-remain').style.color = remain < 0 ? 'var(--over)' : '#C6EFCE';
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+renderMeals();
+renderShop();
+renderExpenses();
+updateHeader();
+
+// Set today's date
+document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+
+// Refresh header every minute
+setInterval(updateHeader, 60000);
+</script>
+</body>
+</html>
