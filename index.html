@@ -2,230 +2,338 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Đi Chợ">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232F5496'/><text x='50' y='68' text-anchor='middle' font-size='55'>🛒</text></svg>">
-<title>Đi Chợ — Ngân Sách Gia Đình</title>
+<meta name="apple-mobile-web-app-title" content="Oi Corigi">
+<meta name="theme-color" content="#1A1A2E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231A1A2E'/><text x='50' y='68' text-anchor='middle' font-size='52'>🛒</text></svg>">
+<title>Oi Corigi — Ngân Sách</title>
 <style>
 :root {
-  --bg: #F8F7F4;
-  --surface: #FFFFFF;
-  --text: #1A1A1A;
-  --text2: #6B6B6B;
-  --accent: #2F5496;
-  --accent-light: #D6E4F0;
-  --save: #1B7A2E;
-  --save-bg: #D4EDDA;
-  --over: #B22222;
-  --over-bg: #F8D7DA;
-  --border: #E8E6E1;
-  --input-bg: #F3F2EF;
-  --shadow: 0 1px 3px rgba(0,0,0,0.06);
-  --nav-height: 60px;
+  --bg: #F5F3EF;
+  --card: #FFFFFF;
+  --text: #1A1A2E;
+  --text2: #8E8E93;
+  --accent: #E94560;
+  --accent2: #0F3460;
+  --green: #00B894;
+  --green-bg: #E6F9F4;
+  --red: #E94560;
+  --red-bg: #FFE8EC;
+  --yellow: #FDCB6E;
+  --border: #F0EDE8;
+  --nav-bg: rgba(255,255,255,0.95);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.10);
+  --radius: 20px;
+  --radius-sm: 14px;
+  --nav-h: 72px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
-  padding-bottom: calc(var(--nav-height) + 20px);
   -webkit-tap-highlight-color: transparent;
-  user-select: none;
+  -webkit-font-smoothing: antialiased;
   max-width: 480px;
   margin: 0 auto;
   min-height: 100vh;
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 24px);
+  overflow-x: hidden;
 }
 
-/* ═══ LOGIN ═══ */
+/* ═══ LOGIN SCREEN ═══ */
 .login-screen {
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; min-height: 100vh;
-  padding: 30px; text-align: center;
-  background: var(--accent);
+  padding: 32px; text-align: center;
+  background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
   color: white;
 }
-.login-screen .logo { font-size: 60px; margin-bottom: 10px; }
-.login-screen h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
-.login-screen .sub { font-size: 13px; opacity: 0.8; margin-bottom: 30px; }
-.login-screen .pin-box { display: flex; gap: 10px; margin-bottom: 20px; }
+.login-screen .logo { font-size: 72px; margin-bottom: 8px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.login-screen h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+.login-screen .sub { font-size: 15px; opacity: 0.7; margin-bottom: 36px; font-weight: 400; }
+.login-screen .pin-box { display: flex; gap: 14px; margin-bottom: 28px; }
 .login-screen .pin-dot {
-  width: 48px; height: 48px; border-radius: 12px;
-  border: 2px solid rgba(255,255,255,0.4); display: flex;
+  width: 56px; height: 56px; border-radius: 16px;
+  border: 2px solid rgba(255,255,255,0.25); display: flex;
   align-items: center; justify-content: center;
-  font-size: 24px; font-weight: 700;
-  transition: all 0.2s;
+  font-size: 28px; font-weight: 700; transition: all 0.2s;
+  background: rgba(255,255,255,0.05);
 }
-.login-screen .pin-dot.filled { border-color: white; background: rgba(255,255,255,0.2); }
-.login-screen .pin-dot.error { border-color: #FF6B6B; background: rgba(255,107,107,0.2); animation: shake 0.4s; }
-@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
-.login-screen .num-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 240px; }
+.login-screen .pin-dot.filled { border-color: white; background: rgba(255,255,255,0.15); transform: scale(1.05); }
+.login-screen .pin-dot.error { border-color: #FF6B6B; background: rgba(255,107,107,0.2); animation: shake 0.5s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-10px)} 40%{transform:translateX(10px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
+.login-screen .num-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 260px; }
 .login-screen .num-key {
-  width: 100%; aspect-ratio: 1; border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1);
-  color: white; font-size: 22px; font-weight: 600; cursor: pointer;
+  width: 100%; aspect-ratio: 1; border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.08);
+  color: white; font-size: 26px; font-weight: 600; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
+  transition: all 0.15s; backdrop-filter: blur(10px);
 }
-.login-screen .num-key:active { background: rgba(255,255,255,0.3); }
-.login-screen .num-key.del { font-size: 14px; }
-.login-screen .login-msg { font-size: 13px; margin-top: 12px; opacity: 0.8; min-height: 20px; }
-.login-screen .login-link { font-size: 12px; margin-top: 20px; opacity: 0.6; cursor: pointer; }
-
-/* ═══ NAV ═══ */
-.nav {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-  background: var(--surface); border-top: 1px solid var(--border);
-  display: flex; max-width: 480px; margin: 0 auto;
-  height: var(--nav-height);
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-.nav-btn {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  border: none; background: none;
-  font-size: 10px; color: var(--text2);
-  cursor: pointer; gap: 3px;
-  transition: color 0.15s;
-}
-.nav-btn svg { width: 22px; height: 22px; }
-.nav-btn.active { color: var(--accent); font-weight: 600; }
+.login-screen .num-key:active { background: rgba(255,255,255,0.25); transform: scale(0.95); }
+.login-screen .num-key.del { font-size: 15px; opacity: 0.6; }
+.login-screen .login-msg { font-size: 14px; margin-top: 14px; opacity: 0.8; min-height: 22px; }
+.login-screen .login-link { font-size: 13px; margin-top: 24px; opacity: 0.5; cursor: pointer; }
 
 /* ═══ HEADER ═══ */
 .header {
-  background: var(--accent); color: white;
-  padding: 16px 16px 14px; border-radius: 0 0 20px 20px;
-  margin-bottom: 16px;
+  background: linear-gradient(135deg, #1A1A2E 0%, #0F3460 100%);
+  color: white; padding: 20px 20px 24px;
+  border-radius: 0 0 28px 28px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
 }
-.header h1 { font-size: 18px; font-weight: 700; }
-.header .sub { font-size: 12px; opacity: 0.8; margin-top: 2px; }
-.header .budget-row { display: flex; gap: 16px; margin-top: 12px; }
-.header .budget-item { flex: 1; }
-.header .budget-item .label { font-size: 10px; opacity: 0.7; text-transform: uppercase; }
-.header .budget-item .val { font-size: 20px; font-weight: 700; }
+.header::after {
+  content: ''; position: absolute; top: -50%; right: -20%;
+  width: 200px; height: 200px; background: rgba(233,69,96,0.15);
+  border-radius: 50%; pointer-events: none;
+}
+.header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; position: relative; z-index: 1; }
+.header .sub { font-size: 13px; opacity: 0.6; margin-top: 2px; position: relative; z-index: 1; }
+.header .budget-row { display: flex; gap: 12px; margin-top: 16px; position: relative; z-index: 1; }
+.header .budget-item {
+  flex: 1; background: rgba(255,255,255,0.1);
+  border-radius: 16px; padding: 14px;
+  backdrop-filter: blur(10px);
+}
+.header .budget-item .label { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+.header .budget-item .val { font-size: 24px; font-weight: 800; margin-top: 4px; }
+.header .logout-btn {
+  position: absolute; top: 20px; right: 20px; z-index: 2;
+  background: rgba(255,255,255,0.15); border: none;
+  color: rgba(255,255,255,0.7); padding: 8px 14px;
+  border-radius: 10px; font-size: 12px; cursor: pointer;
+  font-family: inherit;
+}
 
-/* ═══ PAGE ═══ */
-.page { display: none; padding: 0 12px; }
+/* ═══ TAB BAR ═══ */
+.tab-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  max-width: 480px; margin: 0 auto;
+  background: var(--nav-bg); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  display: flex; padding: 6px 8px;
+  padding-bottom: calc(6px + var(--safe-bottom));
+  height: calc(var(--nav-h) + var(--safe-bottom));
+}
+.tab-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border: none; background: none; cursor: pointer;
+  font-size: 10px; font-weight: 500; color: var(--text2);
+  gap: 4px; transition: all 0.2s;
+  border-radius: 14px; padding: 6px 0;
+  position: relative;
+}
+.tab-btn.active { color: var(--accent); font-weight: 700; }
+.tab-btn.active::after {
+  content: ''; position: absolute; bottom: -2px;
+  width: 20px; height: 3px; background: var(--accent);
+  border-radius: 2px;
+}
+.tab-btn svg { width: 24px; height: 24px; }
+
+/* ═══ PAGES ═══ */
+.page { display: none; padding: 0 16px; animation: fadeIn 0.25s ease; }
 .page.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
 /* ═══ CARDS ═══ */
 .card {
-  background: var(--surface); border-radius: 14px;
-  padding: 14px; margin-bottom: 12px;
+  background: var(--card); border-radius: var(--radius);
+  padding: 18px; margin-bottom: 16px;
   box-shadow: var(--shadow);
+  transition: transform 0.2s;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
 }
 .card-title {
-  font-size: 13px; font-weight: 700; color: var(--accent);
-  text-transform: uppercase; letter-spacing: 0.5px;
-  margin-bottom: 10px;
+  font-size: 15px; font-weight: 700; color: var(--text);
+  letter-spacing: -0.2px;
+}
+.card-badge {
+  font-size: 11px; font-weight: 600; padding: 4px 10px;
+  border-radius: 20px; background: var(--accent2); color: white;
 }
 
-/* ═══ MEAL TABLE ═══ */
-.meal-day { border-bottom: 1px solid var(--border); padding: 10px 0; }
-.meal-day:last-child { border-bottom: none; }
-.meal-day .day-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-.meal-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 13px; }
-.meal-row .meal-icon { width: 24px; text-align: center; flex-shrink: 0; font-size: 14px; }
-.meal-row .meal-text { flex: 1; color: var(--text); }
-.meal-row .meal-price { font-weight: 600; color: var(--accent); min-width: 50px; text-align: right; }
+/* ═══ MEAL DAYS ═══ */
+.meal-day {
+  background: #FAFAF8; border-radius: var(--radius-sm);
+  padding: 14px; margin-bottom: 10px;
+  border: 1px solid var(--border);
+}
+.meal-day .day-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px;
+}
+.meal-day .day-name { font-size: 15px; font-weight: 700; }
+.meal-day .day-total { font-size: 14px; font-weight: 700; color: var(--accent2); }
+.meal-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-top: 1px solid var(--border);
+}
+.meal-row:first-of-type { border-top: none; }
+.meal-row .meal-icon { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
+.meal-row .meal-text { flex: 1; font-size: 14px; color: var(--text); }
+.meal-row .meal-price { font-weight: 700; font-size: 14px; color: var(--accent2); }
 
 /* ═══ SHOPPING ═══ */
-.shop-section { margin-bottom: 16px; }
-.shop-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.shop-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
 .shop-item:last-child { border-bottom: none; }
-.shop-item .check { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
-.shop-item .check.checked { background: var(--save); border-color: var(--save); }
-.shop-item .check.checked::after { content: '✓'; color: white; font-size: 13px; font-weight: 700; }
-.shop-item .name { flex: 1; font-size: 13px; }
+.shop-item .check {
+  width: 28px; height: 28px; border: 2.5px solid #D1D5DB;
+  border-radius: 8px; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.shop-item .check.checked { background: var(--green); border-color: var(--green); }
+.shop-item .check.checked::after { content: '✓'; color: white; font-size: 16px; font-weight: 700; }
+.shop-item .name { flex: 1; font-size: 15px; }
 .shop-item .name.done { text-decoration: line-through; color: var(--text2); }
-.shop-item .info { font-size: 12px; color: var(--text2); text-align: right; min-width: 70px; }
-.shop-total { font-weight: 700; font-size: 14px; text-align: right; padding: 8px 0; color: var(--accent); }
+.shop-item .info { font-size: 13px; color: var(--text2); font-weight: 500; }
+.shop-total {
+  font-size: 16px; font-weight: 800; text-align: right;
+  padding: 12px 0 0; color: var(--accent2);
+  border-top: 2px solid var(--border); margin-top: 8px;
+}
 
-/* ═══ EXPENSE ═══ */
-.form-row { display: flex; gap: 8px; margin-bottom: 10px; }
+/* ═══ EXPENSE FORM ═══ */
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.form-row { display: flex; gap: 10px; }
 .form-row input, .form-row select {
-  flex: 1; padding: 10px 12px; border: 1px solid var(--border);
-  border-radius: 10px; font-size: 14px; background: var(--input-bg);
-  font-family: inherit; color: var(--text);
+  flex: 1; padding: 14px 16px; border: 2px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 16px;
+  background: #FAFAF8; font-family: inherit; color: var(--text);
   -webkit-appearance: none; appearance: none;
+  transition: border-color 0.2s;
 }
 .form-row input:focus, .form-row select:focus {
-  outline: none; border-color: var(--accent);
+  outline: none; border-color: var(--accent2); background: white;
 }
-.btn { 
-  padding: 10px 20px; border: none; border-radius: 10px;
-  font-size: 14px; font-weight: 600; cursor: pointer;
-  font-family: inherit; transition: opacity 0.15s;
+.btn {
+  padding: 14px 24px; border: none; border-radius: var(--radius-sm);
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: all 0.2s;
+  letter-spacing: -0.2px;
 }
-.btn:active { opacity: 0.8; }
-.btn-primary { background: var(--accent); color: white; width: 100%; }
-.btn-danger { background: var(--over); color: white; font-size: 11px; padding: 4px 10px; border-radius: 6px; }
-.btn-outline { background: none; border: 1px solid var(--border); color: var(--text); width: 100%; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent2); color: white; width: 100%; }
+.btn-primary:hover { background: #1A3A6E; }
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+.btn-danger { background: var(--red); color: white; }
 
-.expense-list { max-height: 400px; overflow-y: auto; }
-.expense-item { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-.expense-item .cat-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--accent-light); color: var(--accent); white-space: nowrap; }
-.expense-item .amount { font-weight: 700; color: var(--over); margin-left: auto; }
+/* ═══ EXPENSE LIST ═══ */
+.expense-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.expense-item:last-child { border-bottom: none; }
+.expense-item .cat-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.expense-item .exp-info { flex: 1; min-width: 0; }
+.expense-item .exp-store { font-size: 14px; font-weight: 600; }
+.expense-item .exp-date { font-size: 12px; color: var(--text2); }
+.expense-item .exp-amount { font-size: 16px; font-weight: 800; color: var(--red); }
+.expense-item .cat-tag {
+  font-size: 10px; padding: 3px 8px; border-radius: 10px;
+  background: #F0EDE8; color: var(--text2); white-space: nowrap;
+}
 
-/* ═══ DASHBOARD ═══ */
+/* ═══ STATS ═══ */
 .stat-row { display: flex; gap: 10px; margin-bottom: 12px; }
-.stat-box { flex: 1; background: var(--surface); border-radius: 14px; padding: 14px; box-shadow: var(--shadow); text-align: center; }
-.stat-box .label { font-size: 11px; color: var(--text2); text-transform: uppercase; }
-.stat-box .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
-.stat-box .value.good { color: var(--save); }
-.stat-box .value.bad { color: var(--over); }
+.stat-box {
+  flex: 1; background: var(--card); border-radius: var(--radius);
+  padding: 16px; box-shadow: var(--shadow-sm); text-align: center;
+}
+.stat-box .label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-box .value { font-size: 26px; font-weight: 800; margin-top: 4px; }
+.stat-box.good { background: var(--green-bg); }
+.stat-box.good .value { color: var(--green); }
+.stat-box.warn { background: #FFF8E1; }
+.stat-box.warn .value { color: #E6A817; }
 
-.progress-bar { height: 8px; background: var(--border); border-radius: 4px; margin-top: 8px; overflow: hidden; }
-.progress-bar .fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
-.progress-bar .fill.good { background: var(--save); }
-.progress-bar .fill.warn { background: #E6A817; }
-.progress-bar .fill.bad { background: var(--over); }
-
-.cat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-.cat-row:last-child { border-bottom: none; }
-.cat-row .cat-name { flex: 1; }
-.cat-row .cat-amount { font-weight: 600; }
-.cat-row .cat-bar { width: 40%; margin: 0 10px; }
+.progress-wrap { margin-top: 12px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+.progress-bar { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+.progress-bar .fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+.progress-bar .fill.good { background: var(--green); }
+.progress-bar .fill.warn { background: var(--yellow); }
+.progress-bar .fill.bad { background: var(--red); }
 
 /* ═══ SETTINGS ═══ */
-.settings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
-.settings-row .label { font-size: 14px; }
-.settings-row .val { font-size: 13px; color: var(--text2); }
+.setting-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-row .s-label { font-size: 15px; font-weight: 500; }
+.setting-row .s-btn {
+  background: none; border: 1.5px solid var(--border);
+  padding: 8px 16px; border-radius: 10px; font-size: 13px;
+  font-weight: 600; cursor: pointer; font-family: inherit;
+  color: var(--text); transition: all 0.2s;
+}
+.setting-row .s-btn:active { background: #F0EDE8; }
+.setting-row .s-btn.danger { color: var(--red); border-color: var(--red); }
 
 /* ═══ TOAST ═══ */
 .toast {
-  position: fixed; bottom: calc(var(--nav-height) + 20px); left: 50%; transform: translateX(-50%);
-  background: var(--text); color: white; padding: 10px 24px; border-radius: 20px;
-  font-size: 13px; font-weight: 600; z-index: 200; opacity: 0; transition: opacity 0.3s;
-  pointer-events: none;
+  position: fixed; bottom: calc(var(--nav-h) + 30px); left: 50%; transform: translateX(-50%);
+  background: var(--text); color: white; padding: 12px 28px; border-radius: 30px;
+  font-size: 14px; font-weight: 600; z-index: 200; opacity: 0;
+  transition: opacity 0.3s; pointer-events: none;
+  box-shadow: var(--shadow-lg);
 }
 .toast.show { opacity: 1; }
 
-.empty { text-align: center; padding: 40px 20px; color: var(--text2); }
-.empty .icon { font-size: 40px; margin-bottom: 8px; }
-.empty p { font-size: 13px; }
+/* ═══ EMPTY ═══ */
+.empty { text-align: center; padding: 48px 20px; }
+.empty .icon { font-size: 48px; margin-bottom: 12px; }
+.empty p { font-size: 15px; color: var(--text2); }
 
-/* ═══ LOGOUT ═══ */
-.logout-btn {
-  position: absolute; top: 16px; right: 16px;
-  background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
-  color: white; padding: 6px 12px; border-radius: 8px;
-  font-size: 12px; cursor: pointer; font-family: inherit;
+/* ═══ FAB ═══ */
+.fab {
+  position: fixed; bottom: calc(var(--nav-h) + var(--safe-bottom) + 20px);
+  right: calc(max(16px, (100vw - 480px)/2 + 16px)); z-index: 90;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--accent); color: white; border: none;
+  font-size: 28px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(233,69,96,0.4);
+  transition: all 0.2s; animation: fabIn 0.4s ease;
 }
+@keyframes fabIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.fab:active { transform: scale(0.9); }
+.fab.hidden { display: none; }
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN SCREEN ═══ -->
+<!-- ═══ LOGIN ═══ -->
 <div id="login-screen" class="login-screen">
   <div class="logo">🛒</div>
-  <h1 id="login-title">Đi Chợ</h1>
-  <div class="sub" id="login-sub">Ngân sách gia đình — đơn giản & hiệu quả</div>
+  <h1 id="login-title">Oi Corigi</h1>
+  <div class="sub" id="login-sub">Ngân sách gia đình — đơn giản &amp; hiệu quả</div>
   <div class="pin-box" id="pin-dots">
     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
   </div>
@@ -239,159 +347,123 @@ body {
   <div class="login-link" id="login-link" onclick="resetPin()">Quên mã PIN? Đặt lại (mất dữ liệu)</div>
 </div>
 
-<!-- ═══ MAIN APP (hidden until login) ═══ -->
+<!-- ═══ APP ═══ -->
 <div id="app" style="display:none">
 
-<div class="header" style="position:relative">
+<div class="header">
   <button class="logout-btn" onclick="logout()">Đăng xuất</button>
-  <h1>Ngân Sách Gia Đình</h1>
-  <div class="sub">Mục tiêu: ¥100,000 siêu thị + ¥16,691 Amazon</div>
+  <h1>Oi Corigi 🛒</h1>
+  <div class="sub">¥100,000 siêu thị + ¥16,691 Amazon</div>
   <div class="budget-row">
     <div class="budget-item">
-      <div class="label">Đã chi tuần</div>
-      <div class="val" id="header-weekly">¥0</div>
+      <div class="label">Đã chi</div>
+      <div class="val" id="header-weekly" style="color:#FF8A9E">¥0</div>
     </div>
     <div class="budget-item">
       <div class="label">Còn lại</div>
-      <div class="val" id="header-remain">¥23,000</div>
+      <div class="val" id="header-remain" style="color:#00E5A0">¥23,000</div>
     </div>
   </div>
 </div>
 
-<!-- ═══ NAV ═══ -->
-<nav class="nav">
-  <button class="nav-btn active" data-page="meals">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    Thực đơn
-  </button>
-  <button class="nav-btn" data-page="shop">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-    Mua sắm
-  </button>
-  <button class="nav-btn" data-page="expense">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Chi tiêu
-  </button>
-  <button class="nav-btn" data-page="settings">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Cài đặt
-  </button>
-</nav>
-
-<!-- ═══ PAGE 1: MEAL PLAN ═══ -->
+<!-- ═══ PAGES ═══ -->
 <div class="page active" id="page-meals">
   <div class="card">
-    <div class="card-title">🍽️ Thực đơn tuần</div>
+    <div class="card-header"><div class="card-title">🍽️ Thực đơn tuần</div><div class="card-badge">7 ngày</div></div>
     <div id="meal-plan"></div>
   </div>
 </div>
 
-<!-- ═══ PAGE 2: SHOPPING LIST ═══ -->
 <div class="page" id="page-shop">
   <div class="card">
-    <div class="card-title">🛒 Chuyến chính — Thứ 7 (OK)</div>
+    <div class="card-header"><div class="card-title">🛒 Chuyến chính — Thứ 7</div><div class="card-badge">OK</div></div>
     <div id="shop-main"></div>
     <div class="shop-total">Tổng: <span id="shop-main-total">¥0</span></div>
   </div>
   <div class="card">
-    <div class="card-title">🛒 Bổ sung — Thứ 4</div>
+    <div class="card-header"><div class="card-title">🛒 Bổ sung — Thứ 4</div></div>
     <div id="shop-sup"></div>
     <div class="shop-total">Tổng: <span id="shop-sup-total">¥0</span></div>
   </div>
   <div class="card">
-    <div class="card-title">📦 Amazon (tháng này)</div>
+    <div class="card-header"><div class="card-title">📦 Amazon</div><div class="card-badge">¥16,691</div></div>
     <div id="amazon-list"></div>
-    <div class="shop-total">Tổng: <span id="amazon-total">¥16,691</span></div>
   </div>
 </div>
 
-<!-- ═══ PAGE 3: EXPENSE TRACKER ═══ -->
 <div class="page" id="page-expense">
   <div class="card">
     <div class="card-title">➕ Thêm khoản chi</div>
-    <div class="form-row">
-      <input type="date" id="exp-date" style="max-width:140px">
-      <input type="number" id="exp-amount" placeholder="Số tiền (¥)" min="1" style="max-width:120px">
-    </div>
-    <div class="form-row">
-      <select id="exp-store">
-        <option value="">Chọn cửa hàng</option>
+    <div class="form-group"><label>Ngày</label><input type="date" id="exp-date" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:#FAFAF8;font-family:inherit"></div>
+    <div class="form-group"><label>Số tiền (¥)</label><input type="number" id="exp-amount" placeholder="Nhập số tiền..." min="1" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:#FAFAF8;font-family:inherit"></div>
+    <div class="form-row" style="margin-bottom:12px">
+      <select id="exp-store" style="flex:1">
+        <option value="">🏪 Cửa hàng</option>
         <option>OK Shin-Yoga</option><option>FUJI Yoga</option><option>York Mart</option>
-        <option>My Basket</option><option>Seven-Eleven</option><option>Hanamasa</option>
-        <option>Khác</option>
+        <option>My Basket</option><option>Seven-Eleven</option><option>Hanamasa</option><option>Khác</option>
       </select>
-      <select id="exp-cat">
-        <option value="">Phân loại</option>
+      <select id="exp-cat" style="flex:1">
+        <option value="">📂 Phân loại</option>
         <option>Thịt, cá, hải sản</option><option>Rau củ quả</option>
         <option>Sữa, trứng, đậu</option><option>Gạo, mì, bánh mì</option>
         <option>Gia vị, dầu ăn</option><option>Snack, đồ uống</option>
-        <option>Trái cây</option><option>Đồ khô, đồ hộp</option>
-        <option>Khác</option>
+        <option>Trái cây</option><option>Đồ khô, đồ hộp</option><option>Khác</option>
       </select>
     </div>
-    <button class="btn btn-primary" onclick="addExpense()">Thêm khoản chi</button>
+    <button class="btn btn-primary" onclick="addExpense()">✓ Thêm khoản chi</button>
   </div>
   <div class="card">
-    <div class="card-title">📝 Lịch sử chi tiêu</div>
-    <div id="expense-list" class="expense-list">
-      <div class="empty"><div class="icon">📋</div><p>Chưa có khoản chi nào</p></div>
-    </div>
+    <div class="card-header"><div class="card-title">📝 Lịch sử</div></div>
+    <div id="expense-list"><div class="empty"><div class="icon">📋</div><p>Chưa có khoản chi nào</p></div></div>
   </div>
 </div>
 
-<!-- ═══ PAGE 4: SETTINGS ═══ -->
 <div class="page" id="page-settings">
-  <div class="card">
-    <div class="card-title">📊 Tổng quan</div>
-    <div class="stat-row">
-      <div class="stat-box">
-        <div class="label">Đã chi tuần này</div>
-        <div class="value" id="dash-spent" style="color:var(--over)">¥0</div>
-      </div>
-      <div class="stat-box">
-        <div class="label">Ngân sách tuần</div>
-        <div class="value">¥23,000</div>
-      </div>
-    </div>
-    <div id="dash-progress-label" style="font-size:13px;margin-bottom:6px">0% đã dùng</div>
-    <div class="progress-bar"><div class="fill good" id="dash-progress" style="width:0%"></div></div>
+  <div class="stat-row">
+    <div class="stat-box"><div class="label">Đã chi tuần</div><div class="value" id="dash-spent" style="color:var(--red)">¥0</div></div>
+    <div class="stat-box"><div class="label">Ngân sách</div><div class="value" style="color:var(--accent2)">¥23k</div></div>
   </div>
   <div class="card">
-    <div class="card-title">📂 Phân loại</div>
-    <div id="dash-categories"></div>
+    <div class="card-title">📊 Tiến độ</div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span id="dash-progress-label">0%</span><span>¥23,000</span></div>
+      <div class="progress-bar"><div class="fill good" id="dash-progress" style="width:0%"></div></div>
+    </div>
   </div>
   <div class="card">
-    <div class="card-title">📊 Ngân sách tháng</div>
-    <div class="stat-row">
-      <div class="stat-box"><div class="label">Siêu thị</div><div class="value">¥100k</div></div>
-      <div class="stat-box"><div class="label">Amazon</div><div class="value">¥16.7k</div></div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-box" style="background:var(--save-bg)"><div class="label">Tiết kiệm/tháng</div><div class="value good">¥35,500</div></div>
-      <div class="stat-box" style="background:var(--save-bg)"><div class="label">Tiết kiệm/năm</div><div class="value good">¥426k</div></div>
-    </div>
+    <div class="card-title">📂 Phân loại</div><div id="dash-categories"></div>
   </div>
   <div class="card">
     <div class="card-title">⚙️ Cài đặt</div>
-    <div class="settings-row">
-      <span class="label">Đổi mã PIN</span>
-      <button class="btn btn-outline" style="width:auto;padding:6px 14px" onclick="changePin()">Đổi</button>
-    </div>
-    <div class="settings-row">
-      <span class="label">Xuất dữ liệu (backup)</span>
-      <button class="btn btn-outline" style="width:auto;padding:6px 14px" onclick="exportData()">📥 Xuất</button>
-    </div>
-    <div class="settings-row">
-      <span class="label">Nhập dữ liệu (restore)</span>
-      <button class="btn btn-outline" style="width:auto;padding:6px 14px" onclick="document.getElementById('import-file').click()">📤 Nhập</button>
-      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
-    </div>
-    <div class="settings-row">
-      <span class="label">Xóa tất cả dữ liệu</span>
-      <button class="btn btn-outline" style="width:auto;padding:6px 14px;color:var(--over);border-color:var(--over)" onclick="resetAll()">🗑️ Xóa</button>
-    </div>
+    <div class="setting-row"><span class="s-label">Đổi mã PIN</span><button class="s-btn" onclick="changePin()">Đổi</button></div>
+    <div class="setting-row"><span class="s-label">Xuất dữ liệu</span><button class="s-btn" onclick="exportData()">📥 Xuất</button></div>
+    <div class="setting-row"><span class="s-label">Nhập dữ liệu</span><button class="s-btn" onclick="document.getElementById('import-file').click()">📤 Nhập</button><input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)"></div>
+    <div class="setting-row"><span class="s-label">Xóa dữ liệu</span><button class="s-btn danger" onclick="resetAll()">🗑️ Xóa</button></div>
   </div>
 </div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="quickAdd()">+</button>
+
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <button class="tab-btn active" data-page="meals">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Thực đơn
+  </button>
+  <button class="tab-btn" data-page="shop">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    Mua sắm
+  </button>
+  <button class="tab-btn" data-page="expense">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Chi tiêu
+  </button>
+  <button class="tab-btn" data-page="settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Cài đặt
+  </button>
+</nav>
 
 </div><!-- /#app -->
 
@@ -399,532 +471,311 @@ body {
 
 <script>
 // ═══════════════════════════════════════════
-// PIN LOGIN SYSTEM
+// PIN
 // ═══════════════════════════════════════════
 const PIN_KEY = 'budget_pin_hash';
 const WEEKLY_BUDGET = 23000;
-let pinInput = '';
-let pinMode = 'enter'; // 'create' | 'confirm' | 'enter'
-let pinCreate = '';
+let pinInput = '', pinMode = 'enter', pinCreate = '';
 
 async function hashPin(pin) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(pin + 'budget-salt-2026');
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+  const data = new TextEncoder().encode(pin + 'oi-corigi-2026');
+  const h = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
 async function initLogin() {
   const stored = localStorage.getItem(PIN_KEY);
-  const title = document.getElementById('login-title');
-  const sub = document.getElementById('login-sub');
-  const msg = document.getElementById('login-msg');
+  const t = document.getElementById('login-title'), s = document.getElementById('login-sub');
   const link = document.getElementById('login-link');
-  
   if (!stored) {
-    pinMode = 'create';
-    title.textContent = 'Tạo mã PIN';
-    sub.textContent = 'Nhập 4 số để bảo vệ dữ liệu của bạn';
-    msg.textContent = '';
+    pinMode = 'create'; t.textContent = 'Oi Corigi'; s.textContent = 'Tạo mã PIN 4 số để bắt đầu';
     link.style.display = 'none';
   } else {
-    pinMode = 'enter';
-    title.textContent = 'Đi Chợ';
-    sub.textContent = 'Nhập mã PIN để tiếp tục';
-    msg.textContent = '';
-    link.style.display = 'block';
+    pinMode = 'enter'; link.style.display = 'block';
   }
-  updatePinDots();
+  updateDots();
 }
 
-function updatePinDots() {
-  const dots = document.querySelectorAll('#pin-dots .pin-dot');
-  dots.forEach((d, i) => {
-    if (i < pinInput.length) d.classList.add('filled');
-    else d.classList.remove('filled');
+function updateDots() {
+  document.querySelectorAll('#pin-dots .pin-dot').forEach((d, i) => {
+    d.classList.toggle('filled', i < pinInput.length);
     d.classList.remove('error');
     d.textContent = i < pinInput.length ? '●' : '';
   });
 }
 
-function shakePin() {
+function shake() {
   document.querySelectorAll('#pin-dots .pin-dot').forEach(d => d.classList.add('error'));
-  setTimeout(() => document.querySelectorAll('#pin-dots .pin-dot').forEach(d => d.classList.remove('error')), 400);
+  setTimeout(() => document.querySelectorAll('#pin-dots .pin-dot').forEach(d => d.classList.remove('error')), 500);
 }
 
-async function handlePinKey(num) {
+async function handlePin(n) {
   if (pinInput.length >= 4) return;
-  pinInput += num;
-  updatePinDots();
-  
+  pinInput += n; updateDots();
   if (pinInput.length === 4) {
-    if (pinMode === 'create') {
-      pinCreate = pinInput;
-      pinInput = '';
-      pinMode = 'confirm';
-      document.getElementById('login-sub').textContent = 'Nhập lại để xác nhận';
-      document.getElementById('login-msg').textContent = '';
-      updatePinDots();
-    } else if (pinMode === 'confirm') {
+    if (pinMode === 'create') { pinCreate = pinInput; pinInput = ''; pinMode = 'confirm';
+      document.getElementById('login-sub').textContent = 'Nhập lại để xác nhận'; updateDots(); }
+    else if (pinMode === 'confirm') {
       if (pinInput === pinCreate) {
-        const hash = await hashPin(pinInput);
-        localStorage.setItem(PIN_KEY, hash);
-        document.getElementById('login-msg').textContent = 'Đã tạo PIN thành công!';
-        setTimeout(() => loginSuccess(), 500);
-      } else {
-        document.getElementById('login-msg').textContent = 'PIN không khớp, thử lại';
-        pinInput = '';
-        pinMode = 'create';
-        document.getElementById('login-sub').textContent = 'Nhập 4 số để bảo vệ dữ liệu của bạn';
-        shakePin();
-        updatePinDots();
-      }
-    } else if (pinMode === 'enter') {
-      const stored = localStorage.getItem(PIN_KEY);
-      const hash = await hashPin(pinInput);
-      if (hash === stored) {
-        loginSuccess();
-      } else {
-        document.getElementById('login-msg').textContent = 'Sai mã PIN';
-        pinInput = '';
-        shakePin();
-        updatePinDots();
-      }
+        localStorage.setItem(PIN_KEY, await hashPin(pinInput));
+        document.getElementById('login-msg').textContent = '✓ Thành công!';
+        setTimeout(loginSuccess, 400);
+      } else { document.getElementById('login-msg').textContent = 'Không khớp!'; pinInput = ''; pinMode = 'create';
+        document.getElementById('login-sub').textContent = 'Tạo mã PIN 4 số để bắt đầu'; shake(); updateDots(); }
+    } else {
+      if (await hashPin(pinInput) === localStorage.getItem(PIN_KEY)) { loginSuccess(); }
+      else { document.getElementById('login-msg').textContent = 'Sai PIN!'; pinInput = ''; shake(); updateDots(); }
     }
   }
 }
 
-function handleDel() {
-  if (pinInput.length > 0) {
-    pinInput = pinInput.slice(0, -1);
-    updatePinDots();
-  }
-}
+function handleDel() { if (pinInput.length) { pinInput = pinInput.slice(0,-1); updateDots(); } }
 
 function loginSuccess() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  renderMeals();
-  renderShop();
-  renderExpenses();
-  updateHeader();
+  renderMeals(); renderShop(); renderExpenses(); updateHeader();
   document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
 }
 
 function logout() {
-  pinInput = '';
-  pinMode = 'enter';
+  pinInput = ''; pinMode = 'enter';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
-  document.getElementById('login-title').textContent = 'Đi Chợ';
-  document.getElementById('login-sub').textContent = 'Nhập mã PIN để tiếp tục';
   document.getElementById('login-msg').textContent = '';
   document.getElementById('login-link').style.display = 'block';
-  updatePinDots();
+  updateDots();
 }
 
 function resetPin() {
-  if (confirm('Bạn có chắc muốn đặt lại PIN? TẤT CẢ dữ liệu sẽ bị xóa.')) {
-    localStorage.clear();
-    pinInput = '';
-    pinMode = 'create';
-    pinCreate = '';
-    document.getElementById('login-title').textContent = 'Tạo mã PIN';
-    document.getElementById('login-sub').textContent = 'Nhập 4 số để bảo vệ dữ liệu của bạn';
-    document.getElementById('login-msg').textContent = '';
-    document.getElementById('login-link').style.display = 'none';
-    updatePinDots();
-  }
+  if (confirm('Xóa PIN và tất cả dữ liệu?')) { localStorage.clear(); pinInput = ''; pinMode = 'create'; pinCreate = '';
+    document.getElementById('login-title').textContent = 'Oi Corigi';
+    document.getElementById('login-sub').textContent = 'Tạo mã PIN 4 số để bắt đầu';
+    document.getElementById('login-link').style.display = 'none'; updateDots(); }
 }
 
 function changePin() {
-  if (confirm('Đổi mã PIN? Bạn sẽ cần nhập PIN mới.')) {
-    localStorage.removeItem(PIN_KEY);
-    pinInput = '';
-    pinMode = 'create';
-    pinCreate = '';
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('login-title').textContent = 'Tạo mã PIN mới';
-    document.getElementById('login-sub').textContent = 'Nhập 4 số mới';
-    document.getElementById('login-msg').textContent = '';
-    document.getElementById('login-link').style.display = 'none';
-    updatePinDots();
-  }
+  if (confirm('Đổi mã PIN?')) { localStorage.removeItem(PIN_KEY); pinInput = ''; pinMode = 'create'; pinCreate = '';
+    document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none';
+    document.getElementById('login-title').textContent = 'PIN mới'; document.getElementById('login-sub').textContent = 'Nhập 4 số mới';
+    document.getElementById('login-link').style.display = 'none'; updateDots(); }
 }
 
 // ═══════════════════════════════════════════
-// EXPORT / IMPORT
+// EXPORT/IMPORT
 // ═══════════════════════════════════════════
 function exportData() {
-  const data = {
-    expenses: JSON.parse(localStorage.getItem('budget_expenses') || '[]'),
-    shop: JSON.parse(localStorage.getItem('budget_shop') || '{}'),
-    exportedAt: new Date().toISOString()
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'budget-backup-' + new Date().toISOString().split('T')[0] + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Đã xuất dữ liệu!');
+  const d = { expenses: JSON.parse(localStorage.getItem('budget_expenses')||'[]'), shop: JSON.parse(localStorage.getItem('budget_shop')||'{}'), exportedAt: new Date().toISOString() };
+  const b = new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'oi-corigi-backup-'+new Date().toISOString().split('T')[0]+'.json'; a.click();
+  showToast('Đã xuất!');
 }
-
-function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (data.expenses) localStorage.setItem('budget_expenses', JSON.stringify(data.expenses));
-      if (data.shop) localStorage.setItem('budget_shop', JSON.stringify(data.shop));
-      renderShop();
-      renderExpenses();
-      updateHeader();
-      showToast('Đã nhập dữ liệu!');
-    } catch(err) {
-      showToast('File không hợp lệ');
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
+function importData(e) {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload = function(ev) {
+    try { const d = JSON.parse(ev.target.result); if(d.expenses) localStorage.setItem('budget_expenses',JSON.stringify(d.expenses)); if(d.shop) localStorage.setItem('budget_shop',JSON.stringify(d.shop)); renderShop(); renderExpenses(); updateHeader(); showToast('Đã nhập!'); }
+    catch(ex) { showToast('File không hợp lệ'); }
+  }; r.readAsText(f); e.target.value = '';
 }
 
 // ═══════════════════════════════════════════
-// EVENT LISTENERS
+// EVENTS
 // ═══════════════════════════════════════════
-document.querySelectorAll('#num-pad .num-key').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const val = btn.textContent;
-    if (val === '⌫') handleDel();
-    else if (val >= '0' && val <= '9') handlePinKey(val);
-  });
+document.querySelectorAll('#num-pad .num-key').forEach(b => {
+  b.addEventListener('click', () => { const v = b.textContent; if(v==='⌫') handleDel(); else if(v>='0'&&v<='9') handlePin(v); });
 });
-
-// Physical keyboard support
-document.addEventListener('keydown', (e) => {
-  if (document.getElementById('login-screen').style.display !== 'none') {
-    if (e.key >= '0' && e.key <= '9') handlePinKey(e.key);
-    if (e.key === 'Backspace') handleDel();
-  }
+document.addEventListener('keydown', e => {
+  if (document.getElementById('login-screen').style.display !== 'none') { if (e.key>='0'&&e.key<='9') handlePin(e.key); if (e.key==='Backspace') handleDel(); }
 });
 
 // ═══════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════
+const CAT_COLORS = {
+  'Thịt, cá, hải sản': '#E94560', 'Rau củ quả': '#00B894', 'Sữa, trứng, đậu': '#FDCB6E',
+  'Gạo, mì, bánh mì': '#E17055', 'Gia vị, dầu ăn': '#6C5CE7', 'Snack, đồ uống': '#FD79A8',
+  'Trái cây': '#00CEC9', 'Đồ khô, đồ hộp': '#636E72', 'Khác': '#B2BEC3'
+};
+
 const meals = [
-  { day: 'Thứ 2', items: [
-    { icon: '🌅', text: 'Cơm + trứng ốp + miso + sữa', price: 400 },
-    { icon: '☀️', text: 'Cơm + gà xào ớt chuông + canh', price: 600 },
-    { icon: '🌙', text: 'Cá saba nướng + rau luộc + cơm', price: 700 }
-  ]},
-  { day: 'Thứ 3', items: [
-    { icon: '🌅', text: 'Bánh mì + trứng luộc + sữa', price: 350 },
-    { icon: '☀️', text: 'Mì udon + thịt lợn xào rau cải', price: 550 },
-    { icon: '🌙', text: 'Đậu hũ sốt teriyaki + salad trộn', price: 600 }
-  ]},
-  { day: 'Thứ 4', items: [
-    { icon: '🌅', text: 'Cơm + natto + miso + trứng', price: 350 },
-    { icon: '☀️', text: 'Cơm + thịt bò xào kim chi + dưa', price: 800 },
-    { icon: '🌙', text: 'Sashimi cá hồi + cơm cuộn rong biển', price: 850 }
-  ]},
-  { day: 'Thứ 5', items: [
-    { icon: '🌅', text: 'Bánh mì + yogurt + chuối', price: 300 },
-    { icon: '☀️', text: 'Cơm rang rau củ + trứng + thịt gà', price: 500 },
-    { icon: '🌙', text: 'Gà teriyaki + canh miso + rau', price: 650 }
-  ]},
-  { day: 'Thứ 6', items: [
-    { icon: '🌅', text: 'Cơm + trứng + rong biển + miso', price: 350 },
-    { icon: '☀️', text: 'Mì somen lạnh + thịt gà xé + dưa', price: 500 },
-    { icon: '🌙', text: 'Cá hồi muối + rau củ nướng + cơm', price: 750 }
-  ]},
-  { day: 'Thứ 7', items: [
-    { icon: '🌅', text: 'Pancake + trái cây + sữa', price: 400 },
-    { icon: '☀️', text: 'Cơm + sườn nướng + dưa cải + salad', price: 750 },
-    { icon: '🌙', text: 'Lẩu nhỏ (gà + rau + đậu hũ + nấm)', price: 900 }
-  ]},
-  { day: 'Chủ nhật', items: [
-    { icon: '🌅', text: 'Bánh mì + trứng ốp + sữa + trái cây', price: 400 },
-    { icon: '☀️', text: 'Cơm cà ri gà (nấu nhiều, ăn 2 ngày)', price: 600 },
-    { icon: '🌙', text: 'Bulgogi bò + kim chi + salad + cơm', price: 850 }
-  ]}
+  { day: 'Thứ 2', items: [{icon:'🌅',text:'Cơm + trứng ốp + miso + sữa',price:400},{icon:'☀️',text:'Cơm + gà xào ớt chuông + canh',price:600},{icon:'🌙',text:'Cá saba nướng + rau luộc + cơm',price:700}]},
+  { day: 'Thứ 3', items: [{icon:'🌅',text:'Bánh mì + trứng luộc + sữa',price:350},{icon:'☀️',text:'Mì udon + thịt lợn xào rau cải',price:550},{icon:'🌙',text:'Đậu hũ sốt teriyaki + salad trộn',price:600}]},
+  { day: 'Thứ 4', items: [{icon:'🌅',text:'Cơm + natto + miso + trứng',price:350},{icon:'☀️',text:'Cơm + thịt bò xào kim chi + dưa',price:800},{icon:'🌙',text:'Sashimi cá hồi + cơm cuộn',price:850}]},
+  { day: 'Thứ 5', items: [{icon:'🌅',text:'Bánh mì + yogurt + chuối',price:300},{icon:'☀️',text:'Cơm rang rau củ + trứng + gà',price:500},{icon:'🌙',text:'Gà teriyaki + canh miso + rau',price:650}]},
+  { day: 'Thứ 6', items: [{icon:'🌅',text:'Cơm + trứng + rong biển + miso',price:350},{icon:'☀️',text:'Mì somen lạnh + gà xé + dưa',price:500},{icon:'🌙',text:'Cá hồi muối + rau củ nướng + cơm',price:750}]},
+  { day: 'Thứ 7', items: [{icon:'🌅',text:'Pancake + trái cây + sữa',price:400},{icon:'☀️',text:'Cơm + sườn nướng + dưa cải + salad',price:750},{icon:'🌙',text:'Lẩu nhỏ (gà+rau+đậu hũ+nấm)',price:900}]},
+  { day: 'Chủ nhật', items: [{icon:'🌅',text:'Bánh mì + trứng ốp + sữa + trái cây',price:400},{icon:'☀️',text:'Cơm cà ri gà',price:600},{icon:'🌙',text:'Bulgogi bò + kim chi + salad',price:850}]}
 ];
 
 const shopMain = [
-  { name: 'Gạo (1.5kg)', qty: '1.5kg', price: 600 },
-  { name: 'Thịt gà đùi', qty: '800g', price: 1200 },
-  { name: 'Thịt gà ức', qty: '400g', price: 400 },
-  { name: 'Thịt lợn nạc', qty: '600g', price: 1200 },
-  { name: 'Thịt bò nạc', qty: '400g', price: 2000 },
-  { name: 'Cá saba/aji', qty: '3 con', price: 750 },
-  { name: 'Cá hồi filê', qty: '3 miếng', price: 1200 },
-  { name: 'Trứng gà (10 quả)', qty: '2 hộp', price: 500 },
-  { name: 'Đậu hũ', qty: '4 hộp', price: 320 },
-  { name: 'Sữa tươi 1L', qty: '2 hộp', price: 400 },
-  { name: 'Yogurt 400g', qty: '2 hộp', price: 400 },
-  { name: 'Phô mai', qty: '1 gói', price: 200 },
-  { name: 'Bánh mì sandwich', qty: '2 gói', price: 300 },
-  { name: 'Mì udon/somen', qty: '4 gói', price: 400 },
-  { name: 'Rau cải / spinach', qty: '3 bó', price: 600 },
-  { name: 'Cà chua + dưa chuột', qty: '1 gói', price: 250 },
-  { name: 'Hành tây, cà rốt, khoai', qty: '1 bộ', price: 400 },
-  { name: 'Nấm các loại', qty: '2 gói', price: 300 },
-  { name: 'Trái cây theo mùa', qty: '5 quả', price: 750 },
-  { name: 'Chuối', qty: '1 nải', price: 150 },
-  { name: 'Natto', qty: '3 hộp', price: 240 },
-  { name: 'Miso, xì dầu (bổ sung)', qty: '1', price: 300 },
+  {name:'Gạo (1.5kg)',qty:'1.5kg',price:600},{name:'Thịt gà đùi',qty:'800g',price:1200},{name:'Thịt gà ức',qty:'400g',price:400},
+  {name:'Thịt lợn nạc',qty:'600g',price:1200},{name:'Thịt bò nạc',qty:'400g',price:2000},{name:'Cá saba/aji',qty:'3 con',price:750},
+  {name:'Cá hồi filê',qty:'3 miếng',price:1200},{name:'Trứng gà (10 quả)',qty:'2 hộp',price:500},{name:'Đậu hũ',qty:'4 hộp',price:320},
+  {name:'Sữa tươi 1L',qty:'2 hộp',price:400},{name:'Yogurt 400g',qty:'2 hộp',price:400},{name:'Phô mai',qty:'1 gói',price:200},
+  {name:'Bánh mì sandwich',qty:'2 gói',price:300},{name:'Mì udon/somen',qty:'4 gói',price:400},{name:'Rau cải / spinach',qty:'3 bó',price:600},
+  {name:'Cà chua + dưa chuột',qty:'1 gói',price:250},{name:'Hành tây, cà rốt, khoai',qty:'1 bộ',price:400},
+  {name:'Nấm các loại',qty:'2 gói',price:300},{name:'Trái cây theo mùa',qty:'5 quả',price:750},{name:'Chuối',qty:'1 nải',price:150},
+  {name:'Natto',qty:'3 hộp',price:240},{name:'Miso, xì dầu',qty:'1',price:300}
 ];
 
 const shopSup = [
-  { name: 'Thịt/cá tươi bổ sung', qty: '1', price: 2000 },
-  { name: 'Rau tươi bổ sung', qty: '1', price: 1000 },
-  { name: 'Trái cây bổ sung', qty: '1', price: 600 },
-  { name: 'Sữa + trứng + yogurt', qty: '1', price: 700 },
-  { name: 'Snack, bánh nhẹ', qty: '1', price: 1000 },
-  { name: 'Linh hoạt / dự phòng', qty: '1', price: 1700 },
+  {name:'Thịt/cá tươi bổ sung',qty:'1',price:2000},{name:'Rau tươi bổ sung',qty:'1',price:1000},
+  {name:'Trái cây bổ sung',qty:'1',price:600},{name:'Sữa + trứng + yogurt',qty:'1',price:700},
+  {name:'Snack, bánh nhẹ',qty:'1',price:1000},{name:'Linh hoạt / dự phòng',qty:'1',price:1700}
 ];
 
 const amazonItems = [
-  { name: 'Sữa Moriyama A2 200ml × 12', price: 2712 },
-  { name: 'Sữa bột Morinaga Milk Life GOLD', price: 3789 },
-  { name: 'Sữa hạnh nhân Glico Almond × 24', price: 2812 },
-  { name: 'Nước Irohasu 560ml × 24', price: 1900 },
-  { name: 'Green Da-Ka-Ra 600ml × 24', price: 1913 },
-  { name: 'Listerine 1000ml', price: 988 },
-  { name: 'NMN 400mg 30 viên', price: 980 },
-  { name: 'Lenor nước xả vải 1285ml', price: 882 },
-  { name: 'Xà phòng For Back 135g', price: 715 },
+  {name:'Sữa Moriyama A2 ×12',price:2712},{name:'Sữa bột Morinaga GOLD',price:3789},{name:'Sữa hạnh nhân Glico ×24',price:2812},
+  {name:'Nước Irohasu ×24',price:1900},{name:'Green Da-Ka-Ra ×24',price:1913},{name:'Listerine 1000ml',price:988},
+  {name:'NMN 400mg 30 viên',price:980},{name:'Lenor nước xả vải',price:882},{name:'Xà phòng For Back',price:715}
 ];
 
 // ═══════════════════════════════════════════
 // STORAGE
 // ═══════════════════════════════════════════
-function getExpenses() {
-  try { return JSON.parse(localStorage.getItem('budget_expenses') || '[]'); }
-  catch(e) { return []; }
-}
-function saveExpenses(arr) { localStorage.setItem('budget_expenses', JSON.stringify(arr)); }
-function getShopChecks() {
-  try { return JSON.parse(localStorage.getItem('budget_shop') || '{}'); }
-  catch(e) { return {}; }
-}
-function saveShopChecks(obj) { localStorage.setItem('budget_shop', JSON.stringify(obj)); }
-function resetAll() {
-  if (confirm('Xóa tất cả dữ liệu chi tiêu và danh sách mua sắm?')) {
-    localStorage.removeItem('budget_expenses');
-    localStorage.removeItem('budget_shop');
-    renderShop(); renderExpenses(); updateHeader();
-    showToast('Đã xóa!');
-  }
-}
+function getExpenses() { try{return JSON.parse(localStorage.getItem('budget_expenses')||'[]')}catch(e){return[]} }
+function saveExpenses(a) { localStorage.setItem('budget_expenses',JSON.stringify(a)); }
+function getShopChecks() { try{return JSON.parse(localStorage.getItem('budget_shop')||'{}')}catch(e){return{}} }
+function saveShopChecks(o) { localStorage.setItem('budget_shop',JSON.stringify(o)); }
+function resetAll() { if(confirm('Xóa tất cả dữ liệu?')){localStorage.removeItem('budget_expenses');localStorage.removeItem('budget_shop');renderShop();renderExpenses();updateHeader();showToast('Đã xóa!')} }
 
 // ═══════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + btn.dataset.page).classList.add('active');
-    if (btn.dataset.page === 'settings') renderDashboard();
-    if (btn.dataset.page === 'shop') renderShop();
-    if (btn.dataset.page === 'expense') renderExpenses();
+    document.getElementById('page-'+b.dataset.page).classList.add('active');
+    const fab = document.getElementById('fab');
+    if (b.dataset.page === 'expense') { fab.classList.add('hidden'); }
+    else { fab.classList.remove('hidden'); }
+    if (b.dataset.page === 'settings') renderDashboard();
+    if (b.dataset.page === 'shop') renderShop();
+    if (b.dataset.page === 'expense') renderExpenses();
     updateHeader();
   });
 });
 
+function quickAdd() {
+  document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+  document.querySelector('.tab-btn[data-page="expense"]').classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-expense').classList.add('active');
+  document.getElementById('fab').classList.add('hidden');
+  document.getElementById('exp-amount').focus();
+  updateHeader();
+}
+
 // ═══════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
+function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
 
 // ═══════════════════════════════════════════
-// RENDER: MEAL PLAN
+// RENDER
 // ═══════════════════════════════════════════
 function renderMeals() {
-  const el = document.getElementById('meal-plan');
-  let html = '';
-  let weekTotal = 0;
+  let h = '', wt = 0;
   meals.forEach(m => {
-    const dayTotal = m.items.reduce((s, i) => s + i.price, 0);
-    weekTotal += dayTotal;
-    html += `<div class="meal-day"><div class="day-name">${m.day} — ¥${dayTotal.toLocaleString()}</div>`;
-    m.items.forEach(i => {
-      html += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><span class="meal-text">${i.text}</span><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`;
-    });
-    html += `</div>`;
+    const dt = m.items.reduce((s,i) => s+i.price, 0); wt += dt;
+    h += `<div class="meal-day"><div class="day-header"><span class="day-name">${m.day}</span><span class="day-total">¥${dt.toLocaleString()}</span></div>`;
+    m.items.forEach(i => h += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><span class="meal-text">${i.text}</span><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`);
+    h += `</div>`;
   });
-  html += `<div style="text-align:right;font-weight:700;padding:8px 0;color:var(--accent);margin-top:4px">Tổng tuần: ¥${weekTotal.toLocaleString()} / ¥23,000</div>`;
-  el.innerHTML = html;
+  h += `<div style="text-align:right;font-weight:800;padding:12px 0 0;font-size:16px;color:var(--accent2)">Tổng: ¥${wt.toLocaleString()} / ¥23,000</div>`;
+  document.getElementById('meal-plan').innerHTML = h;
 }
 
-// ═══════════════════════════════════════════
-// RENDER: SHOPPING LIST
-// ═══════════════════════════════════════════
 function renderShop() {
-  const checks = getShopChecks();
-  
-  function renderList(items, elId, totalId) {
-    const el = document.getElementById(elId);
-    let html = '', total = 0;
+  const c = getShopChecks();
+  function list(items, elId, tId) {
+    let h = '', t = 0;
     items.forEach((item, i) => {
-      const key = elId + '_' + i;
-      const done = checks[key];
-      total += item.price;
-      html += `<div class="shop-item">
-        <div class="check${done ? ' checked' : ''}" onclick="toggleShop('${key}')"></div>
-        <span class="name${done ? ' done' : ''}">${item.name}</span>
-        <span class="info">${item.qty || ''} ¥${item.price.toLocaleString()}</span>
-      </div>`;
+      const k = elId+'_'+i, d = c[k]; t += item.price;
+      h += `<div class="shop-item"><div class="check${d?' checked':''}" onclick="toggleShop('${k}')"></div><span class="name${d?' done':''}">${item.name}</span><span class="info">${item.qty||''} ¥${item.price.toLocaleString()}</span></div>`;
     });
-    el.innerHTML = html;
-    document.getElementById(totalId).textContent = '¥' + total.toLocaleString();
+    document.getElementById(elId).innerHTML = h;
+    document.getElementById(tId).textContent = '¥'+t.toLocaleString();
   }
-  
-  renderList(shopMain, 'shop-main', 'shop-main-total');
-  renderList(shopSup, 'shop-sup', 'shop-sup-total');
-  
-  let amzHtml = '', amzTotal = 0;
-  amazonItems.forEach(item => {
-    amzTotal += item.price;
-    amzHtml += `<div class="shop-item"><span class="name">${item.name}</span><span class="info">¥${item.price.toLocaleString()}</span></div>`;
-  });
-  document.getElementById('amazon-list').innerHTML = amzHtml;
-  document.getElementById('amazon-total').textContent = '¥' + amzTotal.toLocaleString();
+  list(shopMain, 'shop-main', 'shop-main-total');
+  list(shopSup, 'shop-sup', 'shop-sup-total');
+  let ah = '', at = 0;
+  amazonItems.forEach(i => { at += i.price; ah += `<div class="shop-item"><span class="name">${i.name}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`; });
+  document.getElementById('amazon-list').innerHTML = ah;
 }
 
-function toggleShop(key) {
-  const checks = getShopChecks();
-  checks[key] = !checks[key];
-  saveShopChecks(checks);
-  renderShop();
-}
+function toggleShop(k) { const c = getShopChecks(); c[k] = !c[k]; saveShopChecks(c); renderShop(); }
 
-// ═══════════════════════════════════════════
-// RENDER: EXPENSES
-// ═══════════════════════════════════════════
 function renderExpenses() {
-  const expenses = getExpenses();
-  const el = document.getElementById('expense-list');
-  
-  if (expenses.length === 0) {
-    el.innerHTML = '<div class="empty"><div class="icon">📋</div><p>Chưa có khoản chi nào</p></div>';
-    return;
-  }
-  
-  expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
-  
-  let html = '';
-  expenses.forEach((e, i) => {
-    html += `<div class="expense-item">
-      <span class="cat-badge">${e.cat || 'Khác'}</span>
-      <span>${e.store || ''}</span>
-      <span style="font-size:11px;color:var(--text2);margin-left:4px">${e.date}</span>
-      <span class="amount">¥${e.amount.toLocaleString()}</span>
-      <button class="btn-danger" onclick="deleteExpense(${i})">✕</button>
+  const ex = getExpenses(), el = document.getElementById('expense-list');
+  if (!ex.length) { el.innerHTML = '<div class="empty"><div class="icon">📋</div><p>Chưa có khoản chi nào</p></div>'; return; }
+  ex.sort((a,b) => new Date(b.date) - new Date(a.date));
+  let h = '';
+  ex.forEach((e, i) => {
+    h += `<div class="expense-item">
+      <div class="cat-dot" style="background:${CAT_COLORS[e.cat]||'#B2BEC3'}"></div>
+      <div class="exp-info"><div class="exp-store">${e.store||'Không rõ'}</div><div class="exp-date">${e.date}</div></div>
+      <span class="cat-tag">${e.cat||'Khác'}</span>
+      <span class="exp-amount">¥${e.amount.toLocaleString()}</span>
+      <button class="btn btn-danger btn-sm" onclick="deleteExpense(${i})">✕</button>
     </div>`;
   });
-  el.innerHTML = html;
+  el.innerHTML = h;
 }
 
 function addExpense() {
-  const date = document.getElementById('exp-date').value || new Date().toISOString().split('T')[0];
-  const amount = parseInt(document.getElementById('exp-amount').value);
-  const store = document.getElementById('exp-store').value;
-  const cat = document.getElementById('exp-cat').value;
-  
-  if (!amount || amount <= 0) { showToast('Nhập số tiền hợp lệ'); return; }
-  
-  const expenses = getExpenses();
-  expenses.push({ date, amount, store, cat, added: new Date().toISOString() });
-  saveExpenses(expenses);
-  
-  document.getElementById('exp-amount').value = '';
-  renderExpenses();
-  updateHeader();
-  showToast('Đã thêm ¥' + amount.toLocaleString());
+  const d = document.getElementById('exp-date').value || new Date().toISOString().split('T')[0];
+  const a = parseInt(document.getElementById('exp-amount').value);
+  const s = document.getElementById('exp-store').value, c = document.getElementById('exp-cat').value;
+  if (!a || a <= 0) { showToast('Nhập số tiền!'); return; }
+  const ex = getExpenses(); ex.push({date:d,amount:a,store:s,cat:c,added:new Date().toISOString()}); saveExpenses(ex);
+  document.getElementById('exp-amount').value = ''; renderExpenses(); updateHeader(); showToast('✓ Đã thêm ¥'+a.toLocaleString());
 }
 
-function deleteExpense(idx) {
-  const expenses = getExpenses();
-  expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
-  const removed = expenses.splice(idx, 1)[0];
-  saveExpenses(expenses);
-  renderExpenses();
-  updateHeader();
-  showToast('Đã xóa ¥' + removed.amount.toLocaleString());
+function deleteExpense(i) {
+  const ex = getExpenses(); ex.sort((a,b) => new Date(b.date) - new Date(a.date));
+  const r = ex.splice(i,1)[0]; saveExpenses(ex); renderExpenses(); updateHeader(); showToast('Đã xóa ¥'+r.amount.toLocaleString());
 }
 
-// ═══════════════════════════════════════════
-// RENDER: DASHBOARD
-// ═══════════════════════════════════════════
 function renderDashboard() {
-  const expenses = getExpenses();
-  const now = new Date();
-  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const weekExpenses = expenses.filter(e => new Date(e.date) >= weekAgo);
-  const totalSpent = weekExpenses.reduce((s, e) => s + e.amount, 0);
-  const pct = Math.min(100, Math.round((totalSpent / WEEKLY_BUDGET) * 100));
-  
-  document.getElementById('dash-spent').textContent = '¥' + totalSpent.toLocaleString();
-  document.getElementById('dash-progress').style.width = pct + '%';
-  document.getElementById('dash-progress-label').textContent = pct + '% đã dùng';
-  
-  const bar = document.getElementById('dash-progress');
-  bar.classList.remove('good', 'warn', 'bad');
-  if (pct > 90) bar.classList.add('bad');
-  else if (pct > 70) bar.classList.add('warn');
-  else bar.classList.add('good');
-  
+  const ex = getExpenses(), now = new Date(), wk = new Date(now.getTime()-7*86400000);
+  const we = ex.filter(e => new Date(e.date) >= wk), ts = we.reduce((s,e) => s+e.amount, 0);
+  const pct = Math.min(100, Math.round(ts/WEEKLY_BUDGET*100));
+  document.getElementById('dash-spent').textContent = '¥'+ts.toLocaleString();
+  document.getElementById('dash-progress').style.width = pct+'%';
+  document.getElementById('dash-progress-label').textContent = pct+'%';
+  const bar = document.getElementById('dash-progress'); bar.classList.remove('good','warn','bad');
+  if (pct>90) bar.classList.add('bad'); else if (pct>70) bar.classList.add('warn'); else bar.classList.add('good');
+
   const cats = {};
-  const CAT_NAMES = ['Thịt, cá, hải sản', 'Rau củ quả', 'Sữa, trứng, đậu', 'Gạo, mì, bánh mì', 
-    'Gia vị, dầu ăn', 'Snack, đồ uống', 'Trái cây', 'Đồ khô, đồ hộp', 'Khác'];
-  weekExpenses.forEach(e => {
-    const c = e.cat || 'Khác';
-    cats[c] = (cats[c] || 0) + e.amount;
-  });
-  
-  let catHtml = '';
-  CAT_NAMES.forEach(name => {
-    const val = cats[name] || 0;
-    const p = totalSpent > 0 ? Math.round((val / totalSpent) * 100) : 0;
-    catHtml += `<div class="cat-row">
-      <span class="cat-name">${name}</span>
-      <span class="cat-amount">¥${val.toLocaleString()}</span>
-      <div class="cat-bar"><div class="progress-bar"><div class="fill good" style="width:${p}%"></div></div></div>
+  ['Thịt, cá, hải sản','Rau củ quả','Sữa, trứng, đậu','Gạo, mì, bánh mì','Gia vị, dầu ăn','Snack, đồ uống','Trái cây','Đồ khô, đồ hộp','Khác'].forEach(n => cats[n]=0);
+  we.forEach(e => { if (cats.hasOwnProperty(e.cat)) cats[e.cat] = (cats[e.cat]||0) + e.amount; else cats['Khác'] = (cats['Khác']||0) + e.amount; });
+
+  let ch = '';
+  Object.entries(cats).forEach(([n,v]) => {
+    const p = ts>0 ? Math.round(v/ts*100) : 0;
+    ch += `<div class="cat-row" style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <div class="cat-dot" style="width:10px;height:10px;border-radius:50%;background:${CAT_COLORS[n]};margin-right:10px;flex-shrink:0"></div>
+      <span style="flex:1">${n}</span><span style="font-weight:700;margin:0 8px">¥${v.toLocaleString()}</span>
+      <div style="width:60px"><div class="progress-bar" style="height:6px"><div class="fill good" style="width:${p}%;background:${CAT_COLORS[n]}"></div></div></div>
       <span style="font-size:11px;min-width:32px;text-align:right">${p}%</span>
     </div>`;
   });
-  document.getElementById('dash-categories').innerHTML = catHtml || '<div class="empty"><p>Chưa có dữ liệu</p></div>';
+  document.getElementById('dash-categories').innerHTML = ch || '<div class="empty"><p>Chưa có dữ liệu</p></div>';
 }
 
-// ═══════════════════════════════════════════
-// HEADER
-// ═══════════════════════════════════════════
 function updateHeader() {
-  const expenses = getExpenses();
-  const now = new Date();
-  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const totalSpent = expenses.filter(e => new Date(e.date) >= weekAgo).reduce((s, e) => s + e.amount, 0);
-  const remain = WEEKLY_BUDGET - totalSpent;
-  
-  document.getElementById('header-weekly').textContent = '¥' + totalSpent.toLocaleString();
-  const remainEl = document.getElementById('header-remain');
-  remainEl.textContent = '¥' + remain.toLocaleString();
-  remainEl.style.color = remain < 0 ? 'var(--over)' : '#C6EFCE';
+  const ex = getExpenses(), now = new Date(), wk = new Date(now.getTime()-7*86400000);
+  const ts = ex.filter(e => new Date(e.date) >= wk).reduce((s,e) => s+e.amount, 0);
+  const rm = WEEKLY_BUDGET - ts;
+  document.getElementById('header-weekly').textContent = '¥'+ts.toLocaleString();
+  const re = document.getElementById('header-remain');
+  re.textContent = '¥'+rm.toLocaleString();
+  re.style.color = rm < 0 ? 'var(--red)' : '#00E5A0';
 }
 
-// ═══════════════════════════════════════════
-// INIT
 // ═══════════════════════════════════════════
 initLogin();
 document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
