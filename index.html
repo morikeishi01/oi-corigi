@@ -238,7 +238,7 @@ body {
 <div id="login-screen" class="login-screen">
   <div class="logo">🏮</div>
   <h1 id="login-title">Oi Corigi</h1>
-  <div class="sub" id="login-sub">💖 家族の予算管理 ✨</div>
+  <div class="sub" id="login-sub">💖 Ngân sách gia đình ✨</div>
   <div class="pin-box" id="pin-dots">
     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
   </div>
@@ -253,72 +253,70 @@ body {
     <span class="sync-dot" id="sync-dot"></span>
     <span id="sync-text">オフライン</span>
   </div>
-  <div class="login-link" id="login-link" onclick="resetPin()">パスワードをお忘れですか？</div>
+  <div class="login-link" id="login-link" onclick="resetPin()">Quên mã PIN?</div>
 </div>
 
 <!-- ═══ APP ═══ -->
 <div id="app" style="display:none">
 
 <div class="header">
-  <button class="logout-btn" onclick="logout()">Logout</button>
+  <button class="logout-btn" onclick="logout()">Đăng xuất</button>
   <span class="sync-badge" id="sync-badge">☁️ Sync</span>
   <h1>Oi Corigi 🏮</h1>
-  <div class="sub">¥100,000 + ¥16,691 Amazon</div>
+  <div class="sub">¥100,000 siêu thị + ¥16,691 Amazon</div>
   <div class="budget-row">
-    <div class="budget-item"><div class="label">支出</div><div class="val" id="header-weekly" style="color:#FF8A9E">¥0</div></div>
-    <div class="budget-item"><div class="label">残り</div><div class="val" id="header-remain" style="color:#00E5A0">¥23,000</div></div>
+    <div class="budget-item"><div class="label">Đã chi</div><div class="val" id="header-weekly" style="color:#FF8A9E">¥0</div></div>
+    <div class="budget-item"><div class="label">Còn lại</div><div class="val" id="header-remain" style="color:#00E5A0">¥23,000</div></div>
   </div>
 </div>
 
 <div class="page active" id="page-meals">
-  <div class="card"><div class="card-header"><div class="card-title">🍽️ 献立</div><div class="card-badge">7日間</div></div><div id="meal-plan"></div></div>
+  <div class="card"><div class="card-header"><div class="card-title">🍽️ 献立</div><div class="card-badge">7 ngày</div></div><div id="meal-plan"></div></div>
 </div>
 
 <div class="page" id="page-shop">
-  <div class="card"><div class="card-header"><div class="card-title shop-title" data-key="shopMain">🛒 メイン — 土曜日</div><div class="card-badge">OK</div></div><div id="shop-main"></div><div class="shop-total"><span class="shop-total-label" data-key="shopTotal">計</span>: <span id="shop-main-total">¥0</span></div></div>
-  <div class="card"><div class="card-header"><div class="card-title shop-title" data-key="shopAdd">🛒 追加 — 水曜日</div></div><div id="shop-sup"></div><div class="shop-total"><span class="shop-total-label" data-key="shopTotal">計</span>: <span id="shop-sup-total">¥0</span></div></div>
-  <div class="card"><div class="card-header"><div class="card-title shop-title" data-key="shopAmazon">📦 Amazon</div><div class="card-badge" data-key="badgeMonth">今月</div></div><div id="amazon-list"></div></div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 Chuyến chính — Thứ 7</div><div class="card-badge">OK</div></div><div id="shop-main"></div><div class="shop-total">Tổng: <span id="shop-main-total">¥0</span></div></div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 Bổ sung — Thứ 4</div></div><div id="shop-sup"></div><div class="shop-total">Tổng: <span id="shop-sup-total">¥0</span></div></div>
+  <div class="card"><div class="card-header"><div class="card-title">📦 Amazon</div><div class="card-badge">Tháng</div></div><div id="amazon-list"></div></div>
 </div>
 
 <div class="page" id="page-expense">
   <div class="card">
-    <div class="card-title">💰 支出を追加</div>
-    <div class="form-group"><label>日付</label><input type="date" id="exp-date" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:#FAFAF8;font-family:inherit"></div>
-    <div class="form-group"><label>金額 (¥)</label><input type="number" id="exp-amount" placeholder="金額を入力..." min="1" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:#FAFAF8;font-family:inherit"></div>
+    <div class="card-title">💰 Thêm khoản chi</div>
+    <div class="form-group"><label>Ngày</label><input type="date" id="exp-date" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:#FAFAF8;font-family:inherit"></div>
+    <div class="form-group"><label>Số tiền (¥)</label><input type="number" id="exp-amount" placeholder="Nhập số tiền..." min="1" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:#FAFAF8;font-family:inherit"></div>
     <div class="form-row" style="margin-bottom:12px">
-      <select id="exp-store" style="flex:1"><option value="">🏪 お店</option><option>OK新用賀</option><option>FUJI用賀</option><option>York Mart</option><option>My Basket</option><option>Seven-Eleven</option><option>Hanamasa</option><option>その他</option></select>
-      <select id="exp-cat" style="flex:1"><option value="">📂 カテゴリー</option><option>Thịt, cá, hải sản</option><option>Rau củ quả</option><option>Sữa, trứng, đậu</option><option>Gạo, mì, bánh mì</option><option>Gia vị, dầu ăn</option><option>Snack, đồ uống</option><option>Trái cây</option><option>Đồ khô, đồ hộp</option><option>Khác</option></select>
+      <select id="exp-store" style="flex:1"><option value="">🏪 Cửa hàng</option><option>OK Shin-Yoga</option><option>FUJI Yoga</option><option>York Mart</option><option>My Basket</option><option>Seven-Eleven</option><option>Hanamasa</option><option>Khác</option></select>
+      <select id="exp-cat" style="flex:1"><option value="">📂 Phân loại</option><option>Thịt, cá, hải sản</option><option>Rau củ quả</option><option>Sữa, trứng, đậu</option><option>Gạo, mì, bánh mì</option><option>Gia vị, dầu ăn</option><option>Snack, đồ uống</option><option>Trái cây</option><option>Đồ khô, đồ hộp</option><option>Khác</option></select>
     </div>
-    <button class="btn btn-primary" onclick="addExpense()">✓ 追加する</button>
+    <button class="btn btn-primary" onclick="addExpense()">✓ Thêm</button>
   </div>
-  <div class="card"><div class="card-header"><div class="card-title">📝 履歴</div></div><div id="expense-list"><div class="empty"><div class="icon">📋</div><p>まだ支出がありません</p></div></div></div>
+  <div class="card"><div class="card-header"><div class="card-title">📝 Lịch sử</div></div><div id="expense-list"><div class="empty"><div class="icon">📋</div><p>Chưa có khoản chi nào</p></div></div></div>
 </div>
 
 <div class="page" id="page-settings">
   <div class="stat-row">
-    <div class="stat-box"><div class="label">支出</div><div class="value" id="dash-spent" style="color:var(--red)">¥0</div></div>
-    <div class="stat-box"><div class="label">予算</div><div class="value" style="color:var(--accent2)">¥23k</div></div>
+    <div class="stat-box"><div class="label">Đã chi</div><div class="value" id="dash-spent" style="color:var(--red)">¥0</div></div>
+    <div class="stat-box"><div class="label">Ngân sách</div><div class="value" style="color:var(--accent2)">¥23k</div></div>
   </div>
   <div class="card">
-    <div class="card-title">📊 進捗</div>
+    <div class="card-title">📊 Tiến độ</div>
     <div class="progress-wrap">
       <div class="progress-label"><span id="dash-progress-label">0%</span><span>¥23,000</span></div>
       <div class="progress-bar"><div class="fill good" id="dash-progress" style="width:0%"></div></div>
     </div>
   </div>
-  <div class="card"><div class="card-title">📂 カテゴリー</div><div id="dash-categories"></div></div>
+  <div class="card"><div class="card-title">📂 Phân loại</div><div id="dash-categories"></div></div>
   <div class="card">
-    <div class="card-title">⚙️ 設定</div>
-    <div class="setting-row"><span class="s-label">🇯🇵 日本語 ⇄ 🇻🇳 Tiếng Việt</span>
-      <button class="s-btn" onclick="setLang(currentLang==='ja'?'vi':'ja')">切り替え</button></div>
-    <div class="setting-row"><span class="s-label">PINを変更</span><button class="s-btn" onclick="changePin()">変更</button></div>
-    <div class="setting-row"><span class="s-label">データをエクスポート</span><button class="s-btn" onclick="exportData()">📥 出力</button></div>
-    <div class="setting-row"><span class="s-label">データを削除</span><button class="s-btn danger" onclick="resetAll()">🗑️ 削除</button></div>
+    <div class="card-title">⚙️ Cài đặt</div>
+    <div class="setting-row"><span class="s-label">Đổi mã PIN</span><button class="s-btn" onclick="changePin()">Đổi</button></div>
+    <div class="setting-row"><span class="s-label">Xuất dữ liệu</span><button class="s-btn" onclick="exportData()">📥 Xuất</button></div>
+    <div class="setting-row"><span class="s-label">Xóa dữ liệu</span><button class="s-btn danger" onclick="resetAll()">🗑️ Xóa</button></div>
   </div>
   <div class="card">
     <div class="text-center text-xs text-gray-400">
       <p class="font-bold text-gray-500 mb-1">お買い物 — Oi Corigi</p>
-      <p>🛒 Firebase Sync — 家族で共有</p>
+      <p>🛒 Firebase Sync — Cho gia đình</p>
     </div>
   </div>
 </div>
@@ -326,10 +324,10 @@ body {
 <button class="fab" id="fab" onclick="quickAdd()">+</button>
 
 <nav class="tab-bar">
-  <button class="tab-btn active" data-page="meals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="tab-label" data-key="tabMeals">献立</span></button>
-  <button class="tab-btn" data-page="shop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span class="tab-label" data-key="tabShop">買い物</span></button>
-  <button class="tab-btn" data-page="expense"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span class="tab-label" data-key="tabExpense">支出</span></button>
-  <button class="tab-btn" data-page="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="tab-label" data-key="tabSettings">設定</span></button>
+  <button class="tab-btn active" data-page="meals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Thực đơn</button>
+  <button class="tab-btn" data-page="shop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Mua sắm</button>
+  <button class="tab-btn" data-page="expense"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Chi tiêu</button>
+  <button class="tab-btn" data-page="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Cài đặt</button>
 </nav>
 
 </div>
@@ -352,118 +350,6 @@ const firebaseConfig = {
 let db = null;
 let firebaseReady = false;
 let familyCode = '';
-let currentLang = localStorage.getItem('oi_lang') || 'ja';
-
-// ═══════════════════════════════════════════
-// i18n — 日本語 ⇄ Tiếng Việt
-// ═══════════════════════════════════════════
-const L = {
-  ja: { loginTitle: 'Oi Corigi', loginSubCreate: '家族コードを設定してください', loginSubConfirm: 'もう一度入力してください', loginSubEnter: 'PINを入力してください', loginForgot: 'パスワードをお忘れですか？', loginSuccess: '✓ 設定完了！', loginMismatch: '一致しません！', loginWrong: 'コードが違います', syncOn: '☁️ 同期中', syncOff: '📱 オフライン', syncLive: '☁️ LIVE', syncLocal: '📱 LOCAL', tabMeals: '献立', tabShop: '買い物', tabExpense: '支出', tabSettings: '設定', headerBudget: '¥100,000 + ¥16,691 Amazon', headerSpent: '支出', headerRemain: '残り', badgeWeek: '7日間', badgeMain: 'メイン', badgeAdd: '追加', badgeMonth: '今月', shopMain: '🛒 メイン — 土曜日', shopAdd: '🛒 追加 — 水曜日', shopAmazon: '📦 Amazon', shopTotal: '計', mealTotal: '合計', mealBudget: '/ ¥23,000', expTitle: '💰 支出を追加', expDate: '日付', expAmount: '金額 (¥)', expAmountPlaceholder: '金額を入力...', expStore: '🏪 お店', expStoreOther: 'その他', expCat: '📂 カテゴリー', expAdd: '✓ 追加する', expHistory: '📝 履歴', expEmpty: 'まだ支出がありません', expAdded: '✓ 追加しました', expDeleted: '削除しました', expAmountWarn: '金額を入力してください！', dashTitle: '📊 進捗', dashCat: '📂 カテゴリー', dashNoData: 'データがありません', setTitle: '設定', setChangePin: 'PINを変更', setExport: 'データをエクスポート', setExportBtn: '📥 出力', setDelete: 'データを削除', setDeleteBtn: '🗑️ 削除', setExportDone: 'エクスポート完了！', setDeleteDone: '削除しました！', setFooter: '🛒 Firebase Sync — 家族で共有', setNewPin: '新しいコード', setNewPinSub: '4桁のコードを入力', setPinChange: '家族コードを変更しますか？', setDeleteConfirm: 'すべてのデータを削除しますか？', logout: 'Logout', fab: '+', storeList: ['OK新用賀','FUJI用賀','York Mart','My Basket','Seven-Eleven','Hanamasa','その他'] },
-  vi: { loginTitle: 'Oi Corigi', loginSubCreate: 'Tạo mã gia đình 4 số', loginSubConfirm: 'Nhập lại để xác nhận', loginSubEnter: 'Nhập mã PIN để vào', loginForgot: 'Quên mã PIN?', loginSuccess: '✓ Thành công!', loginMismatch: 'Không khớp!', loginWrong: 'Sai mã PIN', syncOn: '☁️ Đang đồng bộ', syncOff: '📱 Ngoại tuyến', syncLive: '☁️ LIVE', syncLocal: '📱 LOCAL', tabMeals: 'Thực đơn', tabShop: 'Mua sắm', tabExpense: 'Chi tiêu', tabSettings: 'Cài đặt', headerBudget: '¥100,000 siêu thị + ¥16,691 Amazon', headerSpent: 'Đã chi', headerRemain: 'Còn lại', badgeWeek: '7 ngày', badgeMain: 'Chính', badgeAdd: 'Thêm', badgeMonth: 'Tháng', shopMain: '🛒 Chuyến chính — Thứ 7', shopAdd: '🛒 Bổ sung — Thứ 4', shopAmazon: '📦 Amazon', shopTotal: 'Tổng', mealTotal: 'Tổng tuần', mealBudget: '/ ¥23,000', expTitle: '💰 Thêm khoản chi', expDate: 'Ngày', expAmount: 'Số tiền (¥)', expAmountPlaceholder: 'Nhập số tiền...', expStore: '🏪 Cửa hàng', expStoreOther: 'Khác', expCat: '📂 Phân loại', expAdd: '✓ Thêm', expHistory: '📝 Lịch sử', expEmpty: 'Chưa có khoản chi nào', expAdded: '✓ Đã thêm', expDeleted: 'Đã xóa', expAmountWarn: 'Nhập số tiền!', dashTitle: '📊 Tiến độ', dashCat: '📂 Phân loại', dashNoData: 'Chưa có dữ liệu', setTitle: 'Cài đặt', setChangePin: 'Đổi mã PIN', setExport: 'Xuất dữ liệu', setExportBtn: '📥 Xuất', setDelete: 'Xóa dữ liệu', setDeleteBtn: '🗑️ Xóa', setExportDone: 'Đã xuất!', setDeleteDone: 'Đã xóa!', setFooter: '🛒 Firebase Sync — Cho gia đình', setNewPin: 'Mã PIN mới', setNewPinSub: 'Nhập 4 số mới', setPinChange: 'Đổi mã gia đình?', setDeleteConfirm: 'Xóa tất cả dữ liệu?', logout: 'Đăng xuất', fab: '+', storeList: ['OK Shin-Yoga','FUJI Yoga','York Mart','My Basket','Seven-Eleven','Hanamasa','Khác'],
-  // Meal translations
-  '月曜日': 'Thứ 2', '火曜日': 'Thứ 3', '水曜日': 'Thứ 4', '木曜日': 'Thứ 5', '金曜日': 'Thứ 6', '土曜日': 'Thứ 7', '日曜日': 'Chủ nhật',
-  'ご飯 + 卵焼き + 味噌汁': 'Cơm + trứng ốp + miso + sữa', 'ご飯 + 鶏肉炒め': 'Cơm + gà xào ớt chuông', '鯖の塩焼き + 野菜': 'Cá saba nướng + rau luộc',
-  'パン + ゆで卵 + 牛乳': 'Bánh mì + trứng luộc + sữa', 'うどん + 豚肉野菜炒め': 'Mì udon + thịt lợn xào rau', '豆腐の照り焼き + サラダ': 'Đậu hũ sốt teriyaki + salad',
-  'ご飯 + 納豆 + 味噌汁': 'Cơm + natto + miso + trứng', '牛カルビ炒め + キムチ': 'Thịt bò xào kim chi + dưa', 'サーモン刺身 + 巻き寿司': 'Sashimi cá hồi + cơm cuộn',
-  'パン + ヨーグルト + バナナ': 'Bánh mì + yogurt + chuối', 'チャーハン + 卵 + 鶏肉': 'Cơm rang + trứng + thịt gà', '鶏照り焼き + 味噌汁': 'Gà teriyaki + canh miso',
-  'ご飯 + 卵 + 海苔': 'Cơm + trứng + rong biển', 'そうめん + 鶏ささみ': 'Mì somen + thịt gà xé', '塩鮭 + 焼き野菜': 'Cá hồi muối + rau củ nướng',
-  'パンケーキ + フルーツ': 'Pancake + trái cây + sữa', 'ご飯 + スペアリブ': 'Cơm + sườn nướng + dưa cải', '鍋 (鶏+野菜+豆腐+きのこ)': 'Lẩu nhỏ (gà + rau + đậu hũ + nấm)',
-  'パン + 目玉焼き + 牛乳': 'Bánh mì + trứng ốp + sữa', 'カレーライス': 'Cơm cà ri gà', 'プルコギ + キムチ + サラダ': 'Bulgogi bò + kim chi + salad',
-  // Shop translations
-  'お米 (1.5kg)': 'Gạo (1.5kg)', '鶏もも肉': 'Thịt gà đùi', '鶏むね肉': 'Thịt gà ức', '豚肉ロース': 'Thịt lợn nạc', '牛肉': 'Thịt bò nạc',
-  '鯖・あじ': 'Cá saba/aji', 'サーモン': 'Cá hồi filê', '卵 (10個)': 'Trứng gà (10 quả)', '豆腐': 'Đậu hũ', '牛乳 1L': 'Sữa tươi 1L',
-  'ヨーグルト': 'Yogurt 400g', 'チーズ': 'Phô mai', '食パン': 'Bánh mì sandwich', 'うどん/そうめん': 'Mì udon/somen', '青菜/ほうれん草': 'Rau cải / spinach',
-  'トマト+きゅうり': 'Cà chua + dưa chuột', '玉ねぎ・人参・じゃがいも': 'Hành tây, cà rốt, khoai', 'きのこ': 'Nấm các loại', '季節の果物': 'Trái cây theo mùa',
-  'バナナ': 'Chuối', '納豆': 'Natto', '味噌・醤油': 'Miso, xì dầu',
-  '肉・魚 追加': 'Thịt/cá bổ sung', '野菜 追加': 'Rau bổ sung', '果物 追加': 'Trái cây bổ sung', '牛乳+卵+ヨーグルト': 'Sữa + trứng + yogurt',
-  'お菓子': 'Snack, bánh nhẹ', '予備': 'Linh hoạt / dự phòng',
-  '森山A2牛乳 200ml×12': 'Sữa Moriyama A2 ×12', '森永ミルク生活GOLD': 'Sữa bột Morinaga GOLD', 'アーモンド効果×24': 'Sữa hạnh nhân Glico ×24',
-  'い・ろ・は・す×24': 'Nước Irohasu ×24', 'GREEN DA・KA・RA×24': 'Green Da-Ka-Ra ×24', 'リステリン 1000ml': 'Listerine 1000ml',
-  'NMN 400mg 30粒': 'NMN 400mg 30 viên', 'レノア ハピネス': 'Lenor nước xả vải', 'ForBack 薬用石鹸': 'Xà phòng For Back' }
-};
-
-function t(key) { return (L[currentLang] && L[currentLang][key]) || (L.ja[key]) || key; }
-function tStore(i) { const list = t('storeList'); return list[i] || ''; }
-
-function setLang(lang) {
-  currentLang = lang;
-  localStorage.setItem('oi_lang', lang);
-  const ref = getDocRef();
-  if (ref) ref.set({ lang: lang }, { merge: true }).catch(() => {});
-  location.reload();
-}
-
-function initLang() {
-  // Check Firebase for lang preference
-  const ref = getDocRef();
-  if (ref) {
-    ref.get().then(doc => {
-      if (doc.exists && doc.data().lang) {
-        currentLang = doc.data().lang;
-        localStorage.setItem('oi_lang', currentLang);
-        location.reload();
-      }
-    }).catch(() => {});
-  }
-}
-
-function updateAllText() {
-  // Update all tab labels
-  document.querySelectorAll('.tab-label').forEach(el => {
-    const key = el.dataset.key;
-    if (key) el.textContent = t(key);
-  });
-  // Update login screen
-  const loginSub = document.getElementById('login-sub');
-  if (loginSub && pinMode === 'create') loginSub.textContent = t('loginSubCreate');
-  if (loginSub && pinMode === 'confirm') loginSub.textContent = t('loginSubConfirm');
-  if (loginSub && pinMode === 'enter') loginSub.textContent = t('loginSubEnter');
-  const loginLink = document.getElementById('login-link');
-  if (loginLink) loginLink.textContent = t('loginForgot');
-  // Update header
-  const hSub = document.querySelector('.header .sub');
-  if (hSub) hSub.textContent = t('headerBudget');
-  const hSpent = document.querySelector('.header .budget-item:first-child .label');
-  if (hSpent) hSpent.textContent = t('headerSpent');
-  const hRemain = document.querySelector('.header .budget-item:last-child .label');
-  if (hRemain) hRemain.textContent = t('headerRemain');
-  // Update logout button
-  const logoutBtn = document.querySelector('.header .logout-btn');
-  if (logoutBtn) logoutBtn.textContent = t('logout');
-  // Update expense form
-  const expTitle = document.querySelector('#page-expense .card-title');
-  if (expTitle) expTitle.textContent = t('expTitle');
-  const expDateInput = document.getElementById('exp-date');
-  if (expDateInput) expDateInput.previousElementSibling.textContent = t('expDate');
-  const expAmtInput = document.getElementById('exp-amount');
-  if (expAmtInput) { expAmtInput.previousElementSibling.textContent = t('expAmount'); expAmtInput.placeholder = t('expAmountPlaceholder'); }
-  const expStore = document.getElementById('exp-store');
-  if (expStore) { expStore.options[0].textContent = t('expStore'); expStore.options[expStore.options.length-1].textContent = t('expStoreOther'); }
-  const expCat = document.getElementById('exp-cat');
-  if (expCat) expCat.options[0].textContent = t('expCat');
-  const expAddBtn = document.querySelector('#page-expense .btn-primary');
-  if (expAddBtn) expAddBtn.textContent = t('expAdd');
-  const expHistory = document.querySelector('#page-expense .card:last-child .card-title');
-  if (expHistory) expHistory.textContent = t('expHistory');
-  // Update settings
-  const setTitle = document.querySelector('#page-settings .card:first-child .card-title');
-  if (setTitle) setTitle.textContent = t('setTitle');
-  // Update dashboard
-  const dashTitle = document.querySelector('#page-settings .card:nth-child(2) .card-title');
-  if (dashTitle) dashTitle.textContent = t('dashTitle');
-  const dashCat = document.querySelector('#page-settings .card:nth-child(3) .card-title');
-  if (dashCat) dashCat.textContent = t('dashCat');
-  // Update meals
-  const mealBadge = document.querySelector('#page-meals .card-badge');
-  if (mealBadge) mealBadge.textContent = t('badgeWeek');
-  // Update shop
-  renderShop();
-  // Update sync status
-  updateSyncStatus(firebaseReady);
-  // Update footer
-  const footer = document.querySelector('#page-settings .card:last-child p:last-child');
-  if (footer) footer.textContent = t('setFooter');
-}
 
 function initFirebase() {
   try {
@@ -489,11 +375,11 @@ function updateSyncStatus(online) {
   const text = document.getElementById('sync-text');
   if (dot) {
     dot.className = 'sync-dot ' + (online ? 'online' : 'offline');
-    text.textContent = online ? t('syncOn') : t('syncOff');
+    text.textContent = online ? '☁️ Đang đồng bộ' : '📱 Ngoại tuyến';
   }
   const badge = document.getElementById('sync-badge');
   if (badge) {
-    badge.textContent = online ? t('syncLive') : t('syncLocal');
+    badge.textContent = online ? '☁️ LIVE' : '📱 LOCAL';
     badge.style.background = online ? 'rgba(0,184,148,0.3)' : 'rgba(233,69,96,0.3)';
     badge.style.color = online ? '#00E5A0' : '#FF8A9E';
   }
@@ -576,7 +462,7 @@ async function initLogin() {
   const t = document.getElementById('login-title'), s = document.getElementById('login-sub');
   const link = document.getElementById('login-link');
   if (!stored) {
-    pinMode = 'create'; t.textContent = 'Oi Corigi'; s.textContent = '家族コードを設定してください';
+    pinMode = 'create'; t.textContent = 'Oi Corigi'; s.textContent = 'Tạo mã gia đình 4 số';
     link.style.display = 'none';
   } else {
     pinMode = 'enter'; link.style.display = 'block';
@@ -602,18 +488,18 @@ async function handlePin(n) {
   pinInput += n; updateDots();
   if (pinInput.length === 4) {
     if (pinMode === 'create') { pinCreate = pinInput; pinInput = ''; pinMode = 'confirm';
-      document.getElementById('login-sub').textContent = 'もう一度入力してください'; updateDots(); }
+      document.getElementById('login-sub').textContent = 'Nhập lại để xác nhận'; updateDots(); }
     else if (pinMode === 'confirm') {
       if (pinInput === pinCreate) {
         localStorage.setItem(PIN_KEY, await hashPin(pinInput));
-        document.getElementById('login-msg').textContent = '✓ 設定完了！';
+        document.getElementById('login-msg').textContent = '✓ Thành công!';
         setTimeout(loginSuccess, 400);
-      } else { document.getElementById('login-msg').textContent = '一致しません！'; pinInput = ''; pinMode = 'create';
-        document.getElementById('login-sub').textContent = '家族コードを設定してください'; shake(); updateDots(); }
+      } else { document.getElementById('login-msg').textContent = 'Không khớp!'; pinInput = ''; pinMode = 'create';
+        document.getElementById('login-sub').textContent = 'Tạo mã gia đình 4 số'; shake(); updateDots(); }
     } else {
       if (await hashPin(pinInput) === localStorage.getItem(PIN_KEY)) {
         loginSuccess();
-      } else { document.getElementById('login-msg').textContent = 'コードが違います'; pinInput = ''; shake(); updateDots(); }
+      } else { document.getElementById('login-msg').textContent = 'Sai mã PIN'; pinInput = ''; shake(); updateDots(); }
     }
   }
 }
@@ -638,7 +524,6 @@ async function loginSuccess() {
     } catch(e) { console.warn('Firebase load failed'); }
   }
   listenToFirebase();
-  updateAllText();
   renderMeals(); renderShop(); renderExpenses(); updateHeader();
   document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
 }
@@ -653,7 +538,7 @@ function logout() {
 }
 
 function resetPin() {
-  if (confirm('すべてのデータを削除しますか？')) { localStorage.clear(); pinInput = ''; pinMode = 'create'; pinCreate = '';
+  if (confirm('Xóa tất cả dữ liệu?')) { localStorage.clear(); pinInput = ''; pinMode = 'create'; pinCreate = '';
     document.getElementById('login-title').textContent = 'Oi Corigi';
     document.getElementById('login-sub').textContent = '家族コードを設定してください';
     document.getElementById('login-link').style.display = 'none'; updateDots(); }
@@ -673,11 +558,11 @@ function exportData() {
   const d = { expenses: getExpensesLocal(), shop: getShopLocal(), exportedAt: new Date().toISOString() };
   const b = new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'oi-corigi-backup-'+new Date().toISOString().split('T')[0]+'.json'; a.click();
-  showToast('エクスポート完了！');
+  showToast('Đã xuất!');
 }
 
 function resetAll() {
-  if(confirm('すべてのデータを削除しますか？')){
+  if(confirm('Xóa tất cả dữ liệu?')){
     localStorage.removeItem('oi_expenses'); localStorage.removeItem('oi_shop');
     const ref = getDocRef();
     if (ref) ref.delete().catch(() => {});
@@ -705,37 +590,37 @@ const CAT_COLORS = {
 };
 
 const meals = [
-  { day: '月曜日', items: [{icon:'🌅',text:'ご飯 + 卵焼き + 味噌汁',price:400},{icon:'☀️',text:'ご飯 + 鶏肉炒め',price:600},{icon:'🌙',text:'鯖の塩焼き + 野菜',price:700}]},
-  { day: '火曜日', items: [{icon:'🌅',text:'パン + ゆで卵 + 牛乳',price:350},{icon:'☀️',text:'うどん + 豚肉野菜炒め',price:550},{icon:'🌙',text:'豆腐の照り焼き + サラダ',price:600}]},
-  { day: '水曜日', items: [{icon:'🌅',text:'ご飯 + 納豆 + 味噌汁',price:350},{icon:'☀️',text:'牛カルビ炒め + キムチ',price:800},{icon:'🌙',text:'サーモン刺身 + 巻き寿司',price:850}]},
-  { day: '木曜日', items: [{icon:'🌅',text:'パン + ヨーグルト + バナナ',price:300},{icon:'☀️',text:'チャーハン + 卵 + 鶏肉',price:500},{icon:'🌙',text:'鶏照り焼き + 味噌汁',price:650}]},
-  { day: '金曜日', items: [{icon:'🌅',text:'ご飯 + 卵 + 海苔',price:350},{icon:'☀️',text:'そうめん + 鶏ささみ',price:500},{icon:'🌙',text:'塩鮭 + 焼き野菜',price:750}]},
-  { day: '土曜日', items: [{icon:'🌅',text:'パンケーキ + フルーツ',price:400},{icon:'☀️',text:'ご飯 + スペアリブ',price:750},{icon:'🌙',text:'鍋 (鶏+野菜+豆腐+きのこ)',price:900}]},
-  { day: '日曜日', items: [{icon:'🌅',text:'パン + 目玉焼き + 牛乳',price:400},{icon:'☀️',text:'カレーライス',price:600},{icon:'🌙',text:'プルコギ + キムチ + サラダ',price:850}]}
+  { day: 'Thứ 2', items: [{icon:'🌅',text:'Cơm + trứng ốp + miso + sữa',price:400},{icon:'☀️',text:'Cơm + gà xào ớt chuông',price:600},{icon:'🌙',text:'Cá saba nướng + rau luộc',price:700}]},
+  { day: 'Thứ 3', items: [{icon:'🌅',text:'Bánh mì + trứng luộc + sữa',price:350},{icon:'☀️',text:'Mì udon + thịt lợn xào rau',price:550},{icon:'🌙',text:'Đậu hũ sốt teriyaki + salad',price:600}]},
+  { day: 'Thứ 4', items: [{icon:'🌅',text:'Cơm + natto + miso + trứng',price:350},{icon:'☀️',text:'Thịt bò xào kim chi + dưa',price:800},{icon:'🌙',text:'Sashimi cá hồi + cơm cuộn',price:850}]},
+  { day: 'Thứ 5', items: [{icon:'🌅',text:'Bánh mì + yogurt + chuối',price:300},{icon:'☀️',text:'Cơm rang + trứng + thịt gà',price:500},{icon:'🌙',text:'Gà teriyaki + canh miso',price:650}]},
+  { day: 'Thứ 6', items: [{icon:'🌅',text:'Cơm + trứng + rong biển',price:350},{icon:'☀️',text:'Mì somen + thịt gà xé',price:500},{icon:'🌙',text:'Cá hồi muối + rau củ nướng',price:750}]},
+  { day: 'Thứ 7', items: [{icon:'🌅',text:'Pancake + trái cây + sữa',price:400},{icon:'☀️',text:'Cơm + sườn nướng + dưa cải',price:750},{icon:'🌙',text:'Lẩu nhỏ (gà + rau + đậu hũ + nấm)',price:900}]},
+  { day: 'Chủ nhật', items: [{icon:'🌅',text:'Bánh mì + trứng ốp + sữa',price:400},{icon:'☀️',text:'Cơm cà ri gà',price:600},{icon:'🌙',text:'Bulgogi bò + kim chi + salad',price:850}]}
 ];
 
 const shopMain = [
-  {name:'お米 (1.5kg)',qty:'1.5kg',price:600},{name:'鶏もも肉',qty:'800g',price:1200},{name:'鶏むね肉',qty:'400g',price:400},
-  {name:'豚肉ロース',qty:'600g',price:1200},{name:'牛肉',qty:'400g',price:2000},{name:'鯖・あじ',qty:'3尾',price:750},
-  {name:'サーモン',qty:'3切',price:1200},{name:'卵 (10個)',qty:'2パック',price:500},{name:'豆腐',qty:'4丁',price:320},
-  {name:'牛乳 1L',qty:'2本',price:400},{name:'ヨーグルト',qty:'2個',price:400},{name:'チーズ',qty:'1個',price:200},
-  {name:'食パン',qty:'2袋',price:300},{name:'うどん/そうめん',qty:'4袋',price:400},{name:'青菜/ほうれん草',qty:'3束',price:600},
-  {name:'トマト+きゅうり',qty:'1袋',price:250},{name:'玉ねぎ・人参・じゃがいも',qty:'1セット',price:400},
-  {name:'きのこ',qty:'2袋',price:300},{name:'季節の果物',qty:'5個',price:750},{name:'バナナ',qty:'1房',price:150},
-  {name:'納豆',qty:'3パック',price:240},{name:'味噌・醤油',qty:'1',price:300}
+  {name:'Gạo (1.5kg)',qty:'1.5kg',price:600},{name:'Thịt gà đùi',qty:'800g',price:1200},{name:'Thịt gà ức',qty:'400g',price:400},
+  {name:'Thịt lợn nạc',qty:'600g',price:1200},{name:'Thịt bò nạc',qty:'400g',price:2000},{name:'Cá saba/aji',qty:'3 con',price:750},
+  {name:'Cá hồi filê',qty:'3 miếng',price:1200},{name:'Trứng gà (10 quả)',qty:'2 hộp',price:500},{name:'Đậu hũ',qty:'4 hộp',price:320},
+  {name:'Sữa tươi 1L',qty:'2 hộp',price:400},{name:'Yogurt 400g',qty:'2 hộp',price:400},{name:'Phô mai',qty:'1 gói',price:200},
+  {name:'Bánh mì sandwich',qty:'2 gói',price:300},{name:'Mì udon/somen',qty:'4 gói',price:400},{name:'Rau cải / spinach',qty:'3 bó',price:600},
+  {name:'Cà chua + dưa chuột',qty:'1 gói',price:250},{name:'Hành tây, cà rốt, khoai',qty:'1 bộ',price:400},
+  {name:'Nấm các loại',qty:'2 gói',price:300},{name:'Trái cây theo mùa',qty:'5 quả',price:750},{name:'Chuối',qty:'1 nải',price:150},
+  {name:'Natto',qty:'3 hộp',price:240},{name:'Miso, xì dầu',qty:'1',price:300}
 ];
 
 const shopSup = [
-  {name:'肉・魚 追加',qty:'1',price:2000},{name:'野菜 追加',qty:'1',price:1000},
-  {name:'果物 追加',qty:'1',price:600},{name:'牛乳+卵+ヨーグルト',qty:'1',price:700},
-  {name:'お菓子',qty:'1',price:1000},{name:'予備',qty:'1',price:1700}
+  {name:'Thịt/cá bổ sung',qty:'1',price:2000},{name:'Rau bổ sung',qty:'1',price:1000},
+  {name:'Trái cây bổ sung',qty:'1',price:600},{name:'Sữa + trứng + yogurt',qty:'1',price:700},
+  {name:'Snack, bánh nhẹ',qty:'1',price:1000},{name:'Linh hoạt / dự phòng',qty:'1',price:1700}
 ];
 
 const amazonItems = [
-  {name:'森山A2牛乳 200ml×12',price:2712},{name:'森永ミルク生活GOLD',price:3789},
-  {name:'アーモンド効果×24',price:2812},{name:'い・ろ・は・す×24',price:1900},
-  {name:'GREEN DA・KA・RA×24',price:1913},{name:'リステリン 1000ml',price:988},
-  {name:'NMN 400mg 30粒',price:980},{name:'レノア ハピネス',price:882},{name:'ForBack 薬用石鹸',price:715}
+  {name:'Sữa Moriyama A2 ×12',price:2712},{name:'Sữa bột Morinaga GOLD',price:3789},
+  {name:'Sữa hạnh nhân Glico ×24',price:2812},{name:'Nước Irohasu ×24',price:1900},
+  {name:'Green Da-Ka-Ra ×24',price:1913},{name:'Listerine 1000ml',price:988},
+  {name:'NMN 400mg 30 viên',price:980},{name:'Lenor nước xả vải',price:882},{name:'Xà phòng For Back',price:715}
 ];
 
 // ═══════════════════════════════════════════
@@ -779,11 +664,11 @@ function renderMeals() {
   let h = '', wt = 0;
   meals.forEach(m => {
     const dt = m.items.reduce((s,i) => s+i.price, 0); wt += dt;
-    h += `<div class="meal-day"><div class="day-header"><span class="day-name">${t(m.day)}</span><span class="day-total">¥${dt.toLocaleString()}</span></div>`;
-    m.items.forEach(i => h += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><span class="meal-text">${t(i.text)}</span><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`);
+    h += `<div class="meal-day"><div class="day-header"><span class="day-name">${m.day}</span><span class="day-total">¥${dt.toLocaleString()}</span></div>`;
+    m.items.forEach(i => h += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><span class="meal-text">${i.text}</span><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`);
     h += `</div>`;
   });
-  h += `<div style="text-align:right;font-weight:800;padding:12px 0 0;font-size:16px;color:var(--accent2)">${t('mealTotal')}: ¥${wt.toLocaleString()} ${t('mealBudget')}</div>`;
+  h += `<div style="text-align:right;font-weight:800;padding:12px 0 0;font-size:16px;color:var(--accent2)">Tổng tuần: ¥${wt.toLocaleString()} / ¥23,000</div>`;
   document.getElementById('meal-plan').innerHTML = h;
 }
 
@@ -793,7 +678,7 @@ function renderShop() {
     let h = '', t = 0;
     items.forEach((item, i) => {
       const k = elId+'_'+i, d = c[k]; t += item.price;
-      h += `<div class="shop-item"><div class="check${d?' checked':''}" onclick="toggleShop('${k}')"></div><span class="name${d?' done':''}">${t(item.name)}</span><span class="info">${t(item.qty)||''} ¥${item.price.toLocaleString()}</span></div>`;
+      h += `<div class="shop-item"><div class="check${d?' checked':''}" onclick="toggleShop('${k}')"></div><span class="name${d?' done':''}">${item.name}</span><span class="info">${item.qty||''} ¥${item.price.toLocaleString()}</span></div>`;
     });
     document.getElementById(elId).innerHTML = h;
     document.getElementById(tId).textContent = '¥'+t.toLocaleString();
@@ -801,7 +686,7 @@ function renderShop() {
   list(shopMain, 'shop-main', 'shop-main-total');
   list(shopSup, 'shop-sup', 'shop-sup-total');
   let ah = '';
-  amazonItems.forEach(i => { ah += `<div class="shop-item"><span class="name">${t(i.name)}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`; });
+  amazonItems.forEach(i => { ah += `<div class="shop-item"><span class="name">${i.name}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`; });
   document.getElementById('amazon-list').innerHTML = ah;
 }
 
@@ -832,19 +717,19 @@ async function addExpense() {
   const d = document.getElementById('exp-date').value || new Date().toISOString().split('T')[0];
   const a = parseInt(document.getElementById('exp-amount').value);
   const s = document.getElementById('exp-store').value, c = document.getElementById('exp-cat').value;
-  if (!a || a <= 0) { showToast(t('expAmountWarn')); return; }
+  if (!a || a <= 0) { showToast('Nhập số tiền!'); return; }
   const ex = getExpensesLocal();
   ex.push({ id: Date.now().toString(), date:d, amount:a, store:s, cat:c, added:new Date().toISOString() });
   await saveExpenses(ex);
   document.getElementById('exp-amount').value = '';
-  renderExpenses(); updateHeader(); showToast(t('expAdded')+' ¥'+a.toLocaleString());
+  renderExpenses(); updateHeader(); showToast('✓ Đã thêm ¥'+a.toLocaleString());
 }
 
 async function deleteExpense(i) {
   const ex = getExpensesLocal(); ex.sort((a,b) => new Date(b.date) - new Date(a.date));
   const r = ex.splice(i,1)[0];
   await saveExpenses(ex);
-  renderExpenses(); updateHeader(); showToast(t('expDeleted')+' ¥'+r.amount.toLocaleString());
+  renderExpenses(); updateHeader(); showToast('Đã xóa ¥'+r.amount.toLocaleString());
 }
 
 function renderDashboard() {
