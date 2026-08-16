@@ -253,7 +253,6 @@ body {
     <span class="sync-dot" id="sync-dot"></span>
     <span id="sync-text">Ngoại tuyến</span>
   </div>
-  <div class="login-link" id="login-link" onclick="resetPin()">Quên mã PIN?</div>
 </div>
 
 <!-- ═══ APP ═══ -->
@@ -309,7 +308,6 @@ body {
   <div class="card"><div class="card-title">📂 Phân loại</div><div id="dash-categories"></div></div>
   <div class="card">
     <div class="card-title">⚙️ Cài đặt</div>
-    <div class="setting-row"><span class="s-label">Đổi mã PIN</span><button class="s-btn" onclick="changePin()">Đổi</button></div>
     <div class="setting-row"><span class="s-label">Xuất dữ liệu</span><button class="s-btn" onclick="exportData()">📥 Xuất</button></div>
     <div class="setting-row"><span class="s-label">Xóa dữ liệu</span><button class="s-btn danger" onclick="resetAll()">🗑️ Xóa</button></div>
   </div>
@@ -447,8 +445,10 @@ function listenToFirebase() {
 // PIN SYSTEM
 // ═══════════════════════════════════════════
 const PIN_KEY = 'oi_pin_hash';
+const LOCKED_PIN_HASH = '9868f42e212f3ff893c24ac9c84c002ff3b1ace7ff7225346bb7a1d706afe213';
+const LOCKED_FAMILY_CODE = '1412';
 const WEEKLY_BUDGET = 23000;
-let pinInput = '', pinMode = 'enter', pinCreate = '';
+let pinInput = '';
 
 async function hashPin(pin) {
   const data = new TextEncoder().encode(pin + 'oi-corigi-firebase');
@@ -458,15 +458,8 @@ async function hashPin(pin) {
 
 async function initLogin() {
   initFirebase();
-  const stored = localStorage.getItem(PIN_KEY);
   const t = document.getElementById('login-title'), s = document.getElementById('login-sub');
-  const link = document.getElementById('login-link');
-  if (!stored) {
-    pinMode = 'create'; t.textContent = 'Oi Corigi'; s.textContent = 'Tạo mã gia đình 4 số';
-    link.style.display = 'none';
-  } else {
-    pinMode = 'enter'; link.style.display = 'block';
-  }
+  s.textContent = 'Nhập mã PIN để vào';
   updateDots();
 }
 
@@ -487,19 +480,11 @@ async function handlePin(n) {
   if (pinInput.length >= 4) return;
   pinInput += n; updateDots();
   if (pinInput.length === 4) {
-    if (pinMode === 'create') { pinCreate = pinInput; pinInput = ''; pinMode = 'confirm';
-      document.getElementById('login-sub').textContent = 'Nhập lại để xác nhận'; updateDots(); }
-    else if (pinMode === 'confirm') {
-      if (pinInput === pinCreate) {
-        localStorage.setItem(PIN_KEY, await hashPin(pinInput));
-        document.getElementById('login-msg').textContent = '✓ Thành công!';
-        setTimeout(loginSuccess, 400);
-      } else { document.getElementById('login-msg').textContent = 'Không khớp!'; pinInput = ''; pinMode = 'create';
-        document.getElementById('login-sub').textContent = 'Tạo mã gia đình 4 số'; shake(); updateDots(); }
+    if (await hashPin(pinInput) === LOCKED_PIN_HASH) {
+      loginSuccess();
     } else {
-      if (await hashPin(pinInput) === localStorage.getItem(PIN_KEY)) {
-        loginSuccess();
-      } else { document.getElementById('login-msg').textContent = 'Sai mã PIN'; pinInput = ''; shake(); updateDots(); }
+      document.getElementById('login-msg').textContent = 'Sai mã PIN';
+      pinInput = ''; shake(); updateDots();
     }
   }
 }
@@ -507,7 +492,7 @@ async function handlePin(n) {
 function handleDel() { if (pinInput.length) { pinInput = pinInput.slice(0,-1); updateDots(); } }
 
 async function loginSuccess() {
-  familyCode = pinInput || pinCreate;
+  familyCode = LOCKED_FAMILY_CODE;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
 
@@ -519,7 +504,6 @@ async function loginSuccess() {
         const data = doc.data();
         if (data.expenses) localStorage.setItem('oi_expenses', JSON.stringify(data.expenses));
         if (data.shop) localStorage.setItem('oi_shop', JSON.stringify(data.shop));
-        if (data.lang) { currentLang = data.lang; localStorage.setItem('oi_lang', currentLang); }
       }
     } catch(e) { console.warn('Firebase load failed'); }
   }
@@ -529,26 +513,11 @@ async function loginSuccess() {
 }
 
 function logout() {
-  pinInput = ''; pinMode = 'enter';
+  pinInput = '';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-msg').textContent = '';
-  document.getElementById('login-link').style.display = 'block';
   updateDots();
-}
-
-function resetPin() {
-  if (confirm('Xóa tất cả dữ liệu?')) { localStorage.clear(); pinInput = ''; pinMode = 'create'; pinCreate = '';
-    document.getElementById('login-title').textContent = 'Oi Corigi';
-    document.getElementById('login-sub').textContent = '家族コードを設定してください';
-    document.getElementById('login-link').style.display = 'none'; updateDots(); }
-}
-
-function changePin() {
-  if (confirm('家族コードを変更しますか？')) { localStorage.removeItem(PIN_KEY); pinInput = ''; pinMode = 'create'; pinCreate = '';
-    document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none';
-    document.getElementById('login-title').textContent = '新しいコード'; document.getElementById('login-sub').textContent = '4桁のコードを入力';
-    document.getElementById('login-link').style.display = 'none'; updateDots(); }
 }
 
 // ═══════════════════════════════════════════
