@@ -445,10 +445,24 @@ function listenToFirebase() {
 // PIN SYSTEM
 // ═══════════════════════════════════════════
 const PIN_KEY = 'oi_pin_hash';
-const LOCKED_PIN_HASH = '9868f42e212f3ff893c24ac9c84c002ff3b1ace7ff7225346bb7a1d706afe213';
-const LOCKED_FAMILY_CODE = '1412';
+// 🔒 Bảo mật: Hash được mã hóa XOR + Base64
+const _E = '9wHZTU5dVp/673j5+notXJbS2ZWaX05REtjI+mXAkHo=';
+const _K = 'oi-corigi-2026-secure-key';
 const WEEKLY_BUDGET = 23000;
 let pinInput = '';
+let _attempts = 0;
+let _lockedUntil = 0;
+
+// Decode hash từ XOR + Base64
+function _D() {
+  const xored = Uint8Array.from(atob(_E), c => c.charCodeAt(0));
+  const key = new TextEncoder().encode(_K);
+  const keyExt = new Uint8Array((key.length * Math.ceil(xored.length / key.length))).fill(0);
+  for (let i = 0; i < keyExt.length; i++) keyExt[i] = key[i % key.length];
+  const hashBytes = new Uint8Array(xored.length);
+  for (let i = 0; i < xored.length; i++) hashBytes[i] = xored[i] ^ keyExt[i];
+  return Array.from(hashBytes).map(b => b.toString(16).padStart(2,'0')).join('');
+}
 
 async function hashPin(pin) {
   const data = new TextEncoder().encode(pin + 'oi-corigi-firebase');
@@ -461,6 +475,19 @@ async function initLogin() {
   const t = document.getElementById('login-title'), s = document.getElementById('login-sub');
   s.textContent = 'Nhập mã PIN để vào';
   updateDots();
+  _checkLock();
+}
+
+function _checkLock() {
+  const now = Date.now();
+  if (now < _lockedUntil) {
+    const mins = Math.ceil((_lockedUntil - now) / 60000);
+    document.getElementById('login-sub').textContent = `Bị khóa ${mins} phút. Thử lại sau.`;
+    document.querySelectorAll('.num-key').forEach(k => k.disabled = true);
+    return true;
+  }
+  document.querySelectorAll('.num-key').forEach(k => k.disabled = false);
+  return false;
 }
 
 function updateDots() {
@@ -477,13 +504,23 @@ function shake() {
 }
 
 async function handlePin(n) {
+  if (_checkLock()) return;
   if (pinInput.length >= 4) return;
   pinInput += n; updateDots();
   if (pinInput.length === 4) {
-    if (await hashPin(pinInput) === LOCKED_PIN_HASH) {
+    const targetHash = _D();
+    if (await hashPin(pinInput) === targetHash) {
+      _attempts = 0;
       loginSuccess();
     } else {
-      document.getElementById('login-msg').textContent = 'Sai mã PIN';
+      _attempts++;
+      if (_attempts >= 5) {
+        _lockedUntil = Date.now() + 5 * 60 * 1000; // Khóa 5 phút
+        document.getElementById('login-msg').textContent = '🔒 Bị khóa 5 phút!';
+        _checkLock();
+      } else {
+        document.getElementById('login-msg').textContent = `Sai mã PIN (${5 - _attempts} lần còn lại)`;
+      }
       pinInput = ''; shake(); updateDots();
     }
   }
@@ -492,7 +529,7 @@ async function handlePin(n) {
 function handleDel() { if (pinInput.length) { pinInput = pinInput.slice(0,-1); updateDots(); } }
 
 async function loginSuccess() {
-  familyCode = LOCKED_FAMILY_CODE;
+  familyCode = '1412';
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
 
