@@ -274,14 +274,18 @@ body {
 </div>
 
 <div class="page" id="page-shop">
-  <div class="card"><div class="card-header"><div class="card-title">🛒 Chuyến chính — Thứ 7</div><div class="card-badge">OK</div></div><div id="shop-main"></div><div class="shop-total">Tổng (chưa thuế): <span id="shop-main-total">¥0</span></div><div class="shop-total" style="color:var(--accent);font-size:18px">Tổng thực tế: <span id="shop-main-real">¥11,324</span></div></div>
-  <div class="card"><div class="card-header"><div class="card-title">🛒 Bổ sung — Thứ 4</div></div><div id="shop-sup"></div><div class="shop-total">Tổng: <span id="shop-sup-total">¥0</span></div></div>
-  <div class="card"><div class="card-header"><div class="card-title">📦 Amazon</div><div class="card-badge">Tháng</div></div><div id="amazon-list"></div></div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 Chuyến chính — Thứ 7</div><div class="card-badge">OK</div></div><div id="shop-main"></div><div class="shop-total">Tổng (chưa thuế): <span id="shop-main-total">¥0</span></div><div class="shop-total" style="color:var(--accent);font-size:18px">Tổng thực tế: <span id="shop-main-real">¥11,324</span></div>
+    <button class="btn btn-primary" onclick="completeShop('main')" style="margin-top:12px">✓ Hoàn thành Chuyến chính</button>
+  </div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 Bổ sung — Thứ 4</div></div><div id="shop-sup"></div><div class="shop-total">Tổng: <span id="shop-sup-total">¥0</span></div>
+    <button class="btn btn-primary" onclick="completeShop('sup')" style="margin-top:12px">✓ Hoàn thành Bổ sung</button>
+  </div>
+  <div class="card"><div class="card-header"><div class="card-title">📦 Amazon</div><div class="card-badge">Tháng</div></div><div id="amazon-list"></div><div class="shop-total">Tổng: <span id="amazon-total">¥0</span></div>
+    <button class="btn btn-primary" onclick="completeShop('amazon')" style="margin-top:12px">✓ Hoàn thành Amazon</button>
+  </div>
   <div class="card" id="shop-complete-card">
     <div style="text-align:center;padding:8px 0">
-      <div style="font-size:14px;color:var(--text2);margin-bottom:12px">Đã mua xong? Bấm để ghi chi tiêu</div>
-      <button class="btn btn-primary" onclick="completeShop()" style="max-width:300px;margin:0 auto">✓ Hoàn thành mua sắm</button>
-      <div id="shop-savings" style="margin-top:16px;display:none">
+      <div id="shop-savings" style="display:none">
         <div style="font-size:24px;font-weight:800;color:var(--green)">🎉 Tiết kiệm <span id="savings-amount">¥0</span></div>
         <div style="font-size:13px;color:var(--text2);margin-top:4px">so với ngân sách tuần ¥23,000</div>
       </div>
@@ -702,9 +706,13 @@ function renderShop() {
   }
   list(shopMain, 'shop-main', 'shop-main-total');
   list(shopSup, 'shop-sup', 'shop-sup-total');
-  let ah = '';
-  amazonItems.forEach(i => { ah += `<div class="shop-item"><span class="name">${i.name}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`; });
+  let ah = '', at = 0;
+  amazonItems.forEach((i, idx) => { 
+    const k = 'amazon_'+idx, d = c[k]; at += i.price;
+    ah += `<div class="shop-item"><div class="check${d?' checked':''}" onclick="toggleShop('${k}')"></div><span class="name${d?' done':''}">${i.name}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`; 
+  });
   document.getElementById('amazon-list').innerHTML = ah;
+  document.getElementById('amazon-total').textContent = '¥'+at.toLocaleString();
 }
 
 async function toggleShop(k) {
@@ -713,28 +721,42 @@ async function toggleShop(k) {
   renderShop();
 }
 
-async function completeShop() {
-  // Check all items in main shop
+async function completeShop(type) {
   const c = getShopLocal();
-  shopMain.forEach((item, i) => { c['shop-main_'+i] = true; });
+  let items, prefix, amount, store, cat;
+  
+  if (type === 'main') {
+    items = shopMain; prefix = 'shop-main_';
+    amount = 11324; store = 'OK Shin-Yoga'; cat = 'Thực phẩm tổng hợp';
+  } else if (type === 'sup') {
+    items = shopSup; prefix = 'shop-sup_';
+    amount = shopSup.reduce((s, i) => s + i.price, 0);
+    store = 'OK Shin-Yoga'; cat = 'Thực phẩm bổ sung';
+  } else if (type === 'amazon') {
+    items = amazonItems; prefix = 'amazon_';
+    amount = amazonItems.reduce((s, i) => s + i.price, 0);
+    store = 'Amazon'; cat = 'Amazon';
+  }
+  
+  // Check all items in this list
+  items.forEach((item, i) => { c[prefix+i] = true; });
   await saveShopChecks(c);
   renderShop();
   
-  // Add expense (actual amount paid with tax)
-  const actualAmount = 11324;
+  // Add expense
   const ex = getExpensesLocal();
   const today = new Date().toISOString().split('T')[0];
-  ex.push({ id: Date.now().toString(), date: today, amount: actualAmount, store: 'OK Shin-Yoga', cat: 'Thực phẩm tổng hợp', added: new Date().toISOString() });
+  ex.push({ id: Date.now().toString(), date: today, amount: amount, store: store, cat: cat, added: new Date().toISOString() });
   await saveExpenses(ex);
   renderExpenses();
   updateHeader();
   
   // Show savings
-  const savings = WEEKLY_BUDGET - actualAmount;
+  const savings = WEEKLY_BUDGET - amount;
   document.getElementById('savings-amount').textContent = '¥' + savings.toLocaleString();
   document.getElementById('shop-savings').style.display = 'block';
   
-  showToast('✓ Đã hoàn thành! Chi ¥' + actualAmount.toLocaleString() + ', tiết kiệm ¥' + savings.toLocaleString());
+  showToast('✓ Đã hoàn thành ' + (type === 'main' ? 'Chuyến chính' : type === 'sup' ? 'Bổ sung' : 'Amazon') + '! Chi ¥' + amount.toLocaleString());
 }
 
 function renderExpenses() {
