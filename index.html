@@ -691,14 +691,14 @@ document.addEventListener('keydown', e => {
 const CAT_COLORS = {
   'Thịt, cá, hải sản': '#E94560', 'Rau củ quả': '#00B894', 'Sữa, trứng, đậu': '#FDCB6E',
   'Gạo, mì, bánh mì': '#E17055', 'Gia vị, dầu ăn': '#6C5CE7', 'Snack, đồ uống': '#FD79A8',
-  'Trái cây': '#00CEC9', 'Đồ khô, đồ hộp': '#636E72', 'Khác': '#B2BEC3'
+  'Trái cây': '#00CEC9', 'Đồ khô, đồ hộp': '#636E72', 'Ăn ngoài': '#FF9F43', 'Khác': '#B2BEC3'
 };
 
 const meals = [
   // Tuần 17/08 — dựa trên nguyên liệu OK Shin-Yoga (¥11,324)
   { day: 'Thứ 2', items: [{icon:'🌅',text:'Roll bread + phô mai + sữa canxi',price:350},{icon:'☀️',text:'Gà đùi xào ớt chuông ✅ (đã ăn)',price:600},{icon:'🌙',text:'Saba nướng muối + bắp cải luộc',price:760}]},
   { day: 'Thứ 3', items: [{icon:'🌅',text:'Muffin + chuối + sữa',price:300},{icon:'☀️',text:'Yakisoba bắp cải + eringi + gà',price:550},{icon:'🌙',text:'Gà đùi teriyaki + canh đậu hũ',price:700}]},
-  { day: 'Thứ 4', items: [{icon:'🌅',text:'Bánh mè + bơ + sữa',price:320},{icon:'☀️',text:'Cơm + bò nướng shintama',price:750},{icon:'🌙',text:'Mapo đậu hũ + heo xay xào',price:650}]},
+  { day: 'Thứ 4', items: [{icon:'🌅',text:'Bánh mè + bơ + sữa',price:320},{icon:'☀️',text:'Cơm + bò nướng shintama',price:750},{icon:'🌙',text:'Ăn ngoài ✅ (tối 19/08)',price:8670}]},
   { day: 'Thứ 5', items: [{icon:'🌅',text:'Roll bread + phô mai',price:300},{icon:'☀️',text:'Unadon (cơm cá chình)',price:1200},{icon:'🌙',text:'Oyakodon (gà đùi + trứng)',price:700}]},
   { day: 'Thứ 6', items: [{icon:'🌅',text:'Muffin + natto + trứng',price:350},{icon:'☀️',text:'Cơm + heo harami nướng + eringi',price:780},{icon:'🌙',text:'Heo xay xào bắp cải + cơm',price:600}]},
   { day: 'Thứ 7', items: [{icon:'🌅',text:'Bánh mè + bơ + sữa',price:320},{icon:'☀️',text:'Cơm + ức gà xào nấm',price:600},{icon:'🌙',text:'Cá chình nướng + bắp cải + rau',price:1100}]},
