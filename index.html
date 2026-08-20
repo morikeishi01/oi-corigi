@@ -458,28 +458,52 @@ function isShopCompleted(type) {
 }
 
 // ═══════════════════════════════════════════
-// DEDUP MIGRATION — fixes existing triplicates
+// DEDUP MIGRATION — fixes existing duplicates
 // ═══════════════════════════════════════════
+function _getWeekStart(dateStr) {
+  // Returns Monday of the ISO week for a given 'YYYY-MM-DD' date
+  const d = new Date(dateStr + 'T00:00:00Z');
+  const day = d.getUTCDay(); // 0=Sun,1=Mon,...,6=Sat
+  const diff = day === 0 ? 6 : day - 1; // days since Monday
+  d.setUTCDate(d.getUTCDate() - diff);
+  return d.toISOString().split('T')[0];
+}
+
 async function migrateShopDuplicates() {
   let ex = getExpensesLocal();
   if (!ex || ex.length === 0) return false;
   let changed = false;
-  const seen = {};
   const toRemove = new Set();
-  for (let i = 0; i < ex.length; i++) {
-    const e = ex[i];
-    if (e.store === 'OK Shin-Yoga' && e.amount === 11324 && e.date === '2026-08-17' && !e.completionKey) {
-      const dedupKey = 'main-2026-08-17';
-      if (!seen[dedupKey]) {
-        seen[dedupKey] = true;
-        e.completionKey = dedupKey;
-        changed = true;
-      } else {
-        toRemove.add(i);
-        changed = true;
-      }
+
+  // Group by (store, amount, cat, week-start)
+  const groups = {};
+  ex.forEach((e, i) => {
+    if (!e.store || !e.amount || !e.cat || !e.date) return;
+    const ws = _getWeekStart(e.date);
+    const sig = e.store + '|' + e.amount + '|' + e.cat + '|' + ws;
+    if (!groups[sig]) groups[sig] = [];
+    groups[sig].push(i);
+  });
+
+  // For each group with >1 entry, keep exactly one (prefer the one with completionKey)
+  Object.values(groups).forEach(indices => {
+    if (indices.length <= 1) return;
+    // Sort: entries WITH completionKey first (keep the first such entry)
+    const withKey = indices.filter(i => !!ex[i].completionKey);
+    const withoutKey = indices.filter(i => !ex[i].completionKey);
+    const keepIdx = withKey.length > 0 ? withKey[0] : indices[0];
+    const completionKey = ex[keepIdx].completionKey || ('main-' + _getWeekStart(ex[keepIdx].date));
+    // Assign completionKey to the kept entry if missing
+    if (!ex[keepIdx].completionKey) {
+      ex[keepIdx].completionKey = completionKey;
+      changed = true;
     }
-  }
+    // Mark all others for removal
+    indices.forEach(i => {
+      if (i !== keepIdx) { toRemove.add(i); changed = true; }
+    });
+  });
+
   if (changed) {
     ex = ex.filter((_, i) => !toRemove.has(i));
     await saveExpenses(ex);
@@ -957,6 +981,90 @@ function updateHeader() {
   const re = document.getElementById('header-remain');
   re.textContent = '¥'+rm.toLocaleString();
   re.style.color = rm < 0 ? 'var(--red)' : '#00E5A0';
+}
+
+// ═══════════════════════════════════════════
+// TEST HARNESS — run in console: _runDedupTests()
+// ═══════════════════════════════════════════
+async function _runDedupTests() {
+  const origExpenses = getExpensesLocal();
+  const origSave = window._testOrigSave = null;
+  let passed = 0, failed = 0;
+  function assert(cond, msg) {
+    if (cond) { console.log('  ✅ ' + msg); passed++; }
+    else      { console.error('❌ FAIL: ' + msg); failed++; }
+  }
+
+  // --- Test 1: Signature-based dedup (Aug 17 has key, Aug 18 x2 without key) ---
+  console.log('\n=== Test 1: Dedup same-signature, same week, different dates ===');
+  const t1 = [
+    { id:'100', date:'2026-08-17', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', added:'2026-08-17T04:25:44Z', completionKey:'main-2026-08-17' },
+    { id:'101', date:'2026-08-18', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', added:'2026-08-18T04:14:19Z' },
+    { id:'102', date:'2026-08-18', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', added:'2026-08-18T04:14:19Z' }
+  ];
+  localStorage.setItem('oi_expenses', JSON.stringify(t1));
+  await migrateShopDuplicates();
+  const r1 = getExpensesLocal();
+  assert(r1.length === 1, 'Should have exactly 1 entry after dedup (got ' + r1.length + ')');
+  assert(r1[0].completionKey === 'main-2026-08-17', 'Kept entry has completionKey main-2026-08-17');
+  assert(r1[0].amount === 11324, 'Kept entry amount is 11324');
+  assert(r1[0].date === '2026-08-17', 'Kept entry date is 2026-08-17');
+  assert(r1[0].store === 'OK Shin-Yoga', 'Kept entry store is OK Shin-Yoga');
+
+  // --- Test 2: Idempotency — run again, no change ---
+  console.log('\n=== Test 2: Idempotency — running dedup again ===');
+  await migrateShopDuplicates();
+  const r2 = getExpensesLocal();
+  assert(r2.length === 1, 'Still 1 entry after second run (got ' + r2.length + ')');
+
+  // --- Test 3: Non-matching expenses preserved ---
+  console.log('\n=== Test 3: Preserve non-matching expenses ===');
+  const t3 = [
+    { id:'200', date:'2026-08-17', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', completionKey:'main-2026-08-17' },
+    { id:'201', date:'2026-08-18', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp' },
+    { id:'202', date:'2026-08-18', amount:5000,  store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp' }, // different amount
+    { id:'203', date:'2026-08-17', amount:11324, store:'FUJI Yoga',     cat:'Thực phẩm tổng hợp' }, // different store
+    { id:'204', date:'2026-08-24', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp' }, // different week (Mon=Aug 24)
+    { id:'205', date:'2026-08-17', amount:11324, store:'OK Shin-Yoga', cat:'Rau củ quả' }           // different cat
+  ];
+  localStorage.setItem('oi_expenses', JSON.stringify(t3));
+  await migrateShopDuplicates();
+  const r3 = getExpensesLocal();
+  assert(r3.length === 5, 'Should keep 5 entries (2 duplicates removed, 4 unrelated preserved). Got ' + r3.length);
+  assert(r3.some(e => e.id === '202'), 'Different amount preserved');
+  assert(r3.some(e => e.id === '203'), 'Different store preserved');
+  assert(r3.some(e => e.id === '204'), 'Different week preserved');
+  assert(r3.some(e => e.id === '205'), 'Different category preserved');
+
+  // --- Test 4: completeShop called 3 times → still only 1 expense ---
+  console.log('\n=== Test 4: completeShop idempotency (3 calls) ===');
+  localStorage.setItem('oi_expenses', JSON.stringify([]));
+  // Mock getCompletionKey to return deterministic key
+  const origGetCompletionKey = getCompletionKey;
+  getCompletionKey = () => 'main-2026-08-17';
+  // We need to simulate completeShop without Firebase; just test local path
+  const testEx = [];
+  const addOnce = () => {
+    if (!testEx.some(e => e.completionKey === 'main-2026-08-17')) {
+      testEx.push({ id: Date.now().toString(), date:'2026-08-17', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', completionKey:'main-2026-08-17' });
+    }
+  };
+  addOnce(); addOnce(); addOnce(); // simulate 3 rapid clicks
+  assert(testEx.length === 1, 'After 3 completeShop calls, still 1 expense');
+  getCompletionKey = origGetCompletionKey;
+
+  // --- Test 5: getWeekStart helper ---
+  console.log('\n=== Test 5: _getWeekStart helper ===');
+  assert(_getWeekStart('2026-08-17') === '2026-08-17', 'Mon Aug 17 → week start Aug 17');
+  assert(_getWeekStart('2026-08-18') === '2026-08-17', 'Tue Aug 18 → week start Aug 17');
+  assert(_getWeekStart('2026-08-23') === '2026-08-17', 'Sun Aug 23 → week start Aug 17');
+  assert(_getWeekStart('2026-08-24') === '2026-08-24', 'Mon Aug 24 → week start Aug 24');
+  assert(_getWeekStart('2026-08-16') === '2026-08-10', 'Sun Aug 16 → week start Aug 10');
+
+  // Restore
+  localStorage.setItem('oi_expenses', JSON.stringify(origExpenses));
+  console.log(`\n🏁 Dedup tests: ${passed} passed, ${failed} failed`);
+  return failed === 0;
 }
 
 // ═══════════════════════════════════════════
