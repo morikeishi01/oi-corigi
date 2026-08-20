@@ -275,13 +275,13 @@ body {
 
 <div class="page" id="page-shop">
   <div class="card"><div class="card-header"><div class="card-title">🛒 Chuyến chính — Thứ 7</div><div class="card-badge">OK</div></div><div id="shop-main"></div><div class="shop-total">Tổng (chưa thuế): <span id="shop-main-total">¥0</span></div><div class="shop-total" style="color:var(--accent);font-size:18px">Tổng thực tế: <span id="shop-main-real">¥11,324</span></div>
-    <button class="btn btn-primary" onclick="completeShop('main')" style="margin-top:12px">✓ Hoàn thành Chuyến chính</button>
+    <button class="btn btn-primary" id="btn-complete-main" onclick="completeShop('main')" style="margin-top:12px">✓ Hoàn thành Chuyến chính</button>
   </div>
   <div class="card"><div class="card-header"><div class="card-title">🛒 Bổ sung — Thứ 4</div></div><div id="shop-sup"></div><div class="shop-total">Tổng: <span id="shop-sup-total">¥0</span></div>
-    <button class="btn btn-primary" onclick="completeShop('sup')" style="margin-top:12px">✓ Hoàn thành Bổ sung</button>
+    <button class="btn btn-primary" id="btn-complete-sup" onclick="completeShop('sup')" style="margin-top:12px">✓ Hoàn thành Bổ sung</button>
   </div>
   <div class="card"><div class="card-header"><div class="card-title">📦 Amazon</div><div class="card-badge">Tháng</div></div><div id="amazon-list"></div><div class="shop-total">Tổng: <span id="amazon-total">¥0</span></div>
-    <button class="btn btn-primary" onclick="completeShop('amazon')" style="margin-top:12px">✓ Hoàn thành Amazon</button>
+    <button class="btn btn-primary" id="btn-complete-amazon" onclick="completeShop('amazon')" style="margin-top:12px">✓ Hoàn thành Amazon</button>
   </div>
   <div class="card" id="shop-complete-card">
     <div style="text-align:center;padding:8px 0">
@@ -429,6 +429,64 @@ function getShopLocal() {
   try { return JSON.parse(localStorage.getItem('oi_shop') || '{}'); } catch(e) { return {}; }
 }
 
+// ═══════════════════════════════════════════
+// IDEMPOTENCY — completionKey helpers
+// ═══════════════════════════════════════════
+function getCompletionKey(type) {
+  const now = new Date();
+  if (type === 'main') {
+    // Main shop = week of 17/08/2026; derive Monday from current date
+    const d = new Date(now); const day = d.getDay(); const diff = day === 0 ? 6 : day - 1;
+    d.setDate(d.getDate() - diff);
+    return 'main-' + d.toISOString().split('T')[0];
+  }
+  if (type === 'sup') {
+    const d = new Date(now); const day = d.getDay(); const diff = day === 0 ? 6 : day - 1;
+    d.setDate(d.getDate() - diff);
+    return 'sup-' + d.toISOString().split('T')[0];
+  }
+  if (type === 'amazon') {
+    return 'amazon-' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  }
+  return type;
+}
+
+function isShopCompleted(type) {
+  const key = getCompletionKey(type);
+  const ex = getExpensesLocal();
+  return ex.some(e => e.completionKey === key);
+}
+
+// ═══════════════════════════════════════════
+// DEDUP MIGRATION — fixes existing triplicates
+// ═══════════════════════════════════════════
+async function migrateShopDuplicates() {
+  let ex = getExpensesLocal();
+  if (!ex || ex.length === 0) return false;
+  let changed = false;
+  const seen = {};
+  const toRemove = new Set();
+  for (let i = 0; i < ex.length; i++) {
+    const e = ex[i];
+    if (e.store === 'OK Shin-Yoga' && e.amount === 11324 && e.date === '2026-08-17' && !e.completionKey) {
+      const dedupKey = 'main-2026-08-17';
+      if (!seen[dedupKey]) {
+        seen[dedupKey] = true;
+        e.completionKey = dedupKey;
+        changed = true;
+      } else {
+        toRemove.add(i);
+        changed = true;
+      }
+    }
+  }
+  if (changed) {
+    ex = ex.filter((_, i) => !toRemove.has(i));
+    await saveExpenses(ex);
+  }
+  return changed;
+}
+
 function listenToFirebase() {
   const ref = getDocRef();
   if (!ref) return;
@@ -558,6 +616,9 @@ async function loginSuccess() {
       }
     } catch(e) { console.warn('Firebase load failed'); }
   }
+  // Fix duplicate expenses from bug BEFORE starting the snapshot listener
+  // (avoids race condition: listener would revert local migration before it writes to Firebase)
+  await migrateShopDuplicates();
   listenToFirebase();
   renderMeals(); renderShop(); renderExpenses(); updateHeader();
   document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
@@ -713,6 +774,21 @@ function renderShop() {
   });
   document.getElementById('amazon-list').innerHTML = ah;
   document.getElementById('amazon-total').textContent = '¥'+at.toLocaleString();
+
+  // Reflect completion state on buttons
+  ['main', 'sup', 'amazon'].forEach(type => {
+    const btn = document.getElementById('btn-complete-' + type);
+    if (!btn) return;
+    if (isShopCompleted(type)) {
+      btn.disabled = true;
+      btn.textContent = '✓ Đã hoàn thành';
+      btn.style.background = 'var(--green)';
+    } else {
+      btn.disabled = false;
+      btn.textContent = type === 'main' ? '✓ Hoàn thành Chuyến chính' : type === 'sup' ? '✓ Hoàn thành Bổ sung' : '✓ Hoàn thành Amazon';
+      btn.style.background = '';
+    }
+  });
 }
 
 async function toggleShop(k) {
@@ -722,9 +798,24 @@ async function toggleShop(k) {
 }
 
 async function completeShop(type) {
+  // Prevent double-click / rapid re-entry
+  const btn = document.getElementById('btn-complete-' + type);
+  if (btn && btn.disabled) return;
+
+  const completionKey = getCompletionKey(type);
+
+  // 1. Client-side idempotency check (instant, works offline)
+  if (isShopCompleted(type)) {
+    showToast('Đã hoàn thành rồi, không ghi thêm');
+    if (btn) { btn.disabled = true; btn.textContent = '✓ Đã hoàn thành'; btn.style.background = 'var(--green)'; }
+    return;
+  }
+
+  // Disable button immediately to prevent double-click
+  if (btn) btn.disabled = true;
+
   const c = getShopLocal();
   let items, prefix, amount, store, cat;
-  
   if (type === 'main') {
     items = shopMain; prefix = 'shop-main_';
     amount = 11324; store = 'OK Shin-Yoga'; cat = 'Thực phẩm tổng hợp';
@@ -737,25 +828,61 @@ async function completeShop(type) {
     amount = amazonItems.reduce((s, i) => s + i.price, 0);
     store = 'Amazon'; cat = 'Amazon';
   }
-  
-  // Check all items in this list
-  items.forEach((item, i) => { c[prefix+i] = true; });
-  await saveShopChecks(c);
+
+  // Tick all items in this shop list
+  items.forEach((item, i) => { c[prefix + i] = true; });
+
+  const newExpense = { id: Date.now().toString(), date: new Date().toISOString().split('T')[0],
+    amount: amount, store: store, cat: cat, added: new Date().toISOString(), completionKey: completionKey };
+
+  // 2. Firestore transaction — atomic check + write (prevents race on multi-device)
+  const ref = getDocRef();
+  if (ref) {
+    try {
+      await db.runTransaction(async (tx) => {
+        const snap = await tx.get(ref);
+        const data = snap.exists ? snap.data() : {};
+        const arr = data.expenses || [];
+        const already = arr.some(e => e.completionKey === completionKey);
+        if (!already) arr.push(newExpense);
+        tx.set(ref, { expenses: arr, shop: { ...data.shop, ...Object.fromEntries(items.map((_, i) => [prefix + i, true])) } }, { merge: true });
+      });
+      // Update local cache from transaction result
+      const freshSnap = await ref.get();
+      if (freshSnap.exists) {
+        const d = freshSnap.data();
+        if (d.expenses) localStorage.setItem('oi_expenses', JSON.stringify(d.expenses));
+        if (d.shop) localStorage.setItem('oi_shop', JSON.stringify(d.shop));
+      }
+    } catch (e) {
+      console.warn('Firestore transaction failed, falling back to local:', e.message);
+      // Fallback: local-only write with same idempotency guard
+      if (!isShopCompleted(type)) {
+        const ex = getExpensesLocal();
+        ex.push(newExpense);
+        await saveExpenses(ex);
+      }
+      await saveShopChecks(c);
+    }
+  } else {
+    // No Firebase — localStorage only
+    if (!isShopCompleted(type)) {
+      const ex = getExpensesLocal();
+      ex.push(newExpense);
+      await saveExpenses(ex);
+    }
+    await saveShopChecks(c);
+  }
+
+  // Update UI
+  if (btn) { btn.disabled = true; btn.textContent = '✓ Đã hoàn thành'; btn.style.background = 'var(--green)'; }
   renderShop();
-  
-  // Add expense
-  const ex = getExpensesLocal();
-  const today = new Date().toISOString().split('T')[0];
-  ex.push({ id: Date.now().toString(), date: today, amount: amount, store: store, cat: cat, added: new Date().toISOString() });
-  await saveExpenses(ex);
   renderExpenses();
   updateHeader();
-  
-  // Show savings
+
   const savings = WEEKLY_BUDGET - amount;
   document.getElementById('savings-amount').textContent = '¥' + savings.toLocaleString();
   document.getElementById('shop-savings').style.display = 'block';
-  
   showToast('✓ Đã hoàn thành ' + (type === 'main' ? 'Chuyến chính' : type === 'sup' ? 'Bổ sung' : 'Amazon') + '! Chi ¥' + amount.toLocaleString());
 }
 
