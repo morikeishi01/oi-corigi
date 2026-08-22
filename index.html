@@ -173,9 +173,9 @@ body {
 .shop-item .check { width: 28px; height: 28px; border: 2.5px solid #D1D5DB; border-radius: 8px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .shop-item .check.checked { background: var(--green); border-color: var(--green); }
 .shop-item .check.checked::after { content: '✓'; color: white; font-size: 16px; font-weight: 700; }
-.shop-item .name { flex: 1; font-size: 15px; }
+.shop-item .name { flex: 1; font-size: 15px; min-width: 0; overflow-wrap: anywhere; }
 .shop-item .name.done { text-decoration: line-through; color: var(--text2); }
-.shop-item .info { font-size: 13px; color: var(--text2); font-weight: 500; }
+.shop-item .info { font-size: 13px; color: var(--text2); font-weight: 500; flex-shrink: 0; white-space: nowrap; }
 .shop-total { font-size: 16px; font-weight: 800; text-align: right; padding: 12px 0 0; color: var(--accent2); border-top: 2px solid var(--border); margin-top: 8px; }
 
 /* ═══ EXPENSE ═══ */
@@ -485,35 +485,49 @@ async function migrateShopDuplicates() {
   let changed = false;
   const toRemove = new Set();
 
-  // Group by (store, amount, cat, week-start, completionKey) — entries with
-  // different nonempty completionKeys are treated as distinct and never deduped.
-  const groups = {};
+  // Two-tier dedup: group by BASE signature (store|amount|cat|weekStart)
+  // then apply keyed/unkeyed rules within each group.
+  const baseGroups = {};
   ex.forEach((e, i) => {
     if (!e.store || !e.amount || !e.cat || !e.date) return;
     const ws = _getWeekStart(e.date);
-    const ck = e.completionKey || '';
-    const sig = e.store + '|' + e.amount + '|' + e.cat + '|' + ws + '|' + ck;
-    if (!groups[sig]) groups[sig] = [];
-    groups[sig].push(i);
+    const baseSig = e.store + '|' + e.amount + '|' + e.cat + '|' + ws;
+    if (!baseGroups[baseSig]) baseGroups[baseSig] = [];
+    baseGroups[baseSig].push(i);
   });
 
-  // For each group with >1 entry, keep exactly one (prefer the one with completionKey)
-  Object.values(groups).forEach(indices => {
-    if (indices.length <= 1) return;
-    // Sort: entries WITH completionKey first (keep the first such entry)
+  Object.values(baseGroups).forEach(indices => {
+    if (indices.length <= 1) return; // no duplicates possible
+
     const withKey = indices.filter(i => !!ex[i].completionKey);
     const withoutKey = indices.filter(i => !ex[i].completionKey);
-    const keepIdx = withKey.length > 0 ? withKey[0] : indices[0];
-    const completionKey = ex[keepIdx].completionKey || ('main-' + _getWeekStart(ex[keepIdx].date));
-    // Assign completionKey to the kept entry if missing
-    if (!ex[keepIdx].completionKey) {
-      ex[keepIdx].completionKey = completionKey;
-      changed = true;
+    const distinctKeys = [...new Set(withKey.map(i => ex[i].completionKey))];
+
+    if (distinctKeys.length === 0) {
+      // Zero keyed entries — preserve all unkeyed (legitimate manual expenses)
+      return;
     }
-    // Mark all others for removal
-    indices.forEach(i => {
-      if (i !== keepIdx) { toRemove.add(i); changed = true; }
-    });
+
+    if (distinctKeys.length === 1) {
+      // Exactly one distinct completionKey: dedup within keyed (keep first),
+      // treat ALL unkeyed as legacy duplicates and remove them.
+      const seenKeys = new Set();
+      withKey.forEach(i => {
+        const ck = ex[i].completionKey;
+        if (seenKeys.has(ck)) { toRemove.add(i); changed = true; }
+        else seenKeys.add(ck);
+      });
+      withoutKey.forEach(i => { toRemove.add(i); changed = true; });
+    } else {
+      // >1 distinct completionKeys: preserve one per key AND all unkeyed
+      const seenKeys = new Set();
+      withKey.forEach(i => {
+        const ck = ex[i].completionKey;
+        if (seenKeys.has(ck)) { toRemove.add(i); changed = true; }
+        else seenKeys.add(ck);
+      });
+      // unkeyed entries preserved (attribution is ambiguous)
+    }
   });
 
   if (changed) {
@@ -873,13 +887,25 @@ async function completeShop(type) {
       'Ước tính: ¥' + estimated.toLocaleString(),
       String(estimated)
     );
-    if (input === null || input === '') {
-      // Cancel or blank → no mutation
+    if (input == null) {
+      // null or undefined → cancel
       if (btn) btn.disabled = false;
       return;
     }
-    const parsed = parseInt(input, 10);
-    if (isNaN(parsed) || parsed <= 0) {
+    const trimmed = input.trim();
+    if (trimmed === '') {
+      // whitespace-only or empty → blank/cancel
+      if (btn) btn.disabled = false;
+      return;
+    }
+    // Strict full-value numeric: must be digits only (rejects 123abc)
+    if (!/^\d+$/.test(trimmed)) {
+      showToast('Số tiền không hợp lệ');
+      if (btn) btn.disabled = false;
+      return;
+    }
+    const parsed = Number(trimmed);
+    if (!Number.isFinite(parsed) || parsed <= 0 || !Number.isInteger(parsed)) {
       showToast('Số tiền không hợp lệ');
       if (btn) btn.disabled = false;
       return;
@@ -1081,30 +1107,13 @@ async function _runDedupTests() {
   localStorage.setItem('oi_expenses', JSON.stringify(t3));
   await migrateShopDuplicates();
   const r3 = getExpensesLocal();
-  assert(r3.length === 5, 'Should keep 5 entries (2 duplicates removed, 4 unrelated preserved). Got ' + r3.length);
+  assert(r3.length === 5, 'Should keep 5 entries (1 keyed duplicate removed, 4 unrelated preserved). Got ' + r3.length);
   assert(r3.some(e => e.id === '202'), 'Different amount preserved');
   assert(r3.some(e => e.id === '203'), 'Different store preserved');
   assert(r3.some(e => e.id === '204'), 'Different week preserved');
   assert(r3.some(e => e.id === '205'), 'Different category preserved');
 
-  // --- Test 4: completeShop called 3 times → still only 1 expense ---
-  console.log('\n=== Test 4: completeShop idempotency (3 calls) ===');
-  localStorage.setItem('oi_expenses', JSON.stringify([]));
-  // Mock getCompletionKey to return deterministic key
-  const origGetCompletionKey = getCompletionKey;
-  getCompletionKey = () => 'main-2026-08-17';
-  // We need to simulate completeShop without Firebase; just test local path
-  const testEx = [];
-  const addOnce = () => {
-    if (!testEx.some(e => e.completionKey === 'main-2026-08-17')) {
-      testEx.push({ id: Date.now().toString(), date:'2026-08-17', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', completionKey:'main-2026-08-17' });
-    }
-  };
-  addOnce(); addOnce(); addOnce(); // simulate 3 rapid clicks
-  assert(testEx.length === 1, 'After 3 completeShop calls, still 1 expense');
-  getCompletionKey = origGetCompletionKey;
-
-  // --- Test 5: getWeekStart helper ---
+  // --- Test 4: _getWeekStart helper ---
   console.log('\n=== Test 5: _getWeekStart helper ===');
   assert(_getWeekStart('2026-08-17') === '2026-08-17', 'Mon Aug 17 → week start Aug 17');
   assert(_getWeekStart('2026-08-18') === '2026-08-17', 'Tue Aug 18 → week start Aug 17');
@@ -1112,8 +1121,8 @@ async function _runDedupTests() {
   assert(_getWeekStart('2026-08-24') === '2026-08-24', 'Mon Aug 24 → week start Aug 24');
   assert(_getWeekStart('2026-08-16') === '2026-08-10', 'Sun Aug 16 → week start Aug 10');
 
-  // --- Test 6: Migration preserves distinct nonempty completionKeys ---
-  console.log('\n=== Test 6: Migration preserves distinct nonempty completionKeys ===');
+  // --- Test 6: Migration — 1 distinct key → remove unkeyed legacy dupes ---
+  console.log('\n=== Test 6: Migration — 1 distinct key removes unkeyed ===');
   const t6 = [
     { id:'300', date:'2026-08-17', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', completionKey:'main-2026-08-17' },
     { id:'301', date:'2026-08-18', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', completionKey:'main-2026-08-17' },
@@ -1124,10 +1133,37 @@ async function _runDedupTests() {
   localStorage.setItem('oi_expenses', JSON.stringify(t6));
   await migrateShopDuplicates();
   const r6 = getExpensesLocal();
-  assert(r6.length === 3, 'Should keep 3 distinct entries (got ' + r6.length + ')');
+  assert(r6.length === 2, 'Should keep 2 entries (1 per distinct key, unkeyed removed). Got ' + r6.length);
   assert(r6.some(e => e.completionKey === 'main-2026-08-17'), 'main-2026-08-17 preserved');
   assert(r6.some(e => e.completionKey === 'main-2026-08-22'), 'main-2026-08-22 preserved');
-  assert(r6.some(e => !e.completionKey || e.id === '304'), 'Unkeyed entry preserved');
+  assert(!r6.some(e => e.id === '304'), 'Unkeyed legacy duplicate removed');
+
+  // --- Test 7: >1 distinct keys → preserve unkeyed ---
+  console.log('\n=== Test 7: >1 distinct keys preserves unkeyed ===');
+  const t7 = [
+    { id:'400', date:'2026-08-17', amount:5000, store:'York Mart', cat:'Rau củ quả', completionKey:'key-A' },
+    { id:'401', date:'2026-08-18', amount:5000, store:'York Mart', cat:'Rau củ quả', completionKey:'key-B' },
+    { id:'402', date:'2026-08-19', amount:5000, store:'York Mart', cat:'Rau củ quả' }
+  ];
+  localStorage.setItem('oi_expenses', JSON.stringify(t7));
+  await migrateShopDuplicates();
+  const r7 = getExpensesLocal();
+  assert(r7.length === 3, 'Should keep 3 (1 per key + 1 unkeyed). Got ' + r7.length);
+  assert(r7.some(e => e.completionKey === 'key-A'), 'key-A preserved');
+  assert(r7.some(e => e.completionKey === 'key-B'), 'key-B preserved');
+  assert(r7.some(e => e.id === '402'), 'Unkeyed preserved (ambiguous attribution)');
+
+  // --- Test 8: Zero keyed → preserve all unkeyed ---
+  console.log('\n=== Test 8: Zero keyed preserves all unkeyed ===');
+  const t8 = [
+    { id:'500', date:'2026-08-17', amount:3000, store:'My Basket', cat:'Snack, đồ uống' },
+    { id:'501', date:'2026-08-18', amount:3000, store:'My Basket', cat:'Snack, đồ uống' }
+  ];
+  localStorage.setItem('oi_expenses', JSON.stringify(t8));
+  await migrateShopDuplicates();
+  const r8 = getExpensesLocal();
+  assert(r8.length === 2, 'Zero keyed → preserve all unkeyed (got ' + r8.length + ')');
+  assert(!r8.some(e => e.completionKey), 'No synthetic key assigned');
 
   // Restore
   localStorage.setItem('oi_expenses', JSON.stringify(origExpenses));
