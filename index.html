@@ -131,6 +131,10 @@ body {
 .header .budget-item { flex: 1; background: rgba(255,255,255,0.1); border-radius: 16px; padding: 14px; backdrop-filter: blur(10px); }
 .header .budget-item .label { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
 .header .budget-item .val { font-size: 24px; font-weight: 800; margin-top: 4px; }
+.header .monthly-budget { margin-top: 12px; background: rgba(255,255,255,0.1); border-radius: 16px; padding: 14px; backdrop-filter: blur(10px); position: relative; z-index: 1; }
+.header .monthly-budget .monthly-title { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+.header .monthly-budget .monthly-remain { font-size: 28px; font-weight: 800; margin-top: 4px; }
+.header .monthly-budget .monthly-detail { font-size: 13px; opacity: 0.6; margin-top: 4px; }
 .header .logout-btn { position: absolute; top: 20px; right: 20px; z-index: 2; background: rgba(255,255,255,0.15); border: none; color: rgba(255,255,255,0.7); padding: 8px 14px; border-radius: 10px; font-size: 12px; cursor: pointer; font-family: inherit; }
 .header .sync-badge { position: absolute; top: 20px; right: 100px; z-index: 2; font-size: 10px; background: rgba(0,184,148,0.3); color: #00E5A0; padding: 4px 8px; border-radius: 8px; }
 
@@ -264,6 +268,11 @@ body {
   <div class="budget-row">
     <div class="budget-item"><div class="label">Đã chi</div><div class="val" id="header-weekly" style="color:#FF8A9E">¥0</div></div>
     <div class="budget-item"><div class="label">Còn lại</div><div class="val" id="header-remain" style="color:#00E5A0">¥23,000</div></div>
+  </div>
+  <div class="monthly-budget">
+    <div class="monthly-title">Còn lại tháng</div>
+    <div class="monthly-remain" id="header-monthly-remain" style="color:#00E5A0">¥96,697</div>
+    <div class="monthly-detail">Đã chi <span id="header-monthly-spent">¥0</span> / ¥116,691</div>
   </div>
 </div>
 
@@ -541,6 +550,7 @@ const PIN_KEY = 'oi_pin_hash';
 const _E = '9wHZTU5dVp/673j5+notXJbS2ZWaX05REtjI+mXAkHo=';
 const _K = 'oi-corigi-2026-secure-key';
 const WEEKLY_BUDGET = 23000;
+const MONTHLY_BUDGET = 116691;
 let pinInput = '';
 let _attempts = 0;
 let _lockedUntil = 0;
@@ -964,6 +974,23 @@ function updateHeader() {
   const re = document.getElementById('header-remain');
   re.textContent = '¥'+rm.toLocaleString();
   re.style.color = rm < 0 ? 'var(--red)' : '#00E5A0';
+
+  // Monthly budget — compare year/month from date string to avoid UTC boundary bugs
+  const curYear = now.getFullYear();
+  const curMonth = now.getMonth(); // 0-based
+  const ms = ex.filter(e => {
+    if (!e.date || typeof e.date !== 'string') return false;
+    const parts = e.date.split('-');
+    if (parts.length < 2) return false;
+    const ey = parseInt(parts[0], 10);
+    const em = parseInt(parts[1], 10) - 1; // convert to 0-based
+    return ey === curYear && em === curMonth;
+  }).reduce((s, e) => s + e.amount, 0);
+  const mrm = MONTHLY_BUDGET - ms;
+  document.getElementById('header-monthly-spent').textContent = '¥' + ms.toLocaleString();
+  const mre = document.getElementById('header-monthly-remain');
+  mre.textContent = '¥' + mrm.toLocaleString();
+  mre.style.color = mrm < 0 ? 'var(--red)' : '#00E5A0';
 }
 
 // ═══════════════════════════════════════════
