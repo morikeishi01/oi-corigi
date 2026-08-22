@@ -281,10 +281,10 @@ body {
 </div>
 
 <div class="page" id="page-shop">
-  <div class="card"><div class="card-header"><div class="card-title">🛒 Chuyến chính — Thứ 7</div><div class="card-badge">OK</div></div><div id="shop-main"></div><div class="shop-total">Tổng (chưa thuế): <span id="shop-main-total">¥0</span></div><div class="shop-total" style="color:var(--accent);font-size:18px">Tổng thực tế: <span id="shop-main-real">¥11,324</span></div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 Chuyến chính — T7 22/08</div><div class="card-badge">¥18,000</div></div><div id="shop-main"></div><div class="shop-total">Tổng dự kiến: <span id="shop-main-total">¥0</span></div>
     <button class="btn btn-primary" id="btn-complete-main" onclick="completeShop('main')" style="margin-top:12px">✓ Hoàn thành Chuyến chính</button>
   </div>
-  <div class="card"><div class="card-header"><div class="card-title">🛒 Bổ sung — Thứ 4</div></div><div id="shop-sup"></div><div class="shop-total">Tổng: <span id="shop-sup-total">¥0</span></div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 Bổ sung — T4 26/08</div><div class="card-badge">¥2,000</div></div><div id="shop-sup"></div><div class="shop-total">Tổng dự kiến: <span id="shop-sup-total">¥0</span></div>
     <button class="btn btn-primary" id="btn-complete-sup" onclick="completeShop('sup')" style="margin-top:12px">✓ Hoàn thành Bổ sung</button>
   </div>
   <div class="card"><div class="card-header"><div class="card-title">📦 Amazon</div><div class="card-badge">Tháng</div></div><div id="amazon-list"></div><div class="shop-total">Tổng: <span id="amazon-total">¥0</span></div>
@@ -292,6 +292,16 @@ body {
   </div>
   <div class="card" id="shop-complete-card">
     <div style="text-align:center;padding:8px 0">
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:10px">
+        <div style="background:var(--green-bg);border-radius:14px;padding:12px 18px;text-align:center;flex:1">
+          <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px">Dự phòng chưa dùng</div>
+          <div style="font-size:20px;font-weight:800;color:var(--green);margin-top:2px">¥3,000</div>
+        </div>
+        <div style="background:rgba(15,52,96,0.06);border-radius:14px;padding:12px 18px;text-align:center;flex:1">
+          <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px">Tổng ngân sách tuần</div>
+          <div style="font-size:20px;font-weight:800;color:var(--accent2);margin-top:2px">¥23,000</div>
+        </div>
+      </div>
       <div id="shop-savings" style="display:none">
         <div style="font-size:24px;font-weight:800;color:var(--green)">🎉 Tiết kiệm <span id="savings-amount">¥0</span></div>
         <div style="font-size:13px;color:var(--text2);margin-top:4px">so với ngân sách tuần ¥23,000</div>
@@ -440,15 +450,10 @@ function getShopLocal() {
 function getCompletionKey(type) {
   const now = new Date();
   if (type === 'main') {
-    // Main shop = week of 17/08/2026; derive Monday from current date
-    const d = new Date(now); const day = d.getDay(); const diff = day === 0 ? 6 : day - 1;
-    d.setDate(d.getDate() - diff);
-    return 'main-' + d.toISOString().split('T')[0];
+    return PLAN_MAIN_COMPLETION;
   }
   if (type === 'sup') {
-    const d = new Date(now); const day = d.getDay(); const diff = day === 0 ? 6 : day - 1;
-    d.setDate(d.getDate() - diff);
-    return 'sup-' + d.toISOString().split('T')[0];
+    return PLAN_SUP_COMPLETION;
   }
   if (type === 'amazon') {
     return 'amazon-' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
@@ -480,12 +485,14 @@ async function migrateShopDuplicates() {
   let changed = false;
   const toRemove = new Set();
 
-  // Group by (store, amount, cat, week-start)
+  // Group by (store, amount, cat, week-start, completionKey) — entries with
+  // different nonempty completionKeys are treated as distinct and never deduped.
   const groups = {};
   ex.forEach((e, i) => {
     if (!e.store || !e.amount || !e.cat || !e.date) return;
     const ws = _getWeekStart(e.date);
-    const sig = e.store + '|' + e.amount + '|' + e.cat + '|' + ws;
+    const ck = e.completionKey || '';
+    const sig = e.store + '|' + e.amount + '|' + e.cat + '|' + ws + '|' + ck;
     if (!groups[sig]) groups[sig] = [];
     groups[sig].push(i);
   });
@@ -551,6 +558,14 @@ const _E = '9wHZTU5dVp/673j5+notXJbS2ZWaX05REtjI+mXAkHo=';
 const _K = 'oi-corigi-2026-secure-key';
 const WEEKLY_BUDGET = 23000;
 const MONTHLY_BUDGET = 116691;
+const MAIN_CAP = 18000;
+const SUP_CAP = 2000;
+const RESERVE = 3000;
+// Plan-specific prefixes and completion keys (22–28/08/2026)
+const PLAN_MAIN_PREFIX = 'shop-main-2026-08-22_';
+const PLAN_SUP_PREFIX = 'shop-sup-2026-08-26_';
+const PLAN_MAIN_COMPLETION = 'main-2026-08-22';
+const PLAN_SUP_COMPLETION = 'sup-2026-08-26';
 let pinInput = '';
 let _attempts = 0;
 let _lockedUntil = 0;
@@ -701,31 +716,32 @@ const CAT_COLORS = {
 };
 
 const meals = [
-  // Tuần 17/08 — dựa trên nguyên liệu OK Shin-Yoga (¥11,324)
-  { day: 'Thứ 2', items: [{icon:'🌅',text:'Roll bread + phô mai + sữa canxi',price:350},{icon:'☀️',text:'Gà đùi xào ớt chuông ✅ (đã ăn)',price:600},{icon:'🌙',text:'Saba nướng muối + bắp cải luộc',price:760}]},
-  { day: 'Thứ 3', items: [{icon:'🌅',text:'Muffin + chuối + sữa',price:300},{icon:'☀️',text:'Yakisoba bắp cải + eringi + gà',price:550},{icon:'🌙',text:'Gà đùi teriyaki + canh đậu hũ',price:700}]},
-  { day: 'Thứ 4', items: [{icon:'🌅',text:'Bánh mè + bơ + sữa',price:320},{icon:'☀️',text:'Cơm + bò nướng shintama',price:750},{icon:'🌙',text:'Ăn ngoài ✅ (tối 19/08)',price:8670}]},
-  { day: 'Thứ 5', items: [{icon:'🌅',text:'Roll bread + phô mai',price:300},{icon:'☀️',text:'Unadon (cơm cá chình)',price:1200},{icon:'🌙',text:'Oyakodon (gà đùi + trứng)',price:700}]},
-  { day: 'Thứ 6', items: [{icon:'🌅',text:'Muffin + natto + trứng',price:350},{icon:'☀️',text:'Cơm + heo harami nướng + eringi',price:780},{icon:'🌙',text:'Heo xay xào bắp cải + cơm',price:600}]},
-  { day: 'Thứ 7', items: [{icon:'🌅',text:'Bánh mè + bơ + sữa',price:320},{icon:'☀️',text:'Cơm + ức gà xào nấm',price:600},{icon:'🌙',text:'Cá chình nướng + bắp cải + rau',price:1100}]},
-  { day: 'Chủ nhật', items: [{icon:'🌅',text:'Roll bread + trứng ốp + sữa',price:350},{icon:'☀️',text:'Cơm + thịt heo xay soboro + trứng',price:650},{icon:'🌙',text:'Súp gà rau củ (dùng hết phần rau)',price:550}]}
+  // Tuần 22/08–28/08 — dựa trên chuyến chính + bổ sung (¥18,000 + ¥2,000)
+  { day: 'Thứ 7 22/08', items: [{icon:'🌅',text:'Bánh mì + trứng + sữa',price:400},{icon:'☀️',text:'Gà xào ớt chuông + cơm',price:700},{icon:'🌙',text:'Saba nướng + bắp cải + miso',price:800}]},
+  { day: 'Chủ nhật 23/08', items: [{icon:'🌅',text:'Yogurt + chuối',price:300},{icon:'☀️',text:'Heo xào gừng + cơm',price:600},{icon:'🌙',text:'Mapo đậu hũ + dưa chuột',price:500}]},
+  { day: 'Thứ 2 24/08', items: [{icon:'🌅',text:'Cơm + natto + trứng',price:300},{icon:'☀️',text:'Salad ức gà + bánh mì',price:500},{icon:'🌙',text:'Cá hồi áp chảo + rau củ',price:800}]},
+  { day: 'Thứ 3 25/08', items: [{icon:'🌅',text:'Bánh mì phô mai + trái cây',price:400},{icon:'☀️',text:'Udon thịt heo và rau',price:700},{icon:'🌙',text:'Bò xào hành + cơm',price:600}]},
+  { day: 'Thứ 4 26/08', items: [{icon:'🌅',text:'Cơm + trứng + rong biển',price:300},{icon:'☀️',text:'Cà ri gà rau củ',price:800},{icon:'🌙',text:'Lẩu gà + đậu hũ + nấm',price:700}]},
+  { day: 'Thứ 5 27/08', items: [{icon:'🌅',text:'Yogurt + chuối',price:300},{icon:'☀️',text:'Cơm rang gà và trứng',price:600},{icon:'🌙',text:'Saba kho miso + rau xanh',price:700}]},
+  { day: 'Thứ 6 28/08', items: [{icon:'🌅',text:'Bánh mì + trứng + sữa',price:400},{icon:'☀️',text:'Yakisoba heo và bắp cải',price:700},{icon:'🌙',text:'Gà teriyaki + khoai/cà rốt',price:600}]}
 ];
 
 const shopMain = [
-  {name:'Gạo 1kg (Echigo Shirayuki)',qty:'1kg',price:680},{name:'Đùi gà Kirishima',qty:'2 gói',price:1195},{name:'Ức gà Kirishima',qty:'1 gói',price:385},
-  {name:'Heo harami Canada (rã đông)',qty:'1 gói',price:658},{name:'Heo xay thô nội địa',qty:'1 gói',price:426},{name:'Heo xay lớn nội địa',qty:'1 gói',price:737},
-  {name:'Bò yakiniku shintama',qty:'1 gói',price:666},{name:'Saba muối đông',qty:'1 gói',price:758},{name:'Cá chình unagi',qty:'1 gói',price:1190},
-  {name:'Trứng gà 20 quả',qty:'2 vỉ',price:590},{name:'Natto',qty:'2 hộp',price:196},{name:'Phô mai cheddar + QBB',qty:'1+1',price:423},
-  {name:'Đậu hũ mềm kinu',qty:'2 hộp',price:312},{name:'Sữa canxi 700ml',qty:'1 chai',price:204},
-  {name:'Roll bread + Muffin + Bánh mè',qty:'3 loại',price:449},{name:'Mì yakisoba Thượng Hải',qty:'1 gói',price:309},{name:'Bắp cải',qty:'2 cây',price:276},
-  {name:'Nấm eringi',qty:'1 gói',price:208},{name:'Bơ Hokkaido 100g',qty:'1 hộp',price:297},{name:'Wassu trái cây',qty:'1 quả',price:498},
-  {name:'Chuối',qty:'1 nải',price:143},{name:'Đồ uống Canxi (YM)',qty:'1 chai',price:178}
+  {name:'Gạo 5kg',qty:'5kg',price:3800},{name:'Gà đùi',qty:'1kg',price:1500},{name:'Ức gà',qty:'500g',price:700},
+  {name:'Heo lát',qty:'500g',price:1200},{name:'Heo xay',qty:'300g',price:700},{name:'Bò',qty:'300g',price:900},
+  {name:'Saba',qty:'2 miếng',price:1000},{name:'Cá hồi',qty:'2 miếng',price:900},{name:'Trứng 20 quả',qty:'1 vỉ',price:650},
+  {name:'Đậu hũ',qty:'2 hộp',price:400},{name:'Natto',qty:'2 hộp',price:250},{name:'Sữa',qty:'1L',price:500},
+  {name:'Yogurt',qty:'4 hộp',price:400},{name:'Phô mai + bơ',qty:'1+1',price:500},{name:'Bánh mì',qty:'1 ổ',price:400},
+  {name:'Udon/yakisoba',qty:'2 gói',price:500},{name:'Miso + xì dầu + rong biển',qty:'bộ',price:500},{name:'Bắp cải',qty:'1 cây',price:350},
+  {name:'Hành + cà rốt + khoai',qty:'bộ',price:800},{name:'Rau xanh',qty:'1 túi',price:500},{name:'Nấm',qty:'1 gói',price:400},
+  {name:'Ớt chuông',qty:'2 quả',price:350},{name:'Cà chua + dưa chuột',qty:'bộ',price:300},{name:'Chuối',qty:'1 nải',price:200},
+  {name:'Trái cây mùa',qty:'1 phần',price:300}
 ];
 
 const shopSup = [
-  {name:'Thịt/cá bổ sung',qty:'1',price:2000},{name:'Rau bổ sung',qty:'1',price:1000},
-  {name:'Trái cây bổ sung',qty:'1',price:600},{name:'Sữa + trứng + yogurt',qty:'1',price:700},
-  {name:'Snack, bánh nhẹ',qty:'1',price:1000},{name:'Linh hoạt / dự phòng',qty:'1',price:1700}
+  {name:'Sữa 1L',qty:'1',price:250},{name:'Yogurt',qty:'1',price:300},{name:'Trứng 10 quả',qty:'1',price:350},
+  {name:'Rau xanh',qty:'1',price:400},{name:'Cà chua + dưa chuột',qty:'1',price:300},{name:'Trái cây',qty:'1',price:300},
+  {name:'Linh hoạt',qty:'1',price:100}
 ];
 
 const amazonItems = [
@@ -773,21 +789,21 @@ function renderMeals() {
 
 function renderShop() {
   const c = getShopLocal();
-  function list(items, elId, tId) {
+  function list(items, elId, tId, keyPrefix) {
     let h = '', t = 0;
     items.forEach((item, i) => {
-      const k = elId+'_'+i, d = c[k]; t += item.price;
+      const k = keyPrefix + i, d = c[k]; t += item.price;
       h += `<div class="shop-item"><div class="check${d?' checked':''}" onclick="toggleShop('${k}')"></div><span class="name${d?' done':''}">${item.name}</span><span class="info">${item.qty||''} ¥${item.price.toLocaleString()}</span></div>`;
     });
     document.getElementById(elId).innerHTML = h;
     document.getElementById(tId).textContent = '¥'+t.toLocaleString();
   }
-  list(shopMain, 'shop-main', 'shop-main-total');
-  list(shopSup, 'shop-sup', 'shop-sup-total');
+  list(shopMain, 'shop-main', 'shop-main-total', PLAN_MAIN_PREFIX);
+  list(shopSup, 'shop-sup', 'shop-sup-total', PLAN_SUP_PREFIX);
   let ah = '', at = 0;
-  amazonItems.forEach((i, idx) => { 
+  amazonItems.forEach((i, idx) => {
     const k = 'amazon_'+idx, d = c[k]; at += i.price;
-    ah += `<div class="shop-item"><div class="check${d?' checked':''}" onclick="toggleShop('${k}')"></div><span class="name${d?' done':''}">${i.name}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`; 
+    ah += `<div class="shop-item"><div class="check${d?' checked':''}" onclick="toggleShop('${k}')"></div><span class="name${d?' done':''}">${i.name}</span><span class="info">¥${i.price.toLocaleString()}</span></div>`;
   });
   document.getElementById('amazon-list').innerHTML = ah;
   document.getElementById('amazon-total').textContent = '¥'+at.toLocaleString();
@@ -832,18 +848,43 @@ async function completeShop(type) {
   if (btn) btn.disabled = true;
 
   const c = getShopLocal();
-  let items, prefix, amount, store, cat;
+  let items, prefix, estimated, store, cat;
   if (type === 'main') {
-    items = shopMain; prefix = 'shop-main_';
-    amount = 11324; store = 'OK Shin-Yoga'; cat = 'Thực phẩm tổng hợp';
+    items = shopMain; prefix = PLAN_MAIN_PREFIX;
+    estimated = shopMain.reduce((s, i) => s + i.price, 0);
+    store = 'OK Shin-Yoga'; cat = 'Thực phẩm tổng hợp';
   } else if (type === 'sup') {
-    items = shopSup; prefix = 'shop-sup_';
-    amount = shopSup.reduce((s, i) => s + i.price, 0);
+    items = shopSup; prefix = PLAN_SUP_PREFIX;
+    estimated = shopSup.reduce((s, i) => s + i.price, 0);
     store = 'OK Shin-Yoga'; cat = 'Thực phẩm bổ sung';
   } else if (type === 'amazon') {
     items = amazonItems; prefix = 'amazon_';
-    amount = amazonItems.reduce((s, i) => s + i.price, 0);
+    estimated = amazonItems.reduce((s, i) => s + i.price, 0);
     store = 'Amazon'; cat = 'Amazon';
+  }
+
+  // Prompt for ACTUAL tax-inclusive receipt total (prefill with estimate)
+  let amount;
+  if (type === 'amazon') {
+    amount = estimated; // Amazon uses auto-calculated total
+  } else {
+    const input = prompt(
+      'Nhập tổng tiền thực tế (đã bao gồm thuế):\n' +
+      'Ước tính: ¥' + estimated.toLocaleString(),
+      String(estimated)
+    );
+    if (input === null || input === '') {
+      // Cancel or blank → no mutation
+      if (btn) btn.disabled = false;
+      return;
+    }
+    const parsed = parseInt(input, 10);
+    if (isNaN(parsed) || parsed <= 0) {
+      showToast('Số tiền không hợp lệ');
+      if (btn) btn.disabled = false;
+      return;
+    }
+    amount = parsed;
   }
 
   // Tick all items in this shop list
@@ -1070,6 +1111,23 @@ async function _runDedupTests() {
   assert(_getWeekStart('2026-08-23') === '2026-08-17', 'Sun Aug 23 → week start Aug 17');
   assert(_getWeekStart('2026-08-24') === '2026-08-24', 'Mon Aug 24 → week start Aug 24');
   assert(_getWeekStart('2026-08-16') === '2026-08-10', 'Sun Aug 16 → week start Aug 10');
+
+  // --- Test 6: Migration preserves distinct nonempty completionKeys ---
+  console.log('\n=== Test 6: Migration preserves distinct nonempty completionKeys ===');
+  const t6 = [
+    { id:'300', date:'2026-08-17', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', completionKey:'main-2026-08-17' },
+    { id:'301', date:'2026-08-18', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', completionKey:'main-2026-08-17' },
+    { id:'302', date:'2026-08-22', amount:18000, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', completionKey:'main-2026-08-22' },
+    { id:'303', date:'2026-08-23', amount:18000, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp', completionKey:'main-2026-08-22' },
+    { id:'304', date:'2026-08-19', amount:11324, store:'OK Shin-Yoga', cat:'Thực phẩm tổng hợp' }
+  ];
+  localStorage.setItem('oi_expenses', JSON.stringify(t6));
+  await migrateShopDuplicates();
+  const r6 = getExpensesLocal();
+  assert(r6.length === 3, 'Should keep 3 distinct entries (got ' + r6.length + ')');
+  assert(r6.some(e => e.completionKey === 'main-2026-08-17'), 'main-2026-08-17 preserved');
+  assert(r6.some(e => e.completionKey === 'main-2026-08-22'), 'main-2026-08-22 preserved');
+  assert(r6.some(e => !e.completionKey || e.id === '304'), 'Unkeyed entry preserved');
 
   // Restore
   localStorage.setItem('oi_expenses', JSON.stringify(origExpenses));
