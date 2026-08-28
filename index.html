@@ -281,7 +281,7 @@ body {
 </div>
 
 <div class="page" id="page-shop">
-  <div class="card"><div class="card-header"><div class="card-title">🛒 Chuyến chính — T7 22/08</div><div class="card-badge">¥18,260</div></div><div id="shop-main"></div><div class="shop-total">Tổng dự kiến: <span id="shop-main-total">¥0</span></div><div class="shop-total" style="color:var(--accent);border-top:none;margin-top:4px">Tổng thực tế (đã thuế): ¥18,260</div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 Chuyến chính — T7 29/08</div><div class="card-badge">¥10,770</div></div><div id="shop-main"></div><div class="shop-total">Tổng dự kiến: <span id="shop-main-total">¥0</span></div>
     <button class="btn btn-primary" id="btn-complete-main" onclick="completeShop('main')" style="margin-top:12px">✓ Hoàn thành Chuyến chính</button>
   </div>
   <div class="card"><div class="card-header"><div class="card-title">🛒 Bổ sung — T4 26/08</div><div class="card-badge">¥2,000</div></div><div id="shop-sup"></div><div class="shop-total">Tổng dự kiến: <span id="shop-sup-total">¥0</span></div>
@@ -575,13 +575,13 @@ const MONTHLY_BUDGET = 116691;
 const MAIN_CAP = 18000;
 const SUP_CAP = 2000;
 const RESERVE = 3000;
-// Plan-specific prefixes and completion keys (22–28/08/2026)
-const PLAN_MAIN_PREFIX = 'shop-main-2026-08-22_';
-const PLAN_SUP_PREFIX = 'shop-sup-2026-08-26_';
-const PLAN_MAIN_COMPLETION = 'main-2026-08-22';
-const PLAN_SUP_COMPLETION = 'sup-2026-08-26';
-const PLAN_WEEK_START = '2026-08-22';
-const PLAN_WEEK_END = '2026-08-28';
+// Plan-specific prefixes and completion keys (29/08–04/09/2026)
+const PLAN_MAIN_PREFIX = 'shop-main-2026-08-29_';
+const PLAN_SUP_PREFIX = 'shop-sup-2026-09-02_';
+const PLAN_MAIN_COMPLETION = 'main-2026-08-29';
+const PLAN_SUP_COMPLETION = 'sup-2026-09-02';
+const PLAN_WEEK_START = '2026-08-29';
+const PLAN_WEEK_END = '2026-09-04';
 let pinInput = '';
 let _attempts = 0;
 let _lockedUntil = 0;
@@ -732,55 +732,45 @@ const CAT_COLORS = {
 };
 
 const meals = [
-  { day: 'Thứ 7 · 22/08', items: [{icon:'🌅',text:'Muffin + chuối + sữa ít béo',price:350},{icon:'☀️',text:'Yakisoba Thượng Hải + bắp cải',price:550},{icon:'🌙',text:'Unadon (cá chình) + salad bắp cải',price:1200}]},
-  { day: 'Chủ nhật · 23/08', items: [{icon:'🌅',text:'Fullgra + sữa chua + chuối',price:400},{icon:'☀️',text:'Đùi gà teriyaki + cơm',price:700},{icon:'🌙',text:'Sashimi cá hồi + cơm + đậu phụ chiên',price:600}]},
-  { day: 'Thứ 2 · 24/08', items: [{icon:'🌅',text:'Bánh mì mè + trứng ốp + sữa',price:350},{icon:'☀️',text:'Mì ý carbonara (heo xay)',price:600},{icon:'🌙',text:'Saba muối nướng + củ cải + cơm',price:800}]},
-  { day: 'Thứ 3 · 25/08', items: [{icon:'🌅',text:'Muffin + nước uống R-1',price:300},{icon:'☀️',text:'Cơm + gà Đài Loan + cà rốt',price:500},{icon:'🌙',text:'Mapo đậu hũ heo xay + canh giá',price:650}]},
-  { day: 'Thứ 4 · 26/08', items: [{icon:'🌅',text:'Bánh mì mè + trứng + sữa',price:350},{icon:'☀️',text:'Xúc xích xào hành tây + cơm',price:550},{icon:'🌙',text:'Harami nướng + nấm nameko + cơm',price:700}]},
-  { day: 'Thứ 5 · 27/08', items: [{icon:'🌅',text:'Fullgra + sữa',price:350},{icon:'☀️',text:'Cơm rang trứng + bắp hạt',price:500},{icon:'🌙',text:'Cá hồi trout nướng muối + giá',price:600}]},
-  { day: 'Thứ 6 · 28/08', items: [{icon:'🌅',text:'Bánh mì + sữa chua + chuối',price:400},{icon:'☀️',text:'Mì xào heo + bắp cải',price:550},{icon:'🌙',text:'Lẩu gà bắp cải + đậu hũ',price:700}]}
+  { day: 'Thứ 7 · 29/08', items: [{icon:'🌅',text:'Bánh mì + trứng + sữa',price:350},{icon:'☀️',text:'Cơm + gà teriyaki',price:700},{icon:'🌙',text:'Borscht (súp củ dền) + bánh mì + kem chua',price:600}]},
+  { day: 'Chủ nhật · 30/08', items: [{icon:'',text:'Muffin + chuối + sữa chua',price:400},{icon:'☀️',text:'Cơm + cá saba nướng + bắp cải',price:700},{icon:'🌙',text:'Mapo đậu hũ heo xay + cơm',price:650}]},
+  { day: 'Thứ 2 · 31/08', items: [{icon:'🌅',text:'Bánh mì + sữa chua + táo',price:350},{icon:'☀️',text:'Mì ý sốt cà bò',price:700},{icon:'🌙',text:'Salad ức gà + bánh mì',price:500}]},
+  { day: 'Thứ 3 · 01/09', items: [{icon:'',text:'Muffin + sữa',price:300},{icon:'☀️',text:'Cơm + đùi gà kho cà rốt',price:700},{icon:'',text:'Đậu hũ chiên + rau xanh',price:500}]},
+  { day: 'Thứ 4 · 02/09', items: [{icon:'',text:'Bánh mì + trứng + sữa',price:350},{icon:'☀️',text:'Cơm + heo lát nướng + nấm',price:700},{icon:'🌙',text:'Súp rau củ + bánh mì',price:400}]},
+  { day: 'Thứ 5 · 03/09', items: [{icon:'',text:'Fullgra + sữa chua + chuối',price:400},{icon:'☀️',text:'Yakisoba + bắp cải',price:550},{icon:'🌙',text:'Cá saba + cơm + củ dền xào',price:700}]},
+  { day: 'Thứ 6 · 04/09', items: [{icon:'',text:'Bánh mì + trứng + táo',price:400},{icon:'☀️',text:'Cơm rang trứng + rau',price:500},{icon:'',text:'Lẩu nhỏ gà + đậu hũ + nấm',price:700}]}
 ];
 
 const shopMain = [
-  {name:'Đùi gà Kirishima',qty:'2 gói',price:1373},
-  {name:'Heo xay Okinawa',qty:'1 gói',price:590},
-  {name:'Heo xay nội địa',qty:'1 gói',price:629},
-  {name:'Hành tây túi lưới',qty:'1 túi',price:306},
-  {name:'Bắp cải Tsumakoi',qty:'2 cái',price:246},
-  {name:'Fullgra chocolate chuối',qty:'1 túi',price:698},
-  {name:'Cá hồi trout sashimi',qty:'1 khúc',price:578},
-  {name:'Cá chình unagi',qty:'1 gói',price:1190},
-  {name:'Heo harami Canada',qty:'1 gói',price:617},
-  {name:'Cà rốt',qty:'1 túi',price:162},
-  {name:'Dole 227g',qty:'1',price:149},
-  {name:'Gà tẩm vị Đài Loan',qty:'1',price:128},
-  {name:'Ngũ cốc Taiyo',qty:'1',price:498},
-  {name:'Bánh quy sữa Furuta',qty:'1',price:95},
-  {name:'Mì ý Ohmy 500g',qty:'1',price:234},
-  {name:'Sốt carbonara Ohmy 260g',qty:'1',price:168},
-  {name:'Giá đậu đen',qty:'1',price:30},
-  {name:'Cải xanh củ (cắt)',qty:'1',price:137},
-  {name:'Chuối',qty:'1 nải',price:225},
-  {name:'Giá đậu xanh 250g',qty:'1',price:34},
-  {name:'Cá saba muối',qty:'1 gói',price:758},
-  {name:'Tráng miệng sữa chua',qty:'1',price:144},
-  {name:'Nấm nameko Hokuto',qty:'1 gói',price:188},
-  {name:'Yakisoba Thượng Hải Shimadaya',qty:'1 gói',price:309},
-  {name:'Bắp hạt Inaba 480g',qty:'1',price:359},
-  {name:'Đậu phụ chiên Ariake 2 miếng',qty:'1',price:99},
-  {name:'Đậu hũ kinu Satoyuki',qty:'2 gói',price:312},
-  {name:'Đậu hũ kinu Yamami 6',qty:'1',price:119},
-  {name:'Nước ép rau củ 900ml',qty:'1',price:238},
-  {name:'Sữa ít béo Morinaga',qty:'1',price:234},
-  {name:'Bánh su kem Monteur 10',qty:'1',price:217},
-  {name:'Sữa chua 800g',qty:'1',price:467},
-  {name:'Nước uống R-1 Probio',qty:'4 chai',price:476},
-  {name:'Xúc xích Altbayern Itoham',qty:'1',price:375},
-  {name:'Trứng gà Akatori 10',qty:'1 vỉ',price:295},
-  {name:'Trứng gà đỏ Kakisen 10',qty:'1 vỉ',price:312},
-  {name:'Gạo lứt 2kg',qty:'2 túi',price:3910},
-  {name:'Muffin Pasco 4 cái',qty:'2 túi',price:336},
-  {name:'Bánh mì mè Dai-ichi 4',qty:'1',price:173}
+  {name:'Thịt bò Úc (nấu stew)',qty:'1 gói',price:1500},
+  {name:'Ức gà',qty:'1 gói',price:700},
+  {name:'Đùi gà',qty:'2 gói',price:1200},
+  {name:'Heo xay',qty:'1 gói',price:600},
+  {name:'Heo vai/lát',qty:'1 gói',price:800},
+  {name:'Cá saba muối',qty:'1 gói',price:750},
+  {name:'Trứng gà 10',qty:'1 vỉ',price:300},
+  {name:'Đậu hũ kinu',qty:'2 gói',price:300},
+  {name:'Sữa 1L',qty:'1 hộp',price:220},
+  {name:'Sữa chua 400g',qty:'1',price:400},
+  {name:'Kem chua (sour cream)',qty:'1',price:200},
+  {name:'Phô mai',qty:'1 gói',price:200},
+  {name:'Bánh mì sandwich',qty:'1 túi',price:300},
+  {name:'Muffin 4 cái',qty:'1 túi',price:170},
+  {name:'Củ dền',qty:'2 củ',price:250},
+  {name:'Khoai tây',qty:'1 túi',price:200},
+  {name:'Cà rốt',qty:'1 túi',price:150},
+  {name:'Hành tây túi',qty:'1 túi',price:300},
+  {name:'Bắp cải',qty:'1 cái',price:250},
+  {name:'Cà chua',qty:'1 túi',price:250},
+  {name:'Tỏi',qty:'1 củ',price:100},
+  {name:'Rau thì là (dill)',qty:'1 bó',price:100},
+  {name:'Nấm',qty:'1 gói',price:200},
+  {name:'Rau xanh (spinach)',qty:'1 bó',price:300},
+  {name:'Chuối',qty:'1 nải',price:200},
+  {name:'Táo',qty:'3 quả',price:300},
+  {name:'Mì ý 500g',qty:'1 gói',price:230},
+  {name:'Sốt cà chua 400g',qty:'1 lon',price:200},
+  {name:'Lá nguyệt quế',qty:'1 gói',price:100}
 ];
 
 const shopSup = [
