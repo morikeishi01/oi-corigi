@@ -161,13 +161,17 @@ body {
 .meal-day .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .meal-day .day-name { font-size: 15px; font-weight: 700; }
 .meal-day .day-total { font-size: 14px; font-weight: 700; color: var(--accent2); }
-.meal-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); }
+.meal-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); }
 .meal-row:first-of-type { border-top: none; }
-.meal-row .meal-icon { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
+.meal-row.has-how { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.meal-row .meal-icon { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; line-height: 1.4; }
 .meal-row .meal-body { flex: 1; min-width: 0; }
-.meal-row .meal-text { flex: 1; font-size: 14px; color: var(--text); }
-.meal-row .meal-how { font-size: 12px; color: var(--text2); margin-top: 4px; line-height: 1.45; }
-.meal-row .meal-price { font-weight: 700; font-size: 14px; color: var(--accent2); align-self: flex-start; }
+.meal-row .meal-text { font-size: 14px; color: var(--text); }
+.meal-row .meal-hint { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.meal-row.open .meal-hint { display: none; }
+.meal-row .meal-how { display: none; font-size: 12px; color: var(--text2); margin-top: 4px; line-height: 1.45; }
+.meal-row.open .meal-how { display: block; }
+.meal-row .meal-price { font-weight: 700; font-size: 14px; color: var(--accent2); flex-shrink: 0; }
 
 /* ═══ SHOPPING ═══ */
 .shop-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
@@ -862,8 +866,9 @@ function renderMeals() {
     const dt = m.items.reduce((s,i) => s+i.price, 0); wt += dt;
     h += `<div class="meal-day"><div class="day-header"><span class="day-name">${m.day}</span><span class="day-total">¥${dt.toLocaleString()}</span></div>`;
     m.items.forEach(i => {
-      const how = i.how ? `<div class="meal-how">${i.how}</div>` : '';
-      h += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><div class="meal-body"><span class="meal-text">${i.text}</span>${how}</div><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`;
+      const can = !!i.how;
+      const extra = can ? `<div class="meal-hint">Cách nấu ▾</div><div class="meal-how">${i.how}</div>` : '';
+      h += `<div class="meal-row${can?' has-how':''}"${can?' onclick="this.classList.toggle(\'open\')"':''}><span class="meal-icon">${i.icon}</span><div class="meal-body"><span class="meal-text">${i.text}</span>${extra}</div><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`;
     });
     h += `</div>`;
   });
