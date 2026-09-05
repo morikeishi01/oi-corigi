@@ -164,8 +164,10 @@ body {
 .meal-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); }
 .meal-row:first-of-type { border-top: none; }
 .meal-row .meal-icon { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
+.meal-row .meal-body { flex: 1; min-width: 0; }
 .meal-row .meal-text { flex: 1; font-size: 14px; color: var(--text); }
-.meal-row .meal-price { font-weight: 700; font-size: 14px; color: var(--accent2); }
+.meal-row .meal-how { font-size: 12px; color: var(--text2); margin-top: 4px; line-height: 1.45; }
+.meal-row .meal-price { font-weight: 700; font-size: 14px; color: var(--accent2); align-self: flex-start; }
 
 /* ═══ SHOPPING ═══ */
 .shop-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
@@ -281,10 +283,10 @@ body {
 </div>
 
 <div class="page" id="page-shop">
-  <div class="card"><div class="card-header"><div class="card-title">🛒 Chuyến chính — T7 29/08</div><div class="card-badge">¥18,000</div></div><div id="shop-main"></div><div class="shop-total">Tổng dự kiến: <span id="shop-main-total">¥0</span></div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 Chuyến chính — T7 05/09</div><div class="card-badge">¥18,000</div></div><div id="shop-main"></div><div class="shop-total">Tổng dự kiến: <span id="shop-main-total">¥0</span></div>
     <button class="btn btn-primary" id="btn-complete-main" onclick="completeShop('main')" style="margin-top:12px">✓ Hoàn thành Chuyến chính</button>
   </div>
-  <div class="card"><div class="card-header"><div class="card-title">🛒 Bổ sung — T4 26/08</div><div class="card-badge">¥2,000</div></div><div id="shop-sup"></div><div class="shop-total">Tổng dự kiến: <span id="shop-sup-total">¥0</span></div>
+  <div class="card"><div class="card-header"><div class="card-title">🛒 Bổ sung — T4 09/09</div><div class="card-badge">¥2,000</div></div><div id="shop-sup"></div><div class="shop-total">Tổng dự kiến: <span id="shop-sup-total">¥0</span></div>
     <button class="btn btn-primary" id="btn-complete-sup" onclick="completeShop('sup')" style="margin-top:12px">✓ Hoàn thành Bổ sung</button>
   </div>
   <div class="card"><div class="card-header"><div class="card-title">📦 Amazon</div><div class="card-badge">Tháng</div></div><div id="amazon-list"></div><div class="shop-total">Tổng: <span id="amazon-total">¥0</span></div>
@@ -575,13 +577,13 @@ const MONTHLY_BUDGET = 116691;
 const MAIN_CAP = 18000;
 const SUP_CAP = 2000;
 const RESERVE = 3000;
-// Plan-specific prefixes and completion keys (29/08–04/09/2026)
-const PLAN_MAIN_PREFIX = 'shop-main-2026-08-29_';
-const PLAN_SUP_PREFIX = 'shop-sup-2026-09-02_';
-const PLAN_MAIN_COMPLETION = 'main-2026-08-29';
-const PLAN_SUP_COMPLETION = 'sup-2026-09-02';
-const PLAN_WEEK_START = '2026-08-29';
-const PLAN_WEEK_END = '2026-09-04';
+// Plan-specific prefixes and completion keys (05/09–11/09/2026)
+const PLAN_MAIN_PREFIX = 'shop-main-2026-09-05_';
+const PLAN_SUP_PREFIX = 'shop-sup-2026-09-09_';
+const PLAN_MAIN_COMPLETION = 'main-2026-09-05';
+const PLAN_SUP_COMPLETION = 'sup-2026-09-09';
+const PLAN_WEEK_START = '2026-09-05';
+const PLAN_WEEK_END = '2026-09-11';
 let pinInput = '';
 let _attempts = 0;
 let _lockedUntil = 0;
@@ -732,74 +734,89 @@ const CAT_COLORS = {
 };
 
 const meals = [
-  { day: 'Thứ 7 · 29/08', items: [{icon:'🌅',text:'Bánh mì + trứng + sữa',price:350},{icon:'☀️',text:'Cơm + gà teriyaki',price:700},{icon:'🌙',text:'Borscht (súp củ dền) + bánh mì + kem chua',price:600}]},
-  { day: 'Chủ nhật · 30/08', items: [{icon:'',text:'Muffin + chuối + sữa chua',price:400},{icon:'☀️',text:'Cơm + cá saba nướng + bắp cải',price:700},{icon:'🌙',text:'Mapo đậu hũ heo xay + cơm',price:650}]},
-  { day: 'Thứ 2 · 31/08', items: [{icon:'🌅',text:'Bánh mì + sữa chua + táo',price:350},{icon:'☀️',text:'Mì ý sốt cà bò',price:700},{icon:'🌙',text:'Salad ức gà + bánh mì',price:500}]},
-  { day: 'Thứ 3 · 01/09', items: [{icon:'',text:'Muffin + sữa',price:300},{icon:'☀️',text:'Cơm + đùi gà kho cà rốt',price:700},{icon:'',text:'Đậu hũ chiên + rau xanh',price:500}]},
-  { day: 'Thứ 4 · 02/09', items: [{icon:'',text:'Bánh mì + trứng + sữa',price:350},{icon:'☀️',text:'Cơm + heo lát nướng + nấm',price:700},{icon:'🌙',text:'Súp rau củ + bánh mì',price:400}]},
-  { day: 'Thứ 5 · 03/09', items: [{icon:'',text:'Fullgra + sữa chua + chuối',price:400},{icon:'☀️',text:'Yakisoba + bắp cải',price:550},{icon:'🌙',text:'Cá saba + cơm + củ dền xào',price:700}]},
-  { day: 'Thứ 6 · 04/09', items: [{icon:'',text:'Bánh mì + trứng + táo',price:400},{icon:'☀️',text:'Cơm rang trứng + rau',price:500},{icon:'',text:'Lẩu nhỏ gà + đậu hũ + nấm',price:700}]}
+  { day: 'Thứ 7 · 05/09', items: [
+    {icon:'🌅',text:'Sandwich + trứng ốp la + sữa',price:350},
+    {icon:'☀️',text:'Cơm + đùi gà teriyaki',price:700,how:'Rạch da, muối tiêu. Chảo nóng da xuống, chiên 6–7 phút/mặt. Pha 2 muỗng nước tương + 1 mirin + 1 đường + 1 rượu nấu, đổ vào chảo lửa nhỏ đến bóng. Nghỉ 3 phút rồi cắt.'},
+    {icon:'🌙',text:'Cơm + bò xào dầu hào + cải thìa',price:650,how:'Ướp bò 10 phút (1 muỗng dầu hào + 1 nước tương + tiêu). Chảo lửa lớn, tỏi/gừng 15 giây → bò xào tái gạt ra. Cải thìa, ớt chuông, hành tây xào 1 phút. Bò lại + 1 muỗng dầu hào + ½ muỗng đường + 2 muỗng nước. Đảo 30 giây.'}
+  ]},
+  { day: 'Chủ nhật · 06/09', items: [
+    {icon:'🌅',text:'Fullgra + sữa chua + chuối',price:400},
+    {icon:'☀️',text:'Cơm + cá saba nướng + bắp cải muối nhanh',price:700,how:'Lau khô saba, nướng chảo chống dính 4 phút/mặt. Bắp cải thái sợi, muối 5 phút, vắt nhẹ, trộn nước tương + giấm/mirin.'},
+    {icon:'🌙',text:'Mapo đậu hũ heo xay + cơm',price:650,how:'Heo xay phi tỏi gừng. 1 muỗng nước tương + 1 dầu hào. Đậu hũ cắt khối, 100ml nước, lửa nhỏ 5 phút. Hòa bột năng, đảo sánh, hành lá.'}
+  ]},
+  { day: 'Thứ 2 · 07/09', items: [
+    {icon:'🌅',text:'Sandwich + sữa chua + táo',price:350},
+    {icon:'☀️',text:'Mì xào dầu hào tôm + rau',price:700,how:'Trần mì yakisoba 1 phút. Tôm muối tiêu xào chín gạt ra. Rau xào lửa lớn. Mì + tôm vào, 2 muỗng dầu hào + 1 nước tương + ½ đường. Đảo 1 phút.'},
+    {icon:'🌙',text:'Salad ức gà + trứng luộc + sandwich',price:500,how:'Luộc ức 12 phút với gừng hành, ngâm lạnh, xé sợi. Trộn xà lách, cà chua, dưa chuột, trứng. Sốt: 1 dầu hào + 1 nước tương + giấm.'}
+  ]},
+  { day: 'Thứ 3 · 08/09', items: [
+    {icon:'🌅',text:'Sandwich + sữa',price:300},
+    {icon:'☀️',text:'Cơm + đùi gà ram gừng',price:700,how:'Đùi cắt miếng, ram vàng. Gừng sợi, 2 nước tương + 1 mirin + 1 đường + ½ chén nước. Kho nhỏ 12 phút đến sốt cạn bóng.'},
+    {icon:'🌙',text:'Cơm + cá hồi nướng + bông cải hấp',price:700,how:'Muối tiêu, chảo 3–4 phút/mặt. Bông cải hấp 5 phút, rưới dầu hào pha nước tương loãng.'}
+  ]},
+  { day: 'Thứ 4 · 09/09', items: [
+    {icon:'🌅',text:'Sandwich + trứng + sữa',price:350},
+    {icon:'☀️',text:'Mì ý sốt cà + heo xay',price:700,how:'Phi hành tỏi, heo xay chín. Lon sốt cà + muối tiêu đường, ninh 8 phút. Trần mì, trộn, rắc phô mai.'},
+    {icon:'🌙',text:'Cánh gà sốt + cơm + kimchi',price:700,how:'Cánh rạch da, chiên vàng. Sốt 2 nước tương + 1 mirin + 1 đường + gừng. Úp cánh đảo đến bóng.'}
+  ]},
+  { day: 'Thứ 5 · 10/09', items: [
+    {icon:'🌅',text:'Fullgra + sữa chua + chuối',price:400},
+    {icon:'☀️',text:'Yakisoba ba chỉ + bắp cải',price:550,how:'Ba chỉ cháy cạnh, bắp cải + hành tây + cà rốt. Mì vào, 1 dầu hào + 1 nước tương + ½ đường.'},
+    {icon:'🌙',text:'Cơm + đậu phụ chiên + cải thìa xào dầu hào',price:500,how:'Đậu phụ chiên cắt miếng, áp chảo nóng. Cải thìa + tỏi. 1,5 muỗng dầu hào + 2 muỗng nước. Đảo 45 giây.'}
+  ]},
+  { day: 'Thứ 6 · 11/09', items: [
+    {icon:'🌅',text:'Sandwich + trứng + cam',price:400},
+    {icon:'☀️',text:'Cơm rang trứng + kimchi',price:500,how:'Trứng rang chín gạt ra. Cơm nguội đảo tơi. Kimchi thái đảo 30 giây. Trứng lại, nước tương, hành lá.'},
+    {icon:'🌙',text:'Lẩu gà nấm đậu hũ',price:700,how:'Nước dùng gà + gừng hành. Nấm, đậu hũ, cà rốt, bắp cải, thịt gà còn. Sôi 8–10 phút. Chấm nước tương + dầu hào loãng.'}
+  ]}
 ];
 
 const shopMain = [
-  {name:'Thịt bò Úc (nấu stew)',qty:'1 gói',price:1500},
+  {name:'Thịt bò xào (dầu hào)',qty:'1 gói',price:1480},
   {name:'Ức gà',qty:'1 gói',price:700},
-  {name:'Đùi gà',qty:'2 gói',price:1200},
+  {name:'Đùi gà',qty:'2 gói',price:1180},
   {name:'Heo xay',qty:'1 gói',price:600},
-  {name:'Heo vai/lát',qty:'1 gói',price:800},
+  {name:'Ba chỉ heo',qty:'1 gói',price:880},
   {name:'Cá saba muối',qty:'1 gói',price:750},
+  {name:'Cá hồi fillet',qty:'1 miếng',price:980},
+  {name:'Tôm',qty:'1 gói',price:700},
+  {name:'Cánh gà',qty:'1 gói',price:400},
   {name:'Trứng gà 10',qty:'1 vỉ',price:300},
-  {name:'Đậu hũ kinu',qty:'2 gói',price:300},
+  {name:'Đậu hũ kinu',qty:'2 gói',price:200},
+  {name:'Đậu phụ chiên',qty:'1 gói',price:200},
   {name:'Sữa 1L',qty:'1 hộp',price:220},
   {name:'Sữa chua 400g',qty:'1',price:400},
-  {name:'Kem chua (sour cream)',qty:'1',price:200},
   {name:'Phô mai',qty:'1 gói',price:200},
-  {name:'Bánh mì sandwich',qty:'1 túi',price:300},
-  {name:'Muffin 4 cái',qty:'1 túi',price:170},
-  {name:'Củ dền',qty:'2 củ',price:250},
-  {name:'Khoai tây',qty:'1 túi',price:200},
+  {name:'Sandwich',qty:'2 túi',price:470},
+  {name:'Cải thìa',qty:'1 bó',price:200},
+  {name:'Bông cải xanh',qty:'1',price:300},
+  {name:'Bắp cải',qty:'1 cái',price:250},
   {name:'Cà rốt',qty:'1 túi',price:150},
   {name:'Hành tây túi',qty:'1 túi',price:300},
-  {name:'Bắp cải',qty:'1 cái',price:250},
-  {name:'Cà chua',qty:'1 túi',price:250},
   {name:'Tỏi',qty:'1 củ',price:100},
-  {name:'Rau thì là (dill)',qty:'1 bó',price:100},
-  {name:'Nấm',qty:'1 gói',price:200},
-  {name:'Rau xanh (spinach)',qty:'1 bó',price:300},
+  {name:'Gừng',qty:'1 củ',price:80},
+  {name:'Hành lá',qty:'1 bó',price:80},
+  {name:'Nấm',qty:'1 gói',price:250},
+  {name:'Rau bina',qty:'1 bó',price:300},
+  {name:'Cà chua',qty:'1 túi',price:250},
+  {name:'Ớt chuông',qty:'2 quả',price:250},
+  {name:'Khoai tây',qty:'1 túi',price:200},
+  {name:'Giá đỗ',qty:'1',price:130},
+  {name:'Dưa chuột',qty:'2 quả',price:150},
+  {name:'Xà lách',qty:'1',price:250},
   {name:'Chuối',qty:'1 nải',price:200},
   {name:'Táo',qty:'3 quả',price:300},
+  {name:'Cam',qty:'3 quả',price:350},
+  {name:'Dầu hào',qty:'1 chai',price:350},
+  {name:'Mì yakisoba',qty:'1',price:200},
   {name:'Mì ý 500g',qty:'1 gói',price:230},
   {name:'Sốt cà chua 400g',qty:'1 lon',price:200},
-  {name:'Lá nguyệt quế',qty:'1 gói',price:100},
-  {name:'Salmon fillet',qty:'1 miếng',price:700},
-  {name:'Tôm',qty:'1 gói',price:450},
-  {name:'Thịt ba chỉ heo',qty:'1 gói',price:550},
-  {name:'Cánh gà',qty:'1 gói',price:370},
-  {name:'Ớt chuông',qty:'2 quả',price:250},
-  {name:'Dưa chuột',qty:'2 quả',price:150},
-  {name:'Cải thìa',qty:'1 bó',price:140},
-  {name:'Hành lá',qty:'1 bó',price:60},
-  {name:'Gừng',qty:'1 củ',price:80},
-  {name:'Bơ',qty:'1 hộp',price:230},
-  {name:'Nước tương',qty:'1 chai',price:250},
-  {name:'Mirin',qty:'1 chai',price:200},
-  {name:'Rượu nấu ăn',qty:'1 chai',price:200},
-  {name:'Dầu ô liu',qty:'1 chai',price:330},
-  {name:'Đường',qty:'1 túi',price:150},
-  {name:'Muối',qty:'1 túi',price:80},
-  {name:'Tiêu',qty:'1 lọ',price:180},
-  {name:'Nước dùng gà',qty:'1 hộp',price:200},
-  {name:'Cá ngừ hộp',qty:'2 hộp',price:250},
-  {name:'Rong biển khô',qty:'1 gói',price:180},
+  {name:'Gạo lứt thái 2kg',qty:'1',price:1960},
+  {name:'Fullgra',qty:'1',price:400},
   {name:'Natto',qty:'3 hộp',price:180},
-  {name:'Sữa đặc',qty:'1 lon',price:180},
-  {name:'Trà xanh',qty:'1 hộp',price:250},
-  {name:'Cà phê',qty:'1 gói',price:340},
-  {name:'Bánh quy',qty:'1 gói',price:250},
-  {name:'Sô cô la',qty:'1 thanh',price:180},
-  {name:'Kem',qty:'1 hộp',price:250},
-  {name:'Nước cam',qty:'1 chai',price:250},
-  {name:'Nước khoáng',qty:'1 thùng',price:350}
+  {name:'Nước dùng gà',qty:'1 hộp',price:200},
+  {name:'Kimchi',qty:'1',price:300},
+  {name:'Bơ',qty:'1 hộp',price:230}
 ];
 
 const shopSup = [
@@ -844,7 +861,10 @@ function renderMeals() {
   meals.forEach(m => {
     const dt = m.items.reduce((s,i) => s+i.price, 0); wt += dt;
     h += `<div class="meal-day"><div class="day-header"><span class="day-name">${m.day}</span><span class="day-total">¥${dt.toLocaleString()}</span></div>`;
-    m.items.forEach(i => h += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><span class="meal-text">${i.text}</span><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`);
+    m.items.forEach(i => {
+      const how = i.how ? `<div class="meal-how">${i.how}</div>` : '';
+      h += `<div class="meal-row"><span class="meal-icon">${i.icon}</span><div class="meal-body"><span class="meal-text">${i.text}</span>${how}</div><span class="meal-price">¥${i.price.toLocaleString()}</span></div>`;
+    });
     h += `</div>`;
   });
   h += `<div style="text-align:right;font-weight:800;padding:12px 0 0;font-size:16px;color:var(--accent2)">Tổng tuần: ¥${wt.toLocaleString()} / ¥23,000</div>`;
